@@ -116,9 +116,14 @@ const activities = {
   
   const pathname = window.location.pathname
   const attributeStrings = pathname.slice(pathname.indexOf('/internate/') + "/internate/".length).split("/")
+
   
   function toCamelCase(str) {
       return str.replace(/-./g, match => match.charAt(1).toUpperCase());
+  }
+
+  function camelToDash(str) {
+    return str.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
   }
   
   window.fsAttributes = window.fsAttributes || [];
@@ -137,7 +142,7 @@ const activities = {
   
               if (item1 && item2) {
                   // Both items found, perform operations here
-                  console.log(`Found: ${item1.name} (${item1.type}), ${item2.name} (${item2.type})`);
+                  // console.log(`Found: ${item1.name} (${item1.type}), ${item2.name} (${item2.type})`);
                   if (item1.type === 'country') {
                       const inputElement = document.getElementById("internate_filter_country");
                       inputElement.value = item1.name;
@@ -178,7 +183,7 @@ const activities = {
   window.fsAttributes.push([
     'cmsfilter',
     (filterInstances) => {
-      console.log('cmsfilter Successfully loaded!');
+      // console.log('cmsfilter Successfully loaded!');
       const [filterInstance] = filterInstances;
       
       // Define a debounce function to postpone execution
@@ -193,7 +198,6 @@ const activities = {
       };
       
       filterInstance.listInstance.on('renderitems', (renderedItems) => {
-        console.log(renderedItems);
         debounceInsertSections(); // Call the debounced function
       });
     },
@@ -202,15 +206,25 @@ const activities = {
   
   const internalLinksSection = document.querySelector(".section_internal-links .padding-global .padding-section-medium .container-large")
   
-  const addInternalLinkSection = (attribute, otherAttribute) => {
+  const addInternalLinkSection = (attributeList, pageAttribute, secondPageAttribute) => {
   
       // HEADING
-  
+
+        console.log("attribute list: ", attributeList)
+        console.log("page attribute: ", pageAttribute)
+        console.log("second page attribute: ", secondPageAttribute)
       const internalLinkHeading = document.createElement("h2")
-      if (attribute === countries) {
-      internalLinkHeading.innerText = "Andere Länder mit Internaten, die Reiten anbieten"
-      } else if (attribute === activities) {
-      internalLinkHeading.innerText = "Andere von Internate in Deutschland angebotene Sportarten"
+      if (attributeList === countries) {
+      internalLinkHeading.innerText = `Andere Länder mit Internaten, die ${activities[secondPageAttribute].name} anbieten`
+      } else if (attributeList === activities) {
+            switch (activities[secondPageAttribute].type) {
+            case 'sport':
+                internalLinkHeading.innerText = `Andere von Internate in ${countries[pageAttribute].name} angebotene Sportarten`
+                break;
+            case 'activity':
+                internalLinkHeading.innerText = `Andere von Internate in ${countries[pageAttribute].name} angebotene Aktivitäten`
+                break;
+            }
       }
       internalLinksSection.append(internalLinkHeading)
   
@@ -249,24 +263,37 @@ const activities = {
       // Set different countries
       
       let attributeData = [];
-      for (let slug in attribute) {
-      if (attribute.hasOwnProperty(slug)) {
-          attributeData.push({ slug, name: attribute[slug].name });
+      for (let slug in attributeList) {
+      if (attributeList.hasOwnProperty(slug)) {
+          attributeData.push({ slug, type: attributeList[slug].type, name: attributeList[slug].name });
           }
       }
-      if (attribute === countries) {
+      if (attributeList === countries) {
       attributeData.forEach((attribute) => {
-          const link = new Link(`https://internate-org-253554.webflow.io/internate/${attribute.slug}/${otherAttribute}`, `${attribute.name}`);
+          const link = new Link(`https://internate-org-253554.webflow.io/internate/${camelToDash(attribute.slug)}/${camelToDash(secondPageAttribute)}`, `${attribute.name}`);
           link.element.classList.add("internal-link")
           link.appendTo(linksContainer);
       })
   }
-  if (attribute === activities) {
+  if (attributeList === activities) {
+    if(activities[secondPageAttribute].type === "sport") {
       attributeData.forEach((attribute) => {
-          const link = new Link(`https://internate-org-253554.webflow.io/internate/${otherAttribute}/${attribute.slug}`, `${attribute.name}`);
+        if (attribute.type === "sport") {
+          const link = new Link(`https://internate-org-253554.webflow.io/internate/${camelToDash(pageAttribute)}/${camelToDash(attribute.slug)}`, `${attribute.name}`);
           link.element.classList.add("internal-link")
           link.appendTo(linksContainer);
+        }
       })
+    }
+    if(activities[secondPageAttribute].type === "activity") {
+        attributeData.forEach((attribute) => {
+          if (attribute.type === "activity") {
+            const link = new Link(`https://internate-org-253554.webflow.io/internate/${camelToDash(pageAttribute)}/${camelToDash(attribute.slug)}`, `${attribute.name}`);
+            link.element.classList.add("internal-link")
+            link.appendTo(linksContainer);
+          }
+        })
+      }
   }
   
       // SPACER
@@ -277,12 +304,12 @@ const activities = {
   
   }
    
-  addInternalLinkSection(countries, attributeStrings[1])
-  addInternalLinkSection(activities, attributeStrings[0])
+  addInternalLinkSection(countries, attributeStrings[0], attributeStrings[1])
+  addInternalLinkSection(activities, attributeStrings[0], attributeStrings[1])
   
   const sitemapUrl = 'https://internate-org-253554.webflow.io/sitemap.xml';
   getUrlsFromSitemap(sitemapUrl).then(sitemapUrls => {
-      filterLinksBySitemap(sitemapUrls, '.section_internal-links');
+      // filterLinksBySitemap(sitemapUrls, '.section_internal-links');
   });
   
   async function getUrlsFromSitemap(sitemapUrl) {
@@ -365,6 +392,3 @@ const activities = {
     nachLaendernSection.classList.remove("background-color-flower", "text-color-red")
   }
   }
-  
-  // insertSections();
-  
