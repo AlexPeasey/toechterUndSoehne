@@ -309,7 +309,7 @@ const activities = {
   
   const sitemapUrl = 'https://internate-org-253554.webflow.io/sitemap.xml';
   getUrlsFromSitemap(sitemapUrl).then(sitemapUrls => {
-      // filterLinksBySitemap(sitemapUrls, '.section_internal-links');
+  filterLinksBySitemap(sitemapUrls, '.section_internal-links');
   });
   
   async function getUrlsFromSitemap(sitemapUrl) {
