@@ -202,7 +202,6 @@ $(document).ready(function () {
       $('.age-select').change(function() {
         // Capture the selected value
         var selectedAge = $(this).val();
-        console.log(selectedAge)
         // Check if something was selected
         if (selectedAge) {
           // Call the function and pass the selected value
