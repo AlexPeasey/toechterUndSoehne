@@ -93,7 +93,6 @@ $(document).ready(function () {
         const dateTag = $(".summer-schools_date-filter-tag")
         const dateText = $(".date-tag-text")
         const date = $(".summer-schools_input.w-input").val()
-        console.log(date)
         dateText.text(`Datum: ${date}`)
         dateTag.show()
     }
@@ -126,6 +125,24 @@ $(document).ready(function () {
       const [filterInstance] = filterInstances;
       filterInstance.listInstance.on('renderitems', (renderedItems) => {
         countItems();
+        // Step 1: Gather all unique attributes from the items
+        var uniqueAttributes = {}; // Using an object to store unique values
+        
+        $('.summer-schools-item').each(function() {
+            // Assuming 'fs-cmsfilter-field="Schwerpunkt"' is an attribute of a child element of '.summer-schools-item'
+            $(this).find('[fs-cmsfilter-field="Schwerpunkt"]').each(function() {
+            var attributeValue = $(this).text().trim();
+            uniqueAttributes[attributeValue] = true; // Store the attribute value as a key in the object
+            });
+        });
+
+        // Step 2: Remove options from the select field that do not match the gathered attributes
+        $('.schwerpunkt-select option').each(function() {
+            if (!uniqueAttributes[$(this).val()]) {
+            // If the option value is not a key in our uniqueAttributes object, remove it
+            $(this).remove();
+            }
+        });
       });
     },
   ]);
