@@ -53,19 +53,25 @@ $(document).ready(function () {
         let items = document.querySelectorAll('.summer-schools_list .w-dyn-item');
       
         items.forEach(item => {
-            const ageFrom = Number(item.querySelector(".age-from").textContent)
-            const ageTo = Number(item.querySelector(".age-to").textContent)
-            const shouldBeVisible = age >= ageFrom && age <= ageTo
-            if (shouldBeVisible && item.classList.contains('fade-out')) {
-                item.style.display = ''; // Make it visible in the flow
-                requestAnimationFrame(() => {
-                    item.classList.remove('fade-out'); // Start fade-in transition
-                });
-            } else if (!shouldBeVisible && !item.classList.contains('fade-out')) {
-                item.classList.add('fade-out'); // Start fade-out transition
-                setTimeout(() => {
-                    item.style.display = 'none'; // Completely hide after transition
-                }, 100); // match the duration of the CSS transition
+            const ageFromElement = item.querySelector(".age-from");
+            const ageToElement = item.querySelector(".age-to");
+            
+            // Check if both elements exist before proceeding
+            if (ageFromElement && ageToElement) {
+                const ageFrom = Number(item.querySelector(".age-from").textContent)
+                const ageTo = Number(item.querySelector(".age-to").textContent)
+                const shouldBeVisible = age >= ageFrom && age <= ageTo
+                if (shouldBeVisible && item.classList.contains('fade-out')) {
+                    item.style.display = ''; // Make it visible in the flow
+                    requestAnimationFrame(() => {
+                        item.classList.remove('fade-out'); // Start fade-in transition
+                    });
+                } else if (!shouldBeVisible && !item.classList.contains('fade-out')) {
+                    item.classList.add('fade-out'); // Start fade-out transition
+                    setTimeout(() => {
+                        item.style.display = 'none'; // Completely hide after transition
+                    }, 100); // match the duration of the CSS transition
+                }
             }
         });        
     }
