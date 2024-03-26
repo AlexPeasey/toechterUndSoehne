@@ -27,8 +27,8 @@ $(document).ready(function () {
   
     // Function to filter items based on the date
     function filterItems(pickedDate) {
-        let items = document.querySelectorAll('.summer-schools_list .w-dyn-item');
-      
+        let items = document.querySelectorAll('.summer-schools-item.w-dyn-item');
+  
         items.forEach(item => {
             const startDate = new Date(parseDate(item.querySelector('.start-date').innerText));
             const endDate = new Date(parseDate(item.querySelector('.end-date').innerText));
@@ -141,7 +141,7 @@ $(document).ready(function () {
             uniqueAttributes[attributeValue] = true; // Store the attribute value as a key in the object
             });
         });
-
+  
         // Step 2: Remove options from the select field that do not match the gathered attributes
         $('.schwerpunkt-select option').each(function() {
             if (!uniqueAttributes[$(this).val()]) {
@@ -175,6 +175,7 @@ $(document).ready(function () {
         if (dateRegex.test(inputVal)) {
             let parsedDate = parseDate(inputVal);
             // Trigger the filtering function if the date format is correct
+           console.log("filtering items..")
             filterItems(parsedDate);
         }
     });
