@@ -135,12 +135,16 @@ const activities = {
   
               // Convert slugs to camelCase
               const camelSlug1 = toCamelCase(slug1);
-              const camelSlug2 = toCamelCase(slug2);
-  
               const item1 = combinedData[camelSlug1];
-              const item2 = combinedData[camelSlug2];
-  
-              if (item1 && item2) {
+              
+              let item2;
+              
+              if (slug2) {
+              const camelSlug2 = toCamelCase(slug2);
+              item2 = combinedData[camelSlug2];
+              }
+              
+              if (item1) {
                   // Both items found, perform operations here
                   // console.log(`Found: ${item1.name} (${item1.type}), ${item2.name} (${item2.type})`);
                   if (item1.type === 'country') {
@@ -150,18 +154,19 @@ const activities = {
                       inputElement.dispatchEvent(event);
                       // Add logic specific to the country here
                   }
+                  if (item1.type === 'sport') {
+                    const inputElement = document.getElementById("internate_filter_sport");
+                    inputElement.value = item1.name;
+                    const event = new Event('input', { bubbles: true });                           
+                    inputElement.dispatchEvent(event);
+                    // Add logic specific to the country here
+                }
+                if (item2) {
                   if (item2.type === 'country') {
                       const inputElement = document.getElementById("internate_filter_country");
                       inputElement.value = item2.name;
                       const event = new Event('input', { bubbles: true });                           
                       inputElement.dispatchEvent(event);
-                  }
-                                  if (item1.type === 'sport') {
-                      const inputElement = document.getElementById("internate_filter_sport");
-                      inputElement.value = item1.name;
-                      const event = new Event('input', { bubbles: true });                           
-                      inputElement.dispatchEvent(event);
-                      // Add logic specific to the country here
                   }
                   if (item2.type === 'sport') {
                       const inputElement = document.getElementById("internate_filter_sport");
@@ -169,8 +174,9 @@ const activities = {
                       const event = new Event('input', { bubbles: true });                           
                       inputElement.dispatchEvent(event);
                   }
+                }
               } else {
-                  console.log('One or both slugs not found.');
+                  console.log('Slug not found.');
               }
           }
   
@@ -207,8 +213,12 @@ const activities = {
   const internalLinksSection = document.querySelector(".section_internal-links .padding-global .padding-section-medium .container-large")
   
   const addInternalLinkSection = (attributeList, pageAttribute, secondPageAttribute) => {
-  
-      // HEADING
+
+        if(!secondPageAttribute) {
+            return
+        }
+      
+        // HEADING
 
         console.log("attribute list: ", attributeList)
         console.log("page attribute: ", pageAttribute)
