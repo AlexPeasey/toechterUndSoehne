@@ -79,7 +79,8 @@ const activities = {
     girl: { type: 'education', name: 'Girl' },
     boy: { type: 'education', name: 'Boy' }
   };
-  const countries = {
+
+const places = {
     deutschland: {
       type: 'country',
       name: 'Deutschland'
@@ -111,8 +112,89 @@ const activities = {
     australien: {
       type: 'country',
       name: 'Australien'
+    },
+    badenWuerttemberg: {
+      type: 'region',
+      country: 'Deutschland',
+      name: 'Baden-Württemberg'
+    },
+    bayern: {
+      type: 'region',
+      country: 'Deutschland',
+      name: 'Bayern'
+    },
+    berlin: {
+      type: 'region',
+      country: 'Deutschland',
+      name: 'Berlin'
+    },
+    brandenburg: {
+      type: 'region',
+      country: 'Deutschland',
+      name: 'Brandenburg'
+    },
+    bremen: {
+      type: 'region',
+      country: 'Deutschland',
+      name: 'Bremen'
+    },
+    hamburg: {
+      type: 'region',
+      country: 'Deutschland',
+      name: 'Hamburg'
+    },
+    hessen: {
+      type: 'region',
+      country: 'Deutschland',
+      name: 'Hessen'
+    },
+    mecklenburgVorpommern: {
+      type: 'region',
+      country: 'Deutschland',
+      name: 'Mecklenburg-Vorpommern'
+    },
+    niedersachsen: {
+      type: 'region',
+      country: 'Deutschland',
+      name: 'Niedersachsen'
+    },
+    nordrheinWestfalen: {
+      type: 'region',
+      country: 'Deutschland',
+      name: 'Nordrhein-Westfalen'
+    },
+    rheinlandPfalz: {
+      type: 'region',
+      country: 'Deutschland',
+      name: 'Rheinland-Pfalz'
+    },
+    saarland: {
+      type: 'region',
+      country: 'Deutschland',
+      name: 'Saarland'
+    },
+    sachsen: {
+      type: 'region',
+      country: 'Deutschland',
+      name: 'Sachsen'
+    },
+    sachsenAnhalt: {
+      type: 'region',
+      country: 'Deutschland',
+      name: 'Sachsen-Anhalt'
+    },
+    schleswigHolstein: {
+      type: 'region',
+      country: 'Deutschland',
+      name: 'Schleswig-Holstein'
+    },
+    thueringen: {
+      type: 'region',
+      country: 'Deutschland',
+      name: 'Thüringen'
     }
   };
+  
   
   const pathname = window.location.pathname
   const attributeStrings = pathname.slice(pathname.indexOf('/internate/') + "/internate/".length).split("/")
@@ -130,58 +212,54 @@ const activities = {
   window.fsAttributes.push([
       'cmsfilter',
       (listInstances) => {
-          function processSlugs(slug1, slug2) {
-              const combinedData = { ...activities, ...countries };
-  
-              // Convert slugs to camelCase
-              const camelSlug1 = toCamelCase(slug1);
-              const item1 = combinedData[camelSlug1];
-              
-              let item2;
-              
-              if (slug2) {
-              const camelSlug2 = toCamelCase(slug2);
-              item2 = combinedData[camelSlug2];
-              }
-              
-              if (item1) {
-                  // Both items found, perform operations here
-                  // console.log(`Found: ${item1.name} (${item1.type}), ${item2.name} (${item2.type})`);
-                  if (item1.type === 'country') {
-                      const inputElement = document.getElementById("internate_filter_country");
-                      inputElement.value = item1.name;
-                      const event = new Event('input', { bubbles: true });                           
-                      inputElement.dispatchEvent(event);
-                      // Add logic specific to the country here
+        function processSlugs(...attributeSlugs) {
+          const combinedData = { ...activities, ...places };
+      
+          const [attributes] = attributeSlugs
+          // Log attributes for debugging
+          console.log(attributes);
+      
+          attributes.forEach(slug => {
+              if (!slug) return; // Skip if slug is undefined or null
+              // Convert slug to camelCase and find corresponding item
+              const camelSlug = toCamelCase(String(slug));
+              const item = combinedData[camelSlug];
+      
+              // Check if item exists in the combinedData
+              if (item) {
+
+                // Generalize element ID construction and value assignment
+                  let filterType;
+
+                  switch (item.type) {
+                    case 'country':
+                      filterType = 'internate_filter_country'
+                      break;
+                    case 'region':
+                      filterType = 'internate_filter_region'
+                      break;
+                    default:
+                      filterType = 'internate_filter_sport'
                   }
-                  if (item1.type === 'sport') {
-                    const inputElement = document.getElementById("internate_filter_sport");
-                    inputElement.value = item1.name;
-                    const event = new Event('input', { bubbles: true });                           
-                    inputElement.dispatchEvent(event);
-                    // Add logic specific to the country here
-                }
-                if (item2) {
-                  if (item2.type === 'country') {
-                      const inputElement = document.getElementById("internate_filter_country");
-                      inputElement.value = item2.name;
-                      const event = new Event('input', { bubbles: true });                           
-                      inputElement.dispatchEvent(event);
-                  }
-                  if (item2.type === 'sport') {
-                      const inputElement = document.getElementById("internate_filter_sport");
-                      inputElement.value = item2.name;
-                      const event = new Event('input', { bubbles: true });                           
+                  
+                  const inputElement = document.getElementById(filterType);
+                  
+                  if (inputElement) { // Check if element exists
+                      inputElement.value = item.name;
+                      const event = new Event('input', { bubbles: true });
                       inputElement.dispatchEvent(event);
                   }
-                }
+      
+                  // Here, you can add any additional logic specific to the item type
+                  // For example, you might have special handling for certain places or sports
+      
               } else {
-                  console.log('Slug not found.');
+                  console.log(`Slug not found: ${slug}`);
               }
-          }
-  
+          });
+      }      
           // Assuming attributeStrings is defined and accessible here
-          processSlugs(attributeStrings[0], attributeStrings[1]);
+          processSlugs(attributeStrings);
       }
   ]);
   
@@ -209,6 +287,7 @@ const activities = {
     },
   ]);
   
+  // INTERNAL LINKS
   
   const internalLinksSection = document.querySelector(".section_internal-links .padding-global .padding-section-medium .container-large")
   
@@ -220,19 +299,31 @@ const activities = {
       
         // HEADING
 
+        /* 
+
         console.log("attribute list: ", attributeList)
         console.log("page attribute: ", pageAttribute)
         console.log("second page attribute: ", secondPageAttribute)
+        
+        */
+
       const internalLinkHeading = document.createElement("h2")
-      if (attributeList === countries) {
-      internalLinkHeading.innerText = `Andere Länder mit Internaten, die ${activities[secondPageAttribute].name} anbieten`
+      if (attributeList === places) {
+        switch (places[pageAttribute].type) {
+          case 'country':
+            internalLinkHeading.innerText = `Andere Länder mit Internaten, die ${activities[secondPageAttribute].name} anbieten`
+            break;
+          case 'region':
+            internalLinkHeading.innerText = `Internate nach Bundesland`
+        }
+        
       } else if (attributeList === activities) {
             switch (activities[secondPageAttribute].type) {
             case 'sport':
-                internalLinkHeading.innerText = `Andere von Internate in ${countries[pageAttribute].name} angebotene Sportarten`
+                internalLinkHeading.innerText = `Andere von Internaten in ${places[pageAttribute].name} angebotene Sportarten`
                 break;
             case 'activity':
-                internalLinkHeading.innerText = `Andere von Internate in ${countries[pageAttribute].name} angebotene Aktivitäten`
+                internalLinkHeading.innerText = `Andere von Internaten in ${places[pageAttribute].name} angebotene Aktivitäten`
                 break;
             }
       }
@@ -270,7 +361,7 @@ const activities = {
           
       }
       
-      // Set different countries
+      // Set different places
       
       let attributeData = [];
       for (let slug in attributeList) {
@@ -278,7 +369,7 @@ const activities = {
           attributeData.push({ slug, type: attributeList[slug].type, name: attributeList[slug].name });
           }
       }
-      if (attributeList === countries) {
+      if (attributeList === places) {
       attributeData.forEach((attribute) => {
           const link = new Link(`https://internate-org-253554.webflow.io/internate/${camelToDash(attribute.slug)}/${camelToDash(secondPageAttribute)}`, `${attribute.name}`);
           link.element.classList.add("internal-link")
@@ -313,9 +404,24 @@ const activities = {
       internalLinksSection.append(largeSpacer)
   
   }
-   
-  addInternalLinkSection(countries, attributeStrings[0], attributeStrings[1])
-  addInternalLinkSection(activities, attributeStrings[0], attributeStrings[1])
+
+switch (attributeStrings.length) {
+  case 1:
+    addInternalLinkSection(activities, attributeStrings[0], attributeStrings[1])
+    break;
+  case 2:
+    addInternalLinkSection(places, attributeStrings[0], attributeStrings[1])
+    addInternalLinkSection(activities, attributeStrings[0], attributeStrings[1])
+    break;
+  case 3:
+    addInternalLinkSection(places, attributeStrings[0], attributeStrings[2])
+    addInternalLinkSection(activities, attributeStrings[0], attributeStrings[2])
+    console.log("Add the internate nach Bundesländer!")
+}
+  
+  // addInternalLinkSection(places, attributeStrings[0], attributeStrings[1])
+ // addInternalLinkSection(activities, attributeStrings[0], attributeStrings[1])
+
   
   const sitemapUrl = 'https://internate-org-253554.webflow.io/sitemap.xml';
   getUrlsFromSitemap(sitemapUrl).then(sitemapUrls => {
