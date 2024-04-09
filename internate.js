@@ -216,8 +216,6 @@ const places = {
           const combinedData = { ...activities, ...places };
       
           const [attributes] = attributeSlugs
-          // Log attributes for debugging
-          console.log(attributes);
       
           attributes.forEach(slug => {
               if (!slug) return; // Skip if slug is undefined or null
@@ -292,20 +290,9 @@ const places = {
   const internalLinksSection = document.querySelector(".section_internal-links .padding-global .padding-section-medium .container-large")
   
   const addInternalLinkSection = (attributeList, pageAttribute, secondPageAttribute) => {
-
-        if(!secondPageAttribute) {
-            return
-        }
       
         // HEADING
-
-        /* 
-
-        console.log("attribute list: ", attributeList)
-        console.log("page attribute: ", pageAttribute)
-        console.log("second page attribute: ", secondPageAttribute)
         
-        */
 
       const internalLinkHeading = document.createElement("h2")
       if (attributeList === places) {
@@ -370,11 +357,48 @@ const places = {
           }
       }
       if (attributeList === places) {
-      attributeData.forEach((attribute) => {
-          const link = new Link(`https://internate-org-253554.webflow.io/internate/${camelToDash(attribute.slug)}/${camelToDash(secondPageAttribute)}`, `${attribute.name}`);
-          link.element.classList.add("internal-link")
-          link.appendTo(linksContainer);
-      })
+        switch (places[pageAttribute].type) {
+          case "country":
+            const countriesObject = Object.keys(places).reduce((acc, key) => {
+              if (places[key].type === 'country') {
+                  acc[key] = places[key];
+              }
+              return acc;
+            }, {});
+            let countries = [] 
+            for (let country in countriesObject) {
+              if (countriesObject.hasOwnProperty(country)) {
+                countries.push({ country, type: countriesObject[country].type, name: countriesObject[country].name });
+                }
+            }
+            countries.forEach((country) => {
+              const link = new Link(`https://internate-org-253554.webflow.io/internate/${camelToDash(country.country)}/${camelToDash(secondPageAttribute)}`, `${country.name}`);
+              link.element.classList.add("internal-link")
+              link.appendTo(linksContainer);
+              console.log("link created for ", country)
+            })
+            break;
+          case "region":
+            const regionsObject = Object.keys(places).reduce((acc, key) => {
+              if (places[key].type === 'region') {
+                  acc[key] = places[key];
+              }
+              return acc;
+            }, {});
+            let regions = [] 
+            for (let region in regionsObject) {
+              if (regionsObject.hasOwnProperty(region)) {
+                regions.push({ region, type: regionsObject[region].type, name: regionsObject[region].name });
+                }
+            }
+            regions.forEach((region) => {
+              const link = new Link(`https://internate-org-253554.webflow.io/internate/deutschland/${camelToDash(region.region)}`, `${region.name}`);
+              link.element.classList.add("internal-link")
+              link.appendTo(linksContainer);
+              console.log("link created for ", region)
+            })
+            break;
+       }
   }
   if (attributeList === activities) {
     if(activities[secondPageAttribute].type === "sport") {
@@ -404,7 +428,6 @@ const places = {
       internalLinksSection.append(largeSpacer)
   
   }
-
 switch (attributeStrings.length) {
   case 1:
     addInternalLinkSection(activities, attributeStrings[0], attributeStrings[1])
@@ -416,11 +439,9 @@ switch (attributeStrings.length) {
   case 3:
     addInternalLinkSection(places, attributeStrings[0], attributeStrings[2])
     addInternalLinkSection(activities, attributeStrings[0], attributeStrings[2])
-    console.log("Add the internate nach Bundesländer!")
+    addInternalLinkSection(places, attributeStrings[1], null)
 }
   
-  // addInternalLinkSection(places, attributeStrings[0], attributeStrings[1])
- // addInternalLinkSection(activities, attributeStrings[0], attributeStrings[1])
 
   
   const sitemapUrl = 'https://internate-org-253554.webflow.io/sitemap.xml';
