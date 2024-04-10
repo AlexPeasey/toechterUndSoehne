@@ -1,194 +1,169 @@
 const activities = {
-    americanFootball: { type: 'sport', name: 'American Football' },
-    angeln: { type: 'activity', name: 'Angeln' },
-    badminton: { type: 'sport', name: 'Badminton' },
-    baseball: { type: 'sport', name: 'Baseball' },
-    basketball: { type: 'sport', name: 'Basketball' },
-    bogenschiessen: { type: 'sport', name: 'Bogenschießen' },
-    bowling: { type: 'sport', name: 'Bowling' },
-    bowls: { type: 'sport', name: 'Bowls' },
-    boxen: { type: 'sport', name: 'Boxen' },
-    cricket: { type: 'sport', name: 'Cricket' },
-    crosslauf: { type: 'sport', name: 'Crosslauf' },
-    eishockey: { type: 'sport', name: 'Eishockey' },
-    fechten: { type: 'sport', name: 'Fechten' },
-    fitness: { type: 'activity', name: 'Fitness' },
-    fives: { type: 'sport', name: 'Fives' },
-    fliegen: { type: 'activity', name: 'Fliegen' },
-    fussball: { type: 'sport', name: 'Fußball' },
-    golf: { type: 'sport', name: 'Golf' },
-    gymnastikTurnen: { type: 'sport', name: 'Gymnastik/Turnen' },
-    hockey: { type: 'sport', name: 'Hockey' },
-    kajak: { type: 'sport', name: 'Kajak' },
-    kampfsport: { type: 'sport', name: 'Kampfsport' },
-    kanu: { type: 'sport', name: 'Kanu' },
-    klettern: { type: 'activity', name: 'Klettern' },
-    lacrosse: { type: 'sport', name: 'Lacrosse' },
-    leichtathletik: { type: 'sport', name: 'Leichtathletik' },
-    netzball: { type: 'sport', name: 'Netzball' },
-    paddle: { type: 'sport', name: 'Paddle' },
-    polo: { type: 'sport', name: 'Polo' },
-    radeln: { type: 'sport', name: 'Radeln' },
-    reiten: { type: 'sport', name: 'Reiten' },
-    rudern: { type: 'sport', name: 'Rudern' },
-    rugby: { type: 'sport', name: 'Rugby' },
-    schiessen: { type: 'sport', name: 'Schiessen' },
-    schlittschuhlaufen: { type: 'sport', name: 'Schlittschuhlaufen' },
-    schwimmen: { type: 'sport', name: 'Schwimmen' },
-    segeln: { type: 'sport', name: 'Segeln' },
-    ski: { type: 'sport', name: 'Ski' },
-    softball: { type: 'sport', name: 'Softball' },
-    squash: { type: 'sport', name: 'Squash' },
-    surfen: { type: 'sport', name: 'Surfen' },
-    tanzenBallett: { type: 'activity', name: 'Tanzen/Ballett' },
-    tauchen: { type: 'sport', name: 'Tauchen' },
-    tennis: { type: 'sport', name: 'Tennis' },
-    tischtennis: { type: 'sport', name: 'Tischtennis' },
-    turmspringen: { type: 'sport', name: 'Turmspringen' },
-    volleyball: { type: 'sport', name: 'Volleyball' },
-    yogaPilates: { type: 'activity', name: 'Yoga/Pilates' },
-    architektur: { type: 'activity', name: 'Architektur' },
-    ballett: { type: 'activity', name: 'Ballett' },
-    bigBand: { type: 'activity', name: 'Big Band' },
-    goldschmiedekunst: { type: 'activity', name: 'Goldschmiedekunst' },
-    schach: { type: 'activity', name: 'Schach' },
-    chor: { type: 'activity', name: 'Chor' },
-    debattieren: { type: 'activity', name: 'Debattieren' },
-    dukeOfEdinburgh: { type: 'activity', name: 'Duke of Edinburgh' },
-    modedesign: { type: 'activity', name: 'Modedesign' },
-    feuerwehrThw: { type: 'activity', name: 'Feuerwehr/THW' },
-    bildendeKunst: { type: 'activity', name: 'Bildende Kunst' },
-    gartenarbeit: { type: 'activity', name: 'Gartenarbeit' },
-    schmuck: { type: 'activity', name: 'Schmuck' },
-    modelUnitedNations: { type: 'activity', name: 'Model United Nations' },
-    musical: { type: 'activity', name: 'Musical' },
-    orchester: { type: 'activity', name: 'Orchester' },
-    lernenImFreien: { type: 'activity', name: 'Lernen im Freien' },
-    fotografie: { type: 'activity', name: 'Fotografie' },
-    topfern: { type: 'activity', name: 'Töpfern' },
-    programmierenCodieren: { type: 'activity', name: 'Programmieren/Codieren' },
-    robotikDesignTechnologie: { type: 'activity', name: 'Robotik/Design/Technologie' },
-    roundSquare: { type: 'activity', name: 'Round Square' },
-    theater: { type: 'activity', name: 'Theater' },
-    schreinerei: { type: 'activity', name: 'Schreinerei' },
-    hochbegabt: { type: 'education', name: 'Hochbegabt' },
-    lrs: { type: 'education', name: 'LRS' },
-    adhs: { type: 'education', name: 'ADHS' },
-    dyskalkulie: { type: 'education', name: 'Dyskalkulie' },
-    coEdu: { type: 'education', name: 'Co-Edu' },
-    girl: { type: 'education', name: 'Girl' },
-    boy: { type: 'education', name: 'Boy' }
-  };
+  "lernschwaechen": { type: 'Schwerpunkt', name: 'Lernschwächen' },
+  "liberale-ausrichtung": { type: 'Schwerpunkt', name: 'Liberale Ausrichtung' },
+  "boarding-ab-5kl-od-frueher": { type: 'Schwerpunkt', name: 'Boarding ab 5. Klasse oder früher' },
+  "hot-houses-elite": { type: 'Schwerpunkt', name: 'Hot Houses Elite' },
+  "ib": { type: 'Schwerpunkt', name: 'International Baccalaureate' },
+  "uniform": { type: 'Schwerpunkt', name: 'Uniform' },
+  "outdoor-education": { type: 'Schwerpunkt', name: 'Outdoor Education' },
+  "round-square": { type: 'Schwerpunkt', name: 'Round Square' },
+  "ski": { type: 'Schwerpunkt', name: 'Ski' },
+  "wirtschaft": { type: 'Schwerpunkt', name: 'Wirtschaft' },
+  "kirchlicher-hintergrund": { type: 'Schwerpunkt', name: 'Kirchlicher Hintergrund' },
+  "mint-stem-nat-wi": { type: 'Schwerpunkt', name: 'MINT/STEM/NatWi' },
+  "segeln": { type: 'Schwerpunkt', name: 'Segeln' },
+  "musik": { type: 'Schwerpunkt', name: 'Musik' },
+  "reiten": { type: 'Schwerpunkt', name: 'Reiten' },
+  "tennis": { type: 'Schwerpunkt', name: 'Tennis' },
+  "schloss": { type: 'Schwerpunkt', name: 'Schloss' },
+  "kunst": { type: 'Schwerpunkt', name: 'Kunst' },
+  "rudern": { type: 'Schwerpunkt', name: 'Rudern' },
+  "eishockey": { type: 'Schwerpunkt', name: 'Eishockey' },
+  "fussball": { type: 'Schwerpunkt', name: 'Fußball' },
+  "hockey": { type: 'Schwerpunkt', name: 'Hockey' },
+  "tanz": { type: 'Schwerpunkt', name: 'Tanz' },
+  "farm-bauernhof-tiere": { type: 'Schwerpunkt', name: 'Farm/Bauernhof/Tiere' },
+  "textiles-fashion-design": { type: 'Schwerpunkt', name: 'Textiles/Fashion/Design' },
+  "theater": { type: 'Schwerpunkt', name: 'Theater' },
+  "schwimmen": { type: 'Schwerpunkt', name: 'Schwimmen' },
+  "realschule": { type: 'Schwerpunkt', name: 'Realschule' },
+  "sixth-form-college": { type: 'Schwerpunkt', name: 'Sixth-Form-College' },
+  "it-robotics-coding": { type: 'Schwerpunkt', name: 'IT/Robotik/Coding' },
+  "basketball": { type: 'Schwerpunkt', name: 'Basketball' },
+  "golf": { type: 'Schwerpunkt', name: 'Golf' }
+};
+
+
+const abschluesse = {
+  "ap-placem": { type: 'abschluss', name: 'AP Placement' },
+  "am-high": { type: 'abschluss', name: 'American High School' },
+  "summercamp": { type: 'abschluss', name: 'Summer Camp' },
+  "am-highschool": { type: 'abschluss', name: 'American Highschool' },
+  "igcse": { type: 'abschluss', name: 'IGCSE' },
+  "a-le/igcse": { type: 'abschluss', name: 'A-Level/IGCSE' },
+  "grund": { type: 'abschluss', name: 'Grundschule' },
+  "a-level": { type: 'abschluss', name: 'A-Level' },
+  "real": { type: 'abschluss', name: 'Realschule' },
+  "fachabi": { type: 'abschluss', name: 'Fachabitur' },
+  "abitur": { type: 'abschluss', name: 'Abitur' },
+  "fos": { type: 'abschluss', name: 'Fachoberschule' },
+  "myp": { type: 'abschluss', name: 'MYP' },
+  "bac-franc": { type: 'abschluss', name: 'Baccalauréat Français' },
+  "matura": { type: 'abschluss', name: 'Matura' },
+  "haupt": { type: 'abschluss', name: 'Hauptschule' },
+  "post-grad-yr": { type: 'abschluss', name: 'Post-Graduate Year' },
+  "aufb-gym": { type: 'abschluss', name: 'Aufbaugymnasium' },
+};
 
 const places = {
-    deutschland: {
+    "deutschland": {
       type: 'country',
       name: 'Deutschland'
     },
-    grossbritannien: {
+    "grossbritannien": {
       type: 'country',
       name: 'Großbritannien'
     },
-    frankreich: {
+    "frankreich": {
       type: 'country',
       name: 'Frankreich'
     },
-    italien: {
+    "italien": {
       type: 'country',
       name: 'Italien'
     },
-    kanada: {
+    "kanada": {
       type: 'country',
       name: 'Kanada'
     },
-    schweiz: {
+    "schweiz": {
       type: 'country',
       name: 'Schweiz'
     },
-    usa: {
+    "usa": {
       type: 'country',
       name: 'USA'
     },
-    australien: {
+    "australien": {
       type: 'country',
       name: 'Australien'
     },
-    badenWuerttemberg: {
+    "baden-wuerttemberg": {
       type: 'region',
       country: 'Deutschland',
       name: 'Baden-Württemberg'
     },
-    bayern: {
+    "bayern": {
       type: 'region',
       country: 'Deutschland',
       name: 'Bayern'
     },
-    berlin: {
+    "berlin": {
       type: 'region',
       country: 'Deutschland',
       name: 'Berlin'
     },
-    brandenburg: {
+    "brandenburg": {
       type: 'region',
       country: 'Deutschland',
       name: 'Brandenburg'
     },
-    bremen: {
+    "bremen": {
       type: 'region',
       country: 'Deutschland',
       name: 'Bremen'
     },
-    hamburg: {
+    "hamburg": {
       type: 'region',
       country: 'Deutschland',
       name: 'Hamburg'
     },
-    hessen: {
+    "hessen": {
       type: 'region',
       country: 'Deutschland',
       name: 'Hessen'
     },
-    mecklenburgVorpommern: {
+    "mecklenburg-vorpommern": {
       type: 'region',
       country: 'Deutschland',
       name: 'Mecklenburg-Vorpommern'
     },
-    niedersachsen: {
+    "niedersachsen": {
       type: 'region',
       country: 'Deutschland',
       name: 'Niedersachsen'
     },
-    nordrheinWestfalen: {
+    "nordrhein-westfalen": {
       type: 'region',
       country: 'Deutschland',
       name: 'Nordrhein-Westfalen'
     },
-    rheinlandPfalz: {
+    "rheinland-pfalz": {
       type: 'region',
       country: 'Deutschland',
       name: 'Rheinland-Pfalz'
     },
-    saarland: {
+    "saarland": {
       type: 'region',
       country: 'Deutschland',
       name: 'Saarland'
     },
-    sachsen: {
+    "sachsen": {
       type: 'region',
       country: 'Deutschland',
       name: 'Sachsen'
     },
-    sachsenAnhalt: {
+    "sachsen-anhalt": {
       type: 'region',
       country: 'Deutschland',
       name: 'Sachsen-Anhalt'
     },
-    schleswigHolstein: {
+    "schleswig-holstein": {
       type: 'region',
       country: 'Deutschland',
       name: 'Schleswig-Holstein'
     },
-    thueringen: {
+    "thueringen": {
       type: 'region',
       country: 'Deutschland',
       name: 'Thüringen'
@@ -199,29 +174,18 @@ const places = {
   const pathname = window.location.pathname
   const attributeStrings = pathname.slice(pathname.indexOf('/internate/') + "/internate/".length).split("/")
 
-  
-  function toCamelCase(str) {
-      return str.replace(/-./g, match => match.charAt(1).toUpperCase());
-  }
-
-  function camelToDash(str) {
-    return str.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
-  }
-  
   window.fsAttributes = window.fsAttributes || [];
   window.fsAttributes.push([
       'cmsfilter',
       (listInstances) => {
         function processSlugs(...attributeSlugs) {
-          const combinedData = { ...activities, ...places };
-      
+          const combinedData = { ...activities, ...places, ...abschluesse };
           const [attributes] = attributeSlugs
       
           attributes.forEach(slug => {
               if (!slug) return; // Skip if slug is undefined or null
               // Convert slug to camelCase and find corresponding item
-              const camelSlug = toCamelCase(String(slug));
-              const item = combinedData[camelSlug];
+              const item = combinedData[slug];
       
               // Check if item exists in the combinedData
               if (item) {
@@ -236,14 +200,18 @@ const places = {
                     case 'region':
                       filterType = 'internate_filter_region'
                       break;
-                    default:
-                      filterType = 'internate_filter_sport'
+                    case 'Schwerpunkt':
+                      filterType = 'internate_filter_schwerpunkt'
+                      break;
+                    case 'abschluss':
+                      filterType = 'internate_filter_abschluss'
+                      break;
                   }
                   
                   const inputElement = document.getElementById(filterType);
                   
                   if (inputElement) { // Check if element exists
-                      inputElement.value = item.name;
+                      inputElement.value = slug;
                       const event = new Event('input', { bubbles: true });
                       inputElement.dispatchEvent(event);
                   }
@@ -276,7 +244,7 @@ const places = {
         }
         timeoutId = setTimeout(() => {
           insertSections();
-        }, 500); // Set a delay of 500 milliseconds (adjust as needed)
+        }, 250); // Set a delay of 800 milliseconds (adjust as needed)
       };
       
       filterInstance.listInstance.on('renderitems', (renderedItems) => {
@@ -295,22 +263,23 @@ const places = {
         
 
       const internalLinkHeading = document.createElement("h2")
+      const combinedData = { ...activities, ...places, ...abschluesse };
       if (attributeList === places) {
-        switch (places[pageAttribute].type) {
+        switch (combinedData[pageAttribute].type) {
           case 'country':
-            internalLinkHeading.innerText = `Andere Länder mit Internaten, die ${activities[secondPageAttribute].name} anbieten`
+            internalLinkHeading.innerText = `Andere Länder mit Internaten, die ${combinedData[secondPageAttribute].name} anbieten`
             break;
           case 'region':
             internalLinkHeading.innerText = `Internate nach Bundesland`
         }
         
       } else if (attributeList === activities) {
-            switch (activities[secondPageAttribute].type) {
+            switch (combinedData[secondPageAttribute].type) {
             case 'sport':
-                internalLinkHeading.innerText = `Andere von Internaten in ${places[pageAttribute].name} angebotene Sportarten`
+                internalLinkHeading.innerText = `Andere von Internaten in ${combinedData[pageAttribute].name} angebotene Sportarten`
                 break;
             case 'activity':
-                internalLinkHeading.innerText = `Andere von Internaten in ${places[pageAttribute].name} angebotene Aktivitäten`
+                internalLinkHeading.innerText = `Andere von Internaten in ${combinedData[pageAttribute].name} angebotene Aktivitäten`
                 break;
             }
       }
@@ -372,10 +341,9 @@ const places = {
                 }
             }
             countries.forEach((country) => {
-              const link = new Link(`https://internate-org-253554.webflow.io/internate/${camelToDash(country.country)}/${camelToDash(secondPageAttribute)}`, `${country.name}`);
+              const link = new Link(`https://internate-org-253554.webflow.io/internate/${country.country}/${secondPageAttribute}`, `${country.name}`);
               link.element.classList.add("internal-link")
               link.appendTo(linksContainer);
-              console.log("link created for ", country)
             })
             break;
           case "region":
@@ -392,28 +360,27 @@ const places = {
                 }
             }
             regions.forEach((region) => {
-              const link = new Link(`https://internate-org-253554.webflow.io/internate/deutschland/${camelToDash(region.region)}`, `${region.name}`);
+              const link = new Link(`https://internate-org-253554.webflow.io/internate/deutschland/${region.region}`, `${region.name}`);
               link.element.classList.add("internal-link")
               link.appendTo(linksContainer);
-              console.log("link created for ", region)
             })
             break;
        }
   }
   if (attributeList === activities) {
-    if(activities[secondPageAttribute].type === "sport") {
+    if(combinedData[secondPageAttribute].type === "sport") {
       attributeData.forEach((attribute) => {
         if (attribute.type === "sport") {
-          const link = new Link(`https://internate-org-253554.webflow.io/internate/${camelToDash(pageAttribute)}/${camelToDash(attribute.slug)}`, `${attribute.name}`);
+          const link = new Link(`https://internate-org-253554.webflow.io/internate/${pageAttribute}/${attribute.slug}`, `${attribute.name}`);
           link.element.classList.add("internal-link")
           link.appendTo(linksContainer);
         }
       })
     }
-    if(activities[secondPageAttribute].type === "activity") {
+    if(combinedData[secondPageAttribute].type === "activity") {
         attributeData.forEach((attribute) => {
           if (attribute.type === "activity") {
-            const link = new Link(`https://internate-org-253554.webflow.io/internate/${camelToDash(pageAttribute)}/${camelToDash(attribute.slug)}`, `${attribute.name}`);
+            const link = new Link(`https://internate-org-253554.webflow.io/internate/${pageAttribute}/${attribute.slug}`, `${attribute.name}`);
             link.element.classList.add("internal-link")
             link.appendTo(linksContainer);
           }
