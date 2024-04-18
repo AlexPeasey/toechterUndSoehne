@@ -244,7 +244,7 @@ const places = {
         }
         timeoutId = setTimeout(() => {
           insertSections();
-        }, 250); // Set a delay of 800 milliseconds (adjust as needed)
+        }, 5); // Set a delay of 800 milliseconds (adjust as needed)
       };
       
       filterInstance.listInstance.on('renderitems', (renderedItems) => {
@@ -461,11 +461,11 @@ switch (attributeStrings.length) {
   
   const insertSections = () => {
   
-  const internatItems = $(".internat-liste_grid .w-dyn-item")
-  const beraterinnenSection = $(".section_beraterinnen")[0]
-  const nachLaendernSection = $(".section_internate-nach-laendern")[0]
-  const beratungSection = $(".section_beratung")[0]
-  const secondDescription = $(".section_page-second-description")[0]
+  const internatItems = document.querySelectorAll(".internat-liste_grid .w-dyn-item")
+  const beraterinnenSection = document.querySelector(".section_beraterinnen")
+  const nachLaendernSection = document.querySelector(".section_internate-nach-laendern")
+  const beratungSection = document.querySelector(".section_beratung")
+  const secondDescription = document.querySelector(".section_page-second-description")
   
   if (internatItems.length > 3) { // Ensure the length is greater than 4 to access the index 4
     internatItems[4].after(beraterinnenSection);
