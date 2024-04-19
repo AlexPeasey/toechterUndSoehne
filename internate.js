@@ -497,3 +497,29 @@ switch (attributeStrings.length) {
     nachLaendernSection.classList.remove("background-color-flower", "text-color-red")
   }
   }
+
+window.onload = () => {
+
+  const checkDebugMode = async () => {
+  
+  const searchParams = new URLSearchParams(window.location.search)
+  if (searchParams.get("debug") == 1) {
+
+    const delay = ms => new Promise(res => setTimeout(res, ms));
+
+    await delay(1000)
+    const hiddenFilters = document.querySelector(".hidden-filters")
+    const hiddenFilterStrings = document.querySelectorAll(".filter-strings")
+    hiddenFilters.style.display = "flex"
+    hiddenFilters.style.fontFamily = "Monospace"
+    hiddenFilterStrings.forEach((filter) => {
+      filter.style.display = "flex"
+      filter.style.fontFamily = "Monospace"
+      console.log(filter.style.display)
+    })
+  }
+}
+
+  checkDebugMode()
+
+}
