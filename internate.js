@@ -1,58 +1,51 @@
-const activities = {
-  "lernschwaechen": { type: 'Schwerpunkt', name: 'Lernschwächen' },
-  "liberale-ausrichtung": { type: 'Schwerpunkt', name: 'Liberale Ausrichtung' },
-  "boarding-ab-5kl-od-frueher": { type: 'Schwerpunkt', name: 'Boarding ab 5. Klasse oder früher' },
-  "hot-houses-elite": { type: 'Schwerpunkt', name: 'Hot Houses Elite' },
-  "ib": { type: 'Schwerpunkt', name: 'International Baccalaureate' },
-  "uniform": { type: 'Schwerpunkt', name: 'Uniform' },
-  "outdoor-education": { type: 'Schwerpunkt', name: 'Outdoor Education' },
-  "round-square": { type: 'Schwerpunkt', name: 'Round Square' },
-  "ski": { type: 'Schwerpunkt', name: 'Ski' },
-  "wirtschaft": { type: 'Schwerpunkt', name: 'Wirtschaft' },
-  "kirchlicher-hintergrund": { type: 'Schwerpunkt', name: 'Kirchlicher Hintergrund' },
-  "mint-stem-nat-wi": { type: 'Schwerpunkt', name: 'MINT/STEM/NatWi' },
-  "segeln": { type: 'Schwerpunkt', name: 'Segeln' },
-  "musik": { type: 'Schwerpunkt', name: 'Musik' },
-  "reiten": { type: 'Schwerpunkt', name: 'Reiten' },
-  "tennis": { type: 'Schwerpunkt', name: 'Tennis' },
-  "schloss": { type: 'Schwerpunkt', name: 'Schloss' },
-  "kunst": { type: 'Schwerpunkt', name: 'Kunst' },
-  "rudern": { type: 'Schwerpunkt', name: 'Rudern' },
-  "eishockey": { type: 'Schwerpunkt', name: 'Eishockey' },
-  "fussball": { type: 'Schwerpunkt', name: 'Fußball' },
-  "hockey": { type: 'Schwerpunkt', name: 'Hockey' },
-  "tanz": { type: 'Schwerpunkt', name: 'Tanz' },
-  "farm-bauernhof-tiere": { type: 'Schwerpunkt', name: 'Farm/Bauernhof/Tiere' },
-  "textiles-fashion-design": { type: 'Schwerpunkt', name: 'Textiles/Fashion/Design' },
-  "theater": { type: 'Schwerpunkt', name: 'Theater' },
-  "schwimmen": { type: 'Schwerpunkt', name: 'Schwimmen' },
-  "realschule": { type: 'Schwerpunkt', name: 'Realschule' },
-  "sixth-form-college": { type: 'Schwerpunkt', name: 'Sixth-Form-College' },
-  "it-robotics-coding": { type: 'Schwerpunkt', name: 'IT/Robotik/Coding' },
-  "basketball": { type: 'Schwerpunkt', name: 'Basketball' },
-  "golf": { type: 'Schwerpunkt', name: 'Golf' }
-};
-
-
-const abschluesse = {
-  "ap-placem": { type: 'abschluss', name: 'AP Placement' },
-  "am-high": { type: 'abschluss', name: 'American High School' },
-  "summercamp": { type: 'abschluss', name: 'Summer Camp' },
-  "am-highschool": { type: 'abschluss', name: 'American Highschool' },
-  "igcse": { type: 'abschluss', name: 'IGCSE' },
-  "a-le/igcse": { type: 'abschluss', name: 'A-Level/IGCSE' },
-  "grund": { type: 'abschluss', name: 'Grundschule' },
-  "a-level": { type: 'abschluss', name: 'A-Level' },
-  "real": { type: 'abschluss', name: 'Realschule' },
-  "fachabi": { type: 'abschluss', name: 'Fachabitur' },
-  "abitur": { type: 'abschluss', name: 'Abitur' },
-  "fos": { type: 'abschluss', name: 'Fachoberschule' },
-  "myp": { type: 'abschluss', name: 'MYP' },
-  "bac-franc": { type: 'abschluss', name: 'Baccalauréat Français' },
-  "matura": { type: 'abschluss', name: 'Matura' },
-  "haupt": { type: 'abschluss', name: 'Hauptschule' },
-  "post-grad-yr": { type: 'abschluss', name: 'Post-Graduate Year' },
-  "aufb-gym": { type: 'abschluss', name: 'Aufbaugymnasium' },
+const attributes = {
+  "lernschwaechen": { type: 'attribute', name: 'Lernschwächen' },
+  "liberal": { type: 'attribute', name: 'Liberale Ausrichtung' },
+  "eliteinternate": { type: 'attribute', name: 'Eliteinternate' },
+  "international-baccalaureate": { type: 'attribute', name: 'International Baccalaureate' },
+  "schuluniform": { type: 'attribute', name: 'Uniform' },
+  "erlebnispaedagogik": { type: 'attribute', name: 'Outdoor Education' },
+  "round-square": { type: 'attribute', name: 'Round Square' },
+  "ski": { type: 'attribute', name: 'Ski' },
+  "wirtschaft": { type: 'attribute', name: 'Wirtschaft' },
+  "kirchlich": { type: 'attribute', name: 'Kirchlicher Hintergrund' },
+  "mint": { type: 'attribute', name: 'MINT/STEM/NatWi' },
+  "segeln": { type: 'attribute', name: 'Segeln' },
+  "musik": { type: 'attribute', name: 'Musik' },
+  "reitinternate": { type: 'attribute', name: 'Reiten' },
+  "tennis": { type: 'attribute', name: 'Tennis' },
+  "schlossinternate": { type: 'attribute', name: 'Schloss' },
+  "kunst": { type: 'attribute', name: 'Kunst' },
+  "rudern": { type: 'attribute', name: 'Rudern' },
+  "eishockey": { type: 'attribute', name: 'Eishockey' },
+  "fussballinternate": { type: 'attribute', name: 'Fußball' },
+  "hockey": { type: 'attribute', name: 'Hockey' },
+  "tanz": { type: 'attribute', name: 'Tanz' },
+  "bauernhof": { type: 'attribute', name: 'Farm/Bauernhof/Tiere' },
+  "modedesign": { type: 'attribute', name: 'Textiles/Fashion/Design' },
+  "theater": { type: 'attribute', name: 'Theater' },
+  "schwimmen": { type: 'attribute', name: 'Schwimmen' },
+  "realschulinternate": { type: 'attribute', name: 'Realschule' },
+  "sixth-form-colleges": { type: 'attribute', name: 'Sixth-Form-College' },
+  "informatik": { type: 'attribute', name: 'IT/Robotik/Coding' },
+  "basketball": { type: 'attribute', name: 'Basketball' },
+  "golfinternate": { type: 'attribute', name: 'Golf' },
+  "advanced-placement": { type: 'attribute', name: 'AP Placement' },
+  "highschool": { type: 'attribute', name: 'American High School' },
+  "summercamp": { type: 'attribute', name: 'Summer Camp' },
+  "igcse": { type: 'attribute', name: 'IGCSE' },
+  "grundschulinternate": { type: 'attribute', name: 'Grundschule' },
+  "a-level": { type: 'attribute', name: 'A-Level' },
+  "fachabitur": { type: 'attribute', name: 'Fachabitur' },
+  "internatsgymnasium": { type: 'attribute', name: 'Abitur' },
+  "fachoberschule": { type: 'attribute', name: 'Fachoberschule' },
+  "middle-years-programme": { type: 'attribute', name: 'MYP' },
+  "baccalaureat": { type: 'attribute', name: 'Baccalauréat Français' },
+  "matura": { type: 'attribute', name: 'Matura' },
+  "hauptschule": { type: 'attribute', name: 'Hauptschule' },
+  "aufbaugymnasium": { type: 'attribute', name: 'Aufbaugymnasium' },
+  "jungeninternate": { type: 'attribute', name: 'Jungeninternate' },
+  "maedcheninternate": { type: 'attribute', name: 'Mädcheninternate' },
 };
 
 const places = {
@@ -83,6 +76,18 @@ const places = {
     "usa": {
       type: 'country',
       name: 'USA'
+    },
+    "spanien": {
+      type: 'country',
+      name: 'Spanien'
+    },
+    "oesterreich": {
+      type: 'country',
+      name: 'Österreich'
+    },
+    "niederlande": {
+      type: 'country',
+      name: 'Niederlande'
     },
     "australien": {
       type: 'country',
@@ -169,17 +174,17 @@ const places = {
       name: 'Thüringen'
     }
   };
-  
+  const combinedData = { ...attributes, ...places };
   
   const pathname = window.location.pathname
   const attributeStrings = pathname.slice(pathname.indexOf('/internate/') + "/internate/".length).split("/")
+
 
   window.fsAttributes = window.fsAttributes || [];
   window.fsAttributes.push([
       'cmsfilter',
       (listInstances) => {
         function processSlugs(...attributeSlugs) {
-          const combinedData = { ...activities, ...places, ...abschluesse };
           const [attributes] = attributeSlugs
       
           attributes.forEach(slug => {
@@ -200,11 +205,8 @@ const places = {
                     case 'region':
                       filterType = 'internate_filter_region'
                       break;
-                    case 'Schwerpunkt':
-                      filterType = 'internate_filter_schwerpunkt'
-                      break;
-                    case 'abschluss':
-                      filterType = 'internate_filter_abschluss'
+                    case 'attribute':
+                      filterType = 'internate_filter_attribute'
                       break;
                   }
                   
@@ -244,7 +246,7 @@ const places = {
         }
         timeoutId = setTimeout(() => {
           insertSections();
-        }, 5); // Set a delay of 800 milliseconds (adjust as needed)
+        }, 50); // Set a delay of 800 milliseconds (adjust as needed)
       };
       
       filterInstance.listInstance.on('renderitems', (renderedItems) => {
@@ -261,9 +263,8 @@ const places = {
       
         // HEADING
         
-
       const internalLinkHeading = document.createElement("h2")
-      const combinedData = { ...activities, ...places, ...abschluesse };
+      const combinedData = { ...attributes, ...places };
       if (attributeList === places) {
         switch (combinedData[pageAttribute].type) {
           case 'country':
@@ -273,7 +274,7 @@ const places = {
             internalLinkHeading.innerText = `Internate nach Bundesland`
         }
         
-      } else if (attributeList === activities) {
+      } else if (attributeList === attributes) {
             switch (combinedData[secondPageAttribute].type) {
             case 'sport':
                 internalLinkHeading.innerText = `Andere von Internaten in ${combinedData[pageAttribute].name} angebotene Sportarten`
@@ -367,7 +368,7 @@ const places = {
             break;
        }
   }
-  if (attributeList === activities) {
+  if (attributeList === attributes) {
     if(combinedData[secondPageAttribute].type === "sport") {
       attributeData.forEach((attribute) => {
         if (attribute.type === "sport") {
@@ -397,15 +398,15 @@ const places = {
   }
 switch (attributeStrings.length) {
   case 1:
-    addInternalLinkSection(activities, attributeStrings[0], attributeStrings[1])
+    addInternalLinkSection(attributes, attributeStrings[0], attributeStrings[1])
     break;
   case 2:
     addInternalLinkSection(places, attributeStrings[0], attributeStrings[1])
-    addInternalLinkSection(activities, attributeStrings[0], attributeStrings[1])
+    addInternalLinkSection(attributes, attributeStrings[0], attributeStrings[1])
     break;
   case 3:
     addInternalLinkSection(places, attributeStrings[0], attributeStrings[2])
-    addInternalLinkSection(activities, attributeStrings[0], attributeStrings[2])
+    addInternalLinkSection(attributes, attributeStrings[0], attributeStrings[2])
     addInternalLinkSection(places, attributeStrings[1], null)
 }
   
