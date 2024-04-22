@@ -1,52 +1,53 @@
 const attributes = {
-  "lernschwaechen": { type: 'attribute', name: 'Lernschwächen' },
-  "liberal": { type: 'attribute', name: 'Liberale Ausrichtung' },
-  "eliteinternate": { type: 'attribute', name: 'Eliteinternate' },
-  "international-baccalaureate": { type: 'attribute', name: 'International Baccalaureate' },
-  "schuluniform": { type: 'attribute', name: 'Uniform' },
-  "erlebnispaedagogik": { type: 'attribute', name: 'Outdoor Education' },
-  "round-square": { type: 'attribute', name: 'Round Square' },
-  "ski": { type: 'attribute', name: 'Ski' },
-  "wirtschaft": { type: 'attribute', name: 'Wirtschaft' },
-  "kirchlich": { type: 'attribute', name: 'Kirchlicher Hintergrund' },
-  "mint": { type: 'attribute', name: 'MINT/STEM/NatWi' },
-  "segeln": { type: 'attribute', name: 'Segeln' },
-  "musik": { type: 'attribute', name: 'Musik' },
-  "reitinternate": { type: 'attribute', name: 'Reiten' },
-  "tennis": { type: 'attribute', name: 'Tennis' },
-  "schlossinternate": { type: 'attribute', name: 'Schloss' },
-  "kunst": { type: 'attribute', name: 'Kunst' },
-  "rudern": { type: 'attribute', name: 'Rudern' },
-  "eishockey": { type: 'attribute', name: 'Eishockey' },
-  "fussballinternate": { type: 'attribute', name: 'Fußball' },
-  "hockey": { type: 'attribute', name: 'Hockey' },
-  "tanz": { type: 'attribute', name: 'Tanz' },
-  "bauernhof": { type: 'attribute', name: 'Farm/Bauernhof/Tiere' },
-  "modedesign": { type: 'attribute', name: 'Textiles/Fashion/Design' },
-  "theater": { type: 'attribute', name: 'Theater' },
-  "schwimmen": { type: 'attribute', name: 'Schwimmen' },
-  "realschulinternate": { type: 'attribute', name: 'Realschule' },
-  "sixth-form-colleges": { type: 'attribute', name: 'Sixth-Form-College' },
-  "informatik": { type: 'attribute', name: 'IT/Robotik/Coding' },
-  "basketball": { type: 'attribute', name: 'Basketball' },
-  "golfinternate": { type: 'attribute', name: 'Golf' },
-  "advanced-placement": { type: 'attribute', name: 'AP Placement' },
-  "highschool": { type: 'attribute', name: 'American High School' },
-  "summercamp": { type: 'attribute', name: 'Summer Camp' },
-  "igcse": { type: 'attribute', name: 'IGCSE' },
-  "grundschulinternate": { type: 'attribute', name: 'Grundschule' },
-  "a-level": { type: 'attribute', name: 'A-Level' },
-  "fachabitur": { type: 'attribute', name: 'Fachabitur' },
-  "internatsgymnasium": { type: 'attribute', name: 'Abitur' },
-  "fachoberschule": { type: 'attribute', name: 'Fachoberschule' },
-  "middle-years-programme": { type: 'attribute', name: 'MYP' },
-  "baccalaureat": { type: 'attribute', name: 'Baccalauréat Français' },
-  "matura": { type: 'attribute', name: 'Matura' },
-  "hauptschule": { type: 'attribute', name: 'Hauptschule' },
-  "aufbaugymnasium": { type: 'attribute', name: 'Aufbaugymnasium' },
-  "jungeninternate": { type: 'attribute', name: 'Jungeninternate' },
-  "maedcheninternate": { type: 'attribute', name: 'Mädcheninternate' },
+  "lernschwaechen": { type: 'attribute', name: 'Lernschwächen', category: 'Educational Focus' },
+  "liberal": { type: 'attribute', name: 'Liberale Ausrichtung', category: 'Philosophy' },
+  "eliteinternate": { type: 'attribute', name: 'Eliteinternate', category: 'Type' },
+  "international-baccalaureate": { type: 'attribute', name: 'International Baccalaureate', category: 'Curriculum' },
+  "schuluniform": { type: 'attribute', name: 'Uniform', category: 'Policy' },
+  "erlebnispaedagogik": { type: 'attribute', name: 'Outdoor Education', category: 'Educational Focus' },
+  "round-square": { type: 'attribute', name: 'Round Square', category: 'Organization' },
+  "ski": { type: 'attribute', name: 'Ski', category: 'Sport' },
+  "wirtschaft": { type: 'attribute', name: 'Wirtschaft', category: 'Educational Focus' },
+  "kirchlich": { type: 'attribute', name: 'Kirchlicher Hintergrund', category: 'Philosophy' },
+  "mint": { type: 'attribute', name: 'MINT/STEM/NatWi', category: 'Educational Focus' },
+  "segeln": { type: 'attribute', name: 'Segeln', category: 'Sport' },
+  "musik": { type: 'attribute', name: 'Musik', category: 'Art' },
+  "reitinternate": { type: 'attribute', name: 'Reiten', category: 'Sport' },
+  "tennis": { type: 'attribute', name: 'Tennis', category: 'Sport' },
+  "schlossinternate": { type: 'attribute', name: 'Schloss', category: 'Type' },
+  "kunst": { type: 'attribute', name: 'Kunst', category: 'Art' },
+  "rudern": { type: 'attribute', name: 'Rudern', category: 'Sport' },
+  "eishockey": { type: 'attribute', name: 'Eishockey', category: 'Sport' },
+  "fussballinternate": { type: 'attribute', name: 'Fußball', category: 'Sport' },
+  "hockey": { type: 'attribute', name: 'Hockey', category: 'Sport' },
+  "tanz": { type: 'attribute', name: 'Tanz', category: 'Art' },
+  "bauernhof": { type: 'attribute', name: 'Farm/Bauernhof/Tiere', category: 'Setting' },
+  "modedesign": { type: 'attribute', name: 'Textiles/Fashion/Design', category: 'Art' },
+  "theater": { type: 'attribute', name: 'Theater', category: 'Art' },
+  "schwimmen": { type: 'attribute', name: 'Schwimmen', category: 'Sport' },
+  "realschulinternate": { type: 'attribute', name: 'Realschule', category: 'School Type' },
+  "sixth-form-colleges": { type: 'attribute', name: 'Sixth-Form-College', category: 'School Type' },
+  "informatik": { type: 'attribute', name: 'IT/Robotik/Coding', category: 'Educational Focus' },
+  "basketball": { type: 'attribute', name: 'Basketball', category: 'Sport' },
+  "golfinternate": { type: 'attribute', name: 'Golf', category: 'Sport' },
+  "advanced-placement": { type: 'attribute', name: 'AP Placement', category: 'Curriculum' },
+  "highschool": { type: 'attribute', name: 'American High School', category: 'School Type' },
+  "summercamp": { type: 'attribute', name: 'Summer Camp', category: 'Activity' },
+  "igcse": { type: 'attribute', name: 'IGCSE', category: 'Curriculum' },
+  "grundschulinternate": { type: 'attribute', name: 'Grundschule', category: 'School Type' },
+  "a-level": { type: 'attribute', name: 'A-Level', category: 'Curriculum' },
+  "fachabitur": { type: 'attribute', name: 'Fachabitur', category: 'Curriculum' },
+  "internatsgymnasium": { type: 'attribute', name: 'Abitur', category: 'Curriculum' },
+  "fachoberschule": { type: 'attribute', name: 'Fachoberschule', category: 'School Type' },
+  "middle-years-programme": { type: 'attribute', name: 'MYP', category: 'Curriculum' },
+  "baccalaureat": { type: 'attribute', name: 'Baccalauréat Français', category: 'Curriculum' },
+  "matura": { type: 'attribute', name: 'Matura', category: 'Curriculum' },
+  "hauptschule": { type: 'attribute', name: 'Hauptschule', category: 'School Type' },
+  "aufbaugymnasium": { type: 'attribute', name: 'Aufbaugymnasium', category: 'School Type' },
+  "jungeninternate": { type: 'attribute', name: 'Jungeninternate', category: 'Demographic' },
+  "maedcheninternate": { type: 'attribute', name: 'Mädcheninternate', category: 'Demographic' },
 };
+
 
 const places = {
     "deutschland": {
@@ -246,7 +247,7 @@ const places = {
         }
         timeoutId = setTimeout(() => {
           insertSections();
-        }, 50); // Set a delay of 800 milliseconds (adjust as needed)
+        }, 500); // Set a delay of 800 milliseconds (adjust as needed)
       };
       
       filterInstance.listInstance.on('renderitems', (renderedItems) => {
@@ -265,26 +266,42 @@ const places = {
         
       const internalLinkHeading = document.createElement("h2")
       const combinedData = { ...attributes, ...places };
-      if (attributeList === places) {
-        switch (combinedData[pageAttribute].type) {
-          case 'country':
-            internalLinkHeading.innerText = `Andere Länder mit Internaten, die ${combinedData[secondPageAttribute].name} anbieten`
-            break;
-          case 'region':
-            internalLinkHeading.innerText = `Internate nach Bundesland`
+
+      if (secondPageAttribute) {
+        if (attributeList === places) {
+          switch (combinedData[pageAttribute].type) {
+            case 'country':
+              internalLinkHeading.innerText = `Andere Länder mit Internaten, die ${combinedData[secondPageAttribute].name} anbieten`
+              break;
+            case 'region':
+              internalLinkHeading.innerText = `Internate nach Bundesland`
+          }
+          
+        } else if (attributeList === attributes) {
+              switch (combinedData[secondPageAttribute].category) {
+              case 'sport':
+                  internalLinkHeading.innerText = `Andere von Internaten in ${combinedData[pageAttribute].name} angebotene Sportarten`
+                  break;
+              case 'activity':
+                  internalLinkHeading.innerText = `Andere von Internaten in ${combinedData[pageAttribute].name} angebotene Aktivitäten`
+                  break;
+              }
         }
-        
-      } else if (attributeList === attributes) {
-            switch (combinedData[secondPageAttribute].type) {
-            case 'sport':
-                internalLinkHeading.innerText = `Andere von Internaten in ${combinedData[pageAttribute].name} angebotene Sportarten`
-                break;
-            case 'activity':
-                internalLinkHeading.innerText = `Andere von Internaten in ${combinedData[pageAttribute].name} angebotene Aktivitäten`
-                break;
-            }
-      }
-      internalLinksSection.append(internalLinkHeading)
+        internalLinksSection.append(internalLinkHeading)
+    } else if (!secondPageAttribute) {
+        switch (attributes[pageAttribute].category) {
+          case 'Sport':
+            internalLinkHeading.innerText = `Andere von Internaten angebotene Sportarten`
+            break;
+          case 'Activity':
+            internalLinkHeading.innerText = `Andere von Internaten angebotene Aktivitäten`
+            break;
+          case 'Educational Focus':
+            internalLinkHeading.innerText = `Internate mit anderen Bildungsschwerpunkten`
+            break;
+        }
+        internalLinksSection.append(internalLinkHeading)
+      } 
   
       // SPACER
   
@@ -369,25 +386,36 @@ const places = {
        }
   }
   if (attributeList === attributes) {
-    if(combinedData[secondPageAttribute].type === "sport") {
-      attributeData.forEach((attribute) => {
-        if (attribute.type === "sport") {
-          const link = new Link(`https://internate-org-253554.webflow.io/internate/${pageAttribute}/${attribute.slug}`, `${attribute.name}`);
-          link.element.classList.add("internal-link")
-          link.appendTo(linksContainer);
-        }
-      })
-    }
-    if(combinedData[secondPageAttribute].type === "activity") {
+    if (secondPageAttribute) {
+      if(combinedData[secondPageAttribute].type === "sport") {
         attributeData.forEach((attribute) => {
-          if (attribute.type === "activity") {
+          if (attribute.type === "sport") {
             const link = new Link(`https://internate-org-253554.webflow.io/internate/${pageAttribute}/${attribute.slug}`, `${attribute.name}`);
             link.element.classList.add("internal-link")
             link.appendTo(linksContainer);
           }
         })
       }
-  }
+      if(combinedData[secondPageAttribute].type === "activity") {
+          attributeData.forEach((attribute) => {
+            if (attribute.type === "activity") {
+              const link = new Link(`https://internate-org-253554.webflow.io/internate/${pageAttribute}/${attribute.slug}`, `${attribute.name}`);
+              link.element.classList.add("internal-link")
+              link.appendTo(linksContainer);
+            }
+          })
+        }
+    } else if (!secondPageAttribute) {
+      const filteredAttributes = Object.values(attributeList).filter(a => a.category === attributeList[pageAttribute].category)
+      filteredAttributes.forEach((filteredAttribute) => {
+        const link = new Link(`https://internate-org-253554.webflow.io/internate/${filteredAttribute.slug}`, `${filteredAttribute.name}`);
+        link.element.classList.add("internal-link")
+        link.appendTo(linksContainer);
+      })
+      }
+        
+
+}
   
       // SPACER
   
@@ -409,7 +437,6 @@ switch (attributeStrings.length) {
     addInternalLinkSection(attributes, attributeStrings[0], attributeStrings[2])
     addInternalLinkSection(places, attributeStrings[1], null)
 }
-  
 
   
   const sitemapUrl = 'https://internate-org-253554.webflow.io/sitemap.xml';
@@ -458,7 +485,11 @@ switch (attributeStrings.length) {
               link.remove();
           }
       });
-  }
+      const updatedLinks = container.querySelectorAll('a.internal-link');
+      if (updatedLinks.length === 0) {
+        container.remove()
+      }
+    }
   
   const insertSections = () => {
   
