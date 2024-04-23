@@ -248,7 +248,7 @@ const places = {
         }
         timeoutId = setTimeout(() => {
           insertSections();
-        }, 50); // Set a delay of 800 milliseconds (adjust as needed)
+        }, 500); // Set a delay of 800 milliseconds (adjust as needed)
       };
       
       filterInstance.listInstance.on('renderitems', (renderedItems) => {
