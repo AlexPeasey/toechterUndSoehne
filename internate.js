@@ -49,6 +49,7 @@ const attributes = {
   "adhs": { type: 'attribute', name: 'ADHS', category: 'Special Educational Needs' },
   "dyskalkulie": { type: 'attribute', name: 'Dyskalkulie', category: 'Special Educational Needs' },
   "hochbegabung": { type: 'attribute', name: 'Hochbegabung', category: 'Special Educational Needs' },
+  "lrs": { type: 'attribute', name: 'LRS', category: 'Special Educational Needs' },
 };
 
 
