@@ -46,6 +46,7 @@ const attributes = {
   "aufbaugymnasium": { type: 'attribute', name: 'Aufbaugymnasium', category: 'School Type' },
   "jungeninternate": { type: 'attribute', name: 'Jungeninternate', category: 'Demographic' },
   "maedcheninternate": { type: 'attribute', name: 'Mädcheninternate', category: 'Demographic' },
+  "adhs": { type: 'attribute', name: 'ADHS', category: 'Special Educational Needs' },
 };
 
 
