@@ -47,6 +47,8 @@ const attributes = {
   "jungeninternate": { type: 'attribute', name: 'Jungeninternate', category: 'Demographic' },
   "maedcheninternate": { type: 'attribute', name: 'Mädcheninternate', category: 'Demographic' },
   "adhs": { type: 'attribute', name: 'ADHS', category: 'Special Educational Needs' },
+  "dyskalkulie": { type: 'attribute', name: 'Dyskalkulie', category: 'Special Educational Needs' },
+  "hochbegabung": { type: 'attribute', name: 'Hochbegabung', category: 'Special Educational Needs' },
 };
 
 
@@ -184,6 +186,15 @@ const places = {
 
   window.fsAttributes = window.fsAttributes || [];
   window.fsAttributes.push([
+    'cmsload',
+    (listInstances) => {
+      console.log('cmsload Successfully loaded!');
+
+      window.fsAttributes.cmsfilter.init();
+    },
+  ]);
+
+  window.fsAttributes.push([
       'cmsfilter',
       (listInstances) => {
         function processSlugs(...attributeSlugs) {
@@ -248,7 +259,7 @@ const places = {
         }
         timeoutId = setTimeout(() => {
           insertSections();
-        }, 500); // Set a delay of 800 milliseconds (adjust as needed)
+        }, 50); // Set a delay of 800 milliseconds (adjust as needed)
       };
       
       filterInstance.listInstance.on('renderitems', (renderedItems) => {
@@ -494,19 +505,20 @@ switch (attributeStrings.length) {
   
   const insertSections = () => {
   
-  const internatItems = document.querySelectorAll(".internat-liste_grid .w-dyn-item")
+  const internatItems = document.querySelectorAll(".internat-liste_grid .w-dyn-item:not(.splide__slide)");
+  console.log(internatItems)
   const beraterinnenSection = document.querySelector(".section_beraterinnen")
   const nachLaendernSection = document.querySelector(".section_internate-nach-laendern")
   const beratungSection = document.querySelector(".section_beratung")
   const secondDescription = document.querySelector(".section_page-second-description")
   
-  if (internatItems.length > 3) { // Ensure the length is greater than 4 to access the index 4
+  if (internatItems.length > 4) { // Ensure the length is greater than 4 to access the index 4
     internatItems[4].after(beraterinnenSection);
     beraterinnenSection.style.marginTop = "2.5rem"
     beraterinnenSection.style.marginBottom = "2.5rem"
   
   }
-  if (internatItems.length > 8) { // Ensure the length is greater than 4 to access the index 4
+  if (internatItems.length > 9) { // Ensure the length is greater than 9 to access the index 9
     internatItems[9].after(nachLaendernSection)
     nachLaendernSection.style.marginTop = "2.5rem"
     nachLaendernSection.style.marginBottom = "2.5rem"
@@ -515,7 +527,11 @@ switch (attributeStrings.length) {
     nachLaendernSection.style.marginTop = "2.5rem"
     nachLaendernSection.style.marginBottom = "2.5rem"
   }
-  if (internatItems.length > 13) { // Ensure the length is greater than 4 to access the index 4
+  if (internatItems.length > 14) { // Ensure the length is greater than 14 to access the index 14
+    console.log(internatItems.length)
+    console.log(internatItems)
+    console.log(beratungSection)
+    internatItems.forEach((item, index) => console.log("internat item at index ", index, ": ", item))
     internatItems[14].after(beratungSection)
     beratungSection.style.marginTop = "2.5rem"
     beratungSection.style.marginBottom = "2.5rem"
