@@ -189,7 +189,6 @@ const places = {
   window.fsAttributes.push([
     'cmsload',
     (listInstances) => {
-      console.log('cmsload Successfully loaded!');
 
       window.fsAttributes.cmsfilter.init();
     },
@@ -507,7 +506,6 @@ switch (attributeStrings.length) {
   const insertSections = () => {
   
   const internatItems = document.querySelectorAll(".internat-liste_grid .w-dyn-item:not(.splide__slide)");
-  console.log(internatItems)
   const beraterinnenSection = document.querySelector(".section_beraterinnen")
   const nachLaendernSection = document.querySelector(".section_internate-nach-laendern")
   const beratungSection = document.querySelector(".section_beratung")
@@ -529,10 +527,6 @@ switch (attributeStrings.length) {
     nachLaendernSection.style.marginBottom = "2.5rem"
   }
   if (internatItems.length > 14) { // Ensure the length is greater than 14 to access the index 14
-    console.log(internatItems.length)
-    console.log(internatItems)
-    console.log(beratungSection)
-    internatItems.forEach((item, index) => console.log("internat item at index ", index, ": ", item))
     internatItems[14].after(beratungSection)
     beratungSection.style.marginTop = "2.5rem"
     beratungSection.style.marginBottom = "2.5rem"
@@ -564,7 +558,6 @@ window.onload = () => {
     hiddenFilterStrings.forEach((filter) => {
       filter.style.display = "flex"
       filter.style.fontFamily = "Monospace"
-      console.log(filter.style.display)
     })
   }
 }
