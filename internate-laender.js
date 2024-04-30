@@ -1,9 +1,67 @@
+// GLOBALS
+
+const pathname = window.location.pathname;
+const country = pathname.replace("/internate/", "");
+
+
+// SEARCH BOX
+
+const updateSearchLink = (searchValue, landValue) => {
+	let searchButton = document.querySelector(".search-button");
+  searchButton.href = `/internate/internats-suche?suche=${searchValue}&land=${landValue}`;
+}
+
+const updateLandValue = () => {
+    const landSelect = document.querySelector(".internat-search-hero_form select")
+    landSelect.value = country
+}
+
+const inputElements = document.querySelectorAll(".internat-search-hero_form input, .internat-search-hero_form select")
+
+inputElements.forEach((element) => {
+	element.addEventListener("change", () => { updateSearchLink(inputElements[0].value, inputElements[1].value)
+  })
+})
+
+// Assuming you have a form with an ID of 'myForm'
+const form = document.querySelector('.internat-search-hero_form');
+
+form.addEventListener('keydown', function(event) {
+  // Check if the key pressed was the Enter key
+  if (event.key === 'Enter') {
+    // Prevent the form from submitting
+    event.preventDefault();
+    // Additional actions can be added here if needed
+    return false;
+  }
+});
+
+
+// COUNTRY NAMES
+
+
+const dynamicTextElements = document.querySelectorAll(".land-value");
+
+const countryDisplayName = (country) => {
+    const landSelect = document.querySelectorAll(".internat-search-hero_form select option")
+    for (let i=0; i < landSelect.length; i++) {
+        if (landSelect[i].value === country) {
+            console.log(landSelect[i].textContent)
+            return landSelect[i].textContent
+        }
+    }
+}
+
+dynamicTextElements.forEach((element) => {
+  element.textContent = countryDisplayName(country);;
+});
+
+// FILTERS
+
 window.fsAttributes = window.fsAttributes || [];
 window.fsAttributes.push([
   "cmsfilter",
   (listInstances) => {
-    const pathname = window.location.pathname;
-    const country = pathname.replace("/internate/", "");
 
     if (country === "england" || country === "schottland") {
       const inputElements = document.getElementsByClassName("internate_filter_region");
@@ -32,16 +90,6 @@ window.fsAttributes.push([
         landValue = allCountries[i].parentElement.querySelector(".about-internate-internat_country-name").innerText;
         allCountries[i].parentElement.parentElement.parentElement.remove();
       }
-    }
-    const dynamicTextElements = document.querySelectorAll(".land-value");
-
-    dynamicTextElements.forEach((element) => {
-      element.textContent = landValue;
-    });
-    if (country === "england" || country === "schottland") {
-      dynamicTextElements.forEach((element) => {
-        element.textContent = country;
-      });
     }
   },
 ]);
@@ -92,3 +140,5 @@ $(document).ready(function () {
 
   combineItems($(".activities"), $(".sport")); // Call combineItems()
 });
+
+updateLandValue();
