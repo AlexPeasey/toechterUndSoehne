@@ -3,32 +3,32 @@
 const pathname = window.location.pathname;
 const country = pathname.replace("/internate/", "");
 
-
 // SEARCH BOX
 
 const updateSearchLink = (searchValue, landValue) => {
-	let searchButton = document.querySelector(".search-button");
+  let searchButton = document.querySelector(".search-button");
   searchButton.href = `/internate/internats-suche?suche=${searchValue}&land=${landValue}`;
-}
+};
 
 const updateLandValue = () => {
-    const landSelect = document.querySelector(".internat-search-hero_form select")
-    landSelect.value = country
-}
+  const landSelect = document.querySelector(".internat-search-hero_form select");
+  landSelect.value = country;
+};
 
-const inputElements = document.querySelectorAll(".internat-search-hero_form input, .internat-search-hero_form select")
+const inputElements = document.querySelectorAll(".internat-search-hero_form input, .internat-search-hero_form select");
 
 inputElements.forEach((element) => {
-	element.addEventListener("change", () => { updateSearchLink(inputElements[0].value, inputElements[1].value)
-  })
-})
+  element.addEventListener("change", () => {
+    updateSearchLink(inputElements[0].value, inputElements[1].value);
+  });
+});
 
 // Assuming you have a form with an ID of 'myForm'
-const form = document.querySelector('.internat-search-hero_form');
+const form = document.querySelector(".internat-search-hero_form");
 
-form.addEventListener('keydown', function(event) {
+form.addEventListener("keydown", function (event) {
   // Check if the key pressed was the Enter key
-  if (event.key === 'Enter') {
+  if (event.key === "Enter") {
     // Prevent the form from submitting
     event.preventDefault();
     // Additional actions can be added here if needed
@@ -36,24 +36,22 @@ form.addEventListener('keydown', function(event) {
   }
 });
 
-
 // COUNTRY NAMES
-
 
 const dynamicTextElements = document.querySelectorAll(".land-value");
 
 const countryDisplayName = (country) => {
-    const landSelect = document.querySelectorAll(".internat-search-hero_form select option")
-    for (let i=0; i < landSelect.length; i++) {
-        if (landSelect[i].value === country) {
-            console.log(landSelect[i].textContent)
-            return landSelect[i].textContent
-        }
+  const landSelect = document.querySelectorAll(".internat-search-hero_form select option");
+  for (let i = 0; i < landSelect.length; i++) {
+    if (landSelect[i].value === country) {
+      console.log(landSelect[i].textContent);
+      return landSelect[i].textContent;
     }
-}
+  }
+};
 
 dynamicTextElements.forEach((element) => {
-  element.textContent = countryDisplayName(country);;
+  element.textContent = countryDisplayName(country);
 });
 
 // FILTERS
@@ -62,7 +60,6 @@ window.fsAttributes = window.fsAttributes || [];
 window.fsAttributes.push([
   "cmsfilter",
   (listInstances) => {
-
     if (country === "england" || country === "schottland") {
       const inputElements = document.getElementsByClassName("internate_filter_region");
       for (let i = 0; i < inputElements.length; i++) {
