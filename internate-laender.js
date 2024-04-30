@@ -95,6 +95,8 @@ window.fsAttributes.push([
       if (!itemsParent.hasChildNodes()) {
         internateImFokus.remove();
       }
+      const beraterinnenSection = document.querySelector(".section_beraterinnen")
+      beraterinnenSection.style.backgroundColor = "#f8f3ef"
     };
     setTimeout(checkRemoveIIF, 2500);
   },
