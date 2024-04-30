@@ -15,6 +15,8 @@ const updateLandValue = () => {
   landSelect.value = country;
 };
 
+updateLandValue();
+
 const inputElements = document.querySelectorAll(".internat-search-hero_form input, .internat-search-hero_form select");
 
 inputElements.forEach((element) => {
@@ -23,7 +25,6 @@ inputElements.forEach((element) => {
   });
 });
 
-// Assuming you have a form with an ID of 'myForm'
 const form = document.querySelector(".internat-search-hero_form");
 
 form.addEventListener("keydown", function (event) {
@@ -44,7 +45,6 @@ const countryDisplayName = (country) => {
   const landSelect = document.querySelectorAll(".internat-search-hero_form select option");
   for (let i = 0; i < landSelect.length; i++) {
     if (landSelect[i].value === country) {
-      console.log(landSelect[i].textContent);
       return landSelect[i].textContent;
     }
   }
@@ -88,12 +88,23 @@ window.fsAttributes.push([
         allCountries[i].parentElement.parentElement.parentElement.remove();
       }
     }
+    // GET RID OF INTERNATE IM FOKUS IF NONE APPLY
+    const checkRemoveIIF = () => {
+      const internateImFokus = document.querySelector(".section_internate-im-fokus");
+      const itemsParent = internateImFokus.querySelector(".about_internate-grid.w-dyn-items");
+      if (!itemsParent.hasChildNodes()) {
+        internateImFokus.remove();
+      }
+    };
+    setTimeout(checkRemoveIIF, 2500);
   },
 ]);
 
 $(document).ready(function () {
   $(".alle-laender-zeigen").appendTo($(".internate-nach-laendern_grid")).show();
 });
+
+// SPLIDE SLIDER
 
 $(document).ready(function () {
   function categorySlider() {
@@ -137,5 +148,3 @@ $(document).ready(function () {
 
   combineItems($(".activities"), $(".sport")); // Call combineItems()
 });
-
-updateLandValue();
