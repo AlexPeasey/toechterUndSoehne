@@ -177,6 +177,16 @@ const places = {
       type: 'region',
       country: 'Deutschland',
       name: 'Thüringen'
+    },
+    "england": {
+      type: 'region',
+      country: 'GB',
+      name: 'England'
+    },
+    "scotland": {
+      type: 'region',
+      country: 'GB',
+      name: 'Scotland'
     }
   };
   const combinedData = { ...attributes, ...places };
