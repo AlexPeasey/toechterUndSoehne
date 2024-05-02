@@ -150,3 +150,13 @@ $(document).ready(function () {
 
   combineItems($(".activities"), $(".sport")); // Call combineItems()
 });
+
+// HIDE UNEDITED CONTENT
+
+  const dynamicRichtext =  document.getElementById('dynamic-rich-text-atf')
+  const dynamicContentBtf = document.getElementById('dynamic-content-btf')
+
+  if (dynamicRichtext.textContent.startsWith("Töchter und Söhne beobachtet und bewertet Internate in Deutschland seit mehr als zwanzig Jahren.")) {
+    dynamicRichtext.remove()
+    dynamicContentBtf.remove()
+  }

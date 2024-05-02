@@ -541,6 +541,7 @@ switch (attributeStrings.length) {
     beratungSection.style.marginTop = "2.5rem"
     beratungSection.style.marginBottom = "2.5rem"
   }  else {
+
     secondDescription.after(beratungSection)
     beratungSection.style.marginTop = "2.5rem"
     beratungSection.style.marginBottom = "2.5rem"
@@ -550,6 +551,7 @@ switch (attributeStrings.length) {
     nachLaendernSection.classList.remove("background-color-flower", "text-color-red")
   }
   }
+
 
 window.onload = () => {
 
@@ -574,4 +576,12 @@ window.onload = () => {
 
   checkDebugMode()
 
+}
+
+const customContentHeading = document.querySelector(".page-intro-custom_heading")
+const customContentBtf = document.getElementById('desc-2')
+if (customContentHeading.textContent === 'Überschrift "Above-the-fold"-Inhalt') {
+    const customContentSection = document.getElementById("page-intro-custom")
+    customContentSection.remove()
+    customContentBtf.remove()
 }
