@@ -178,12 +178,12 @@ const places = {
     name: "Thüringen",
   },
   england: {
-    type: "region",
+    type: "country",
     country: "GB",
     name: "England",
   },
   scotland: {
-    type: "region",
+    type: "country",
     country: "GB",
     name: "Scotland",
   },
