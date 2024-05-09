@@ -581,9 +581,14 @@ window.onload = () => {
 };
 
 const customContentHeading = document.querySelector(".page-intro-custom_heading");
-const customContentBtf = document.getElementById("desc-2");
 if (customContentHeading.textContent === 'Überschrift "Above-the-fold"-Inhalt') {
   const customContentSection = document.getElementById("page-intro-custom");
   customContentSection.remove();
+}
+
+const customContentHeadingBtf = document.querySelector("#custom-content-btf");
+
+if (customContentHeadingBtf.textContent === 'Überschrift "Below-the-fold"-Inhalt') {
+  const customContentBtf = document.getElementById("desc-2");
   customContentBtf.remove();
 }
