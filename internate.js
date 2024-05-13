@@ -193,6 +193,16 @@ const combinedData = { ...attributes, ...places };
 const pathname = window.location.pathname;
 const attributeStrings = pathname.slice(pathname.indexOf("/internate/") + "/internate/".length).split("/");
 
+// configuring special names
+
+for (let string = 0; string < attributeStrings.length; string++) {
+  if (attributeStrings[string] === "ib") {
+    attributeStrings[string] = "international-baccalaureate"
+  }  
+}
+
+// set filter 
+
 window.fsAttributes = window.fsAttributes || [];
 window.fsAttributes.push([
   "cmsload",
