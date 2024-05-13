@@ -425,7 +425,7 @@ const addInternalLinkSection = (attributeList, pageAttribute, secondPageAttribut
           // making sure current page is not added to internal links
           if (combinedData[secondPageAttribute].name === attribute.name) return;
           // Add link to list
-          if (attribute.type === "Sport") {
+          if (attribute.category === "Sport") {
             const link = new Link(
               `https://internate-org-253554.webflow.io/internate/${pageAttribute}/${attribute.slug}`,
               `${attribute.name}`
