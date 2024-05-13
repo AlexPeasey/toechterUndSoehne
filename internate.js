@@ -283,9 +283,9 @@ const internalLinksSection = document.querySelector(
 const addInternalLinkSection = (attributeList, pageAttribute, secondPageAttribute) => {
   // PARENT DIV
 
-  const internalLinkDiv = document.createElement("div")
-  internalLinkDiv.classList.add("internal-links-container")
-  internalLinksSection.append(internalLinkDiv)
+  const internalLinkDiv = document.createElement("div");
+  internalLinkDiv.classList.add("internal-links-container");
+  internalLinksSection.append(internalLinkDiv);
 
   // HEADING
 
@@ -359,7 +359,12 @@ const addInternalLinkSection = (attributeList, pageAttribute, secondPageAttribut
   let attributeData = [];
   for (let slug in attributeList) {
     if (attributeList.hasOwnProperty(slug)) {
-      attributeData.push({ slug, type: attributeList[slug].type, name: attributeList[slug].name , category: attributeList[slug].category});
+      attributeData.push({
+        slug,
+        type: attributeList[slug].type,
+        name: attributeList[slug].name,
+        category: attributeList[slug].category,
+      });
     }
   }
   if (attributeList === places) {
@@ -379,7 +384,7 @@ const addInternalLinkSection = (attributeList, pageAttribute, secondPageAttribut
         }
         countries.forEach((country) => {
           // making sure current page is not added to internal links
-          if (country.country === pageAttribute) return
+          if (country.country === pageAttribute) return;
           // Add link to list
           const link = new Link(
             `https://internate-org-253554.webflow.io/internate/${country.country}/${secondPageAttribute}`,
@@ -418,7 +423,7 @@ const addInternalLinkSection = (attributeList, pageAttribute, secondPageAttribut
       if (combinedData[secondPageAttribute].category === "Sport") {
         attributeData.forEach((attribute) => {
           // making sure current page is not added to internal links
-          if (combinedData[secondPageAttribute].name === attribute.name) return
+          if (combinedData[secondPageAttribute].name === attribute.name) return;
           // Add link to list
           if (attribute.type === "Sport") {
             const link = new Link(
@@ -433,7 +438,7 @@ const addInternalLinkSection = (attributeList, pageAttribute, secondPageAttribut
       if (combinedData[secondPageAttribute].category === "Schwerpunkt") {
         attributeData.forEach((attribute) => {
           // making sure current page is not added to internal links
-          if (combinedData[secondPageAttribute].name === attribute.name) return
+          if (combinedData[secondPageAttribute].name === attribute.name) return;
           // Add link to list
           if (attribute.category === "Schwerpunkt") {
             const link = new Link(
@@ -446,13 +451,13 @@ const addInternalLinkSection = (attributeList, pageAttribute, secondPageAttribut
         });
       }
     } else if (!secondPageAttribute) {
-      const filteredAttributes = Object.values(attributeList).filter(
-        (a) => a.category === attributeList[pageAttribute].category
+      const filteredAttributes = Object.entries(attributeList).filter(
+        ([key, value]) => value.category === attributeList[pageAttribute].category
       );
-      filteredAttributes.forEach((filteredAttribute) => {
+      filteredAttributes.forEach(([key, value], index) => {
         const link = new Link(
-          `https://internate-org-253554.webflow.io/internate/${filteredAttribute.slug}`,
-          `${filteredAttribute.name}`
+          `https://internate-org-253554.webflow.io/internate/${key}`,
+          `${value.name}`
         );
         link.element.classList.add("internal-link");
         link.appendTo(linksContainer);
@@ -466,9 +471,65 @@ const addInternalLinkSection = (attributeList, pageAttribute, secondPageAttribut
   largeSpacer.classList.add("spacer-huge");
   internalLinkDiv.append(largeSpacer);
 };
+
+// ADD INTERNAL LINKS FOR COUNTRIES
+
+const addInternalLinkSectionForCountries = (attributes, places, attributeKey) => {
+
+  class Link {
+    constructor(href, text, target = "_self") {
+      this.element = document.createElement("a");
+      this.element.href = href;
+      this.element.textContent = text;
+      this.element.target = target;
+    }
+
+    // Method to append the element to a parent
+    appendTo(parent) {
+      if (parent instanceof HTMLElement) {
+        parent.appendChild(this.element);
+      }
+    }
+  }
+  const internalLinkDiv = document.createElement("div");
+  internalLinkDiv.classList.add("internal-links-container");
+  internalLinksSection.append(internalLinkDiv);
+
+  const internalLinkHeading = document.createElement("h2");
+  internalLinkHeading.innerText = `Internate nach Länder mit Schwerpunkt ${attributes[attributeKey].name}`;
+  internalLinkDiv.append(internalLinkHeading);
+
+  const spacer = document.createElement("div");
+  spacer.classList.add("spacer-medium");
+  internalLinkDiv.append(spacer);
+
+  const linksContainer = document.createElement("div");
+  linksContainer.classList.add("internal-links_flex-container");
+  internalLinkDiv.append(linksContainer);
+
+  Object.entries(places).forEach(([key, value]) => {
+    if (value.type === "country") {
+      const link = new Link(
+        `https://internate-org-253554.webflow.io/internate/${key}/${attributeKey}`,
+        `${value.name}`
+      );
+      link.element.classList.add("internal-link");
+      link.appendTo(linksContainer);
+    }
+  });
+
+  const largeSpacer = document.createElement("div");
+  largeSpacer.classList.add("spacer-huge");
+  internalLinkDiv.append(largeSpacer);
+};
+
+
+// ADD INTERNAL LINKS SECTIONS DEPENDING ON HOW MANY LEVELS
+
 switch (attributeStrings.length) {
   case 1:
     addInternalLinkSection(attributes, attributeStrings[0], attributeStrings[1]);
+    addInternalLinkSectionForCountries(attributes, places, attributeStrings[0]);
     break;
   case 2:
     addInternalLinkSection(places, attributeStrings[0], attributeStrings[1]);
@@ -517,7 +578,7 @@ async function filterLinksBySitemap(sitemapUrls, containerSelector) {
     return;
   }
 
-  const internalLinksContainers = document.querySelectorAll(".internal-links-container")
+  const internalLinksContainers = document.querySelectorAll(".internal-links-container");
 
   internalLinksContainers.forEach((linksContainer) => {
     const links = linksContainer.querySelectorAll("a.internal-link");
@@ -531,9 +592,9 @@ async function filterLinksBySitemap(sitemapUrls, containerSelector) {
     });
     const updatedLinks = linksContainer.querySelectorAll("a.internal-link");
     if (updatedLinks.length === 0) {
-      linksContainer.remove();
+      // linksContainer.remove();
     }
-  })
+  });
 }
 
 const insertSections = () => {
