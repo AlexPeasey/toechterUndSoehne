@@ -182,15 +182,15 @@ const places = {
     country: "GB",
     name: "England",
   },
-  scotland: {
+  schottland: {
     type: "country",
     country: "GB",
-    name: "Scotland",
+    name: "Schottland",
   },
-  "northern-ireland": {
+  "nordirland": {
     type: "country",
     country: "GB",
-    name: "Northern Ireland",
+    name: "Nordirland",
   },
   "wales": {
     type: "country",
