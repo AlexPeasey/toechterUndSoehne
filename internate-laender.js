@@ -44,7 +44,7 @@ const dynamicTextElements = document.querySelectorAll(".land-value");
 const countryDisplayName = (country) => {
   const landSelect = document.querySelectorAll(".internat-search-hero_form select option");
   for (let i = 0; i < landSelect.length; i++) {
-    if (landSelect[i].value === country) {
+    if (landSelect[i].value.toLowerCase() === country.toLowerCase()) {
       return landSelect[i].textContent;
     }
   }
