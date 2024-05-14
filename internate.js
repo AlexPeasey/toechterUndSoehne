@@ -187,6 +187,16 @@ const places = {
     country: "GB",
     name: "Scotland",
   },
+  "northern-ireland": {
+    type: "country",
+    country: "GB",
+    name: "Northern Ireland",
+  },
+  "wales": {
+    type: "country",
+    country: "GB",
+    name: "Wales",
+  },
 };
 const combinedData = { ...attributes, ...places };
 

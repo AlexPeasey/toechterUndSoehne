@@ -60,7 +60,7 @@ window.fsAttributes = window.fsAttributes || [];
 window.fsAttributes.push([
   "cmsfilter",
   (listInstances) => {
-    if (country === "england" || country === "schottland") {
+    if (country === "england" || country === "schottland" || country === "northern-ireland" || country === "wales") {
       const inputElements = document.getElementsByClassName("internate_filter_region");
       for (let i = 0; i < inputElements.length; i++) {
         inputElements[i].value = country;
