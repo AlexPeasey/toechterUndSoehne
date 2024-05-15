@@ -187,12 +187,12 @@ const places = {
     country: "GB",
     name: "Schottland",
   },
-  "nordirland": {
+  nordirland: {
     type: "country",
     country: "GB",
     name: "Nordirland",
   },
-  "wales": {
+  wales: {
     type: "country",
     country: "GB",
     name: "Wales",
@@ -207,11 +207,11 @@ const attributeStrings = pathname.slice(pathname.indexOf("/internate/") + "/inte
 
 for (let string = 0; string < attributeStrings.length; string++) {
   if (attributeStrings[string] === "ib") {
-    attributeStrings[string] = "international-baccalaureate"
-  }  
+    attributeStrings[string] = "international-baccalaureate";
+  }
 }
 
-// set filter 
+// set filter
 
 window.fsAttributes = window.fsAttributes || [];
 window.fsAttributes.push([
@@ -475,10 +475,7 @@ const addInternalLinkSection = (attributeList, pageAttribute, secondPageAttribut
         ([key, value]) => value.category === attributeList[pageAttribute].category
       );
       filteredAttributes.forEach(([key, value], index) => {
-        const link = new Link(
-          `https://internate-org-253554.webflow.io/internate/${key}`,
-          `${value.name}`
-        );
+        const link = new Link(`https://internate-org-253554.webflow.io/internate/${key}`, `${value.name}`);
         link.element.classList.add("internal-link");
         link.appendTo(linksContainer);
       });
@@ -495,7 +492,6 @@ const addInternalLinkSection = (attributeList, pageAttribute, secondPageAttribut
 // ADD INTERNAL LINKS FOR COUNTRIES
 
 const addInternalLinkSectionForCountries = (attributes, places, attributeKey) => {
-
   class Link {
     constructor(href, text, target = "_self") {
       this.element = document.createElement("a");
@@ -542,7 +538,6 @@ const addInternalLinkSectionForCountries = (attributes, places, attributeKey) =>
   largeSpacer.classList.add("spacer-huge");
   internalLinkDiv.append(largeSpacer);
 };
-
 
 // ADD INTERNAL LINKS SECTIONS DEPENDING ON HOW MANY LEVELS
 
@@ -690,16 +685,16 @@ if (customContentHeadingBtf.textContent === 'Überschrift "Below-the-fold"-Inhal
   customContentBtf.remove();
 }
 
-const customHeroSubheading = document.getElementById("hero-subheading")
+const customHeroSubheading = document.getElementById("hero-subheading");
 
-if (customHeroSubheading.textContent.toLowerCase() === ('Text der Unterüberschrift').toLowerCase()) {
+if (customHeroSubheading.textContent.toLowerCase() === "Text der Unterüberschrift".toLowerCase()) {
   customHeroSubheading.remove();
 }
 
-const heroTitle = document.getElementById("hero-title")
+const heroTitle = document.getElementById("hero-title");
 
-if (heroTitle.textContent.toLowerCase() === ('Überschrift').toLowerCase()) {
-  let metaTitle = document.title
-  metaTitle = metaTitle.replace(" | Internate.org", "")
-  heroTitle = metaTitle
+if (heroTitle.textContent.toLowerCase() === "Überschrift".toLowerCase()) {
+  let metaTitle = document.title;
+  metaTitle = metaTitle.replace(" | Internate.org", "");
+  heroTitle = metaTitle;
 }
