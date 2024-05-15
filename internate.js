@@ -689,3 +689,9 @@ if (customContentHeadingBtf.textContent === 'Überschrift "Below-the-fold"-Inhal
   const customContentBtf = document.getElementById("desc-2");
   customContentBtf.remove();
 }
+
+const customHeroSubheading = document.getElementById("hero-subheading")
+
+if (customHeroSubheading.textContent === 'Text der Unterüberschrift') {
+  customHeroSubheading.remove();
+}
