@@ -612,7 +612,7 @@ async function filterLinksBySitemap(sitemapUrls, containerSelector) {
     });
     const updatedLinks = linksContainer.querySelectorAll("a.internal-link");
     if (updatedLinks.length === 0) {
-      // linksContainer.remove();
+      linksContainer.remove();
     }
   });
 }
