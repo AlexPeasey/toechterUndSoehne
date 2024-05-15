@@ -689,12 +689,12 @@ const customHeroSubheading = document.getElementById("hero-subheading");
 
 if (customHeroSubheading.textContent.toLowerCase() === "Text der Unterüberschrift".toLowerCase()) {
   customHeroSubheading.remove();
-}
+} 
 
-const heroTitle = document.getElementById("hero-title");
+let heroTitle = document.getElementById("hero-title");
 
 if (heroTitle.textContent.toLowerCase() === "Überschrift".toLowerCase()) {
   let metaTitle = document.title;
   metaTitle = metaTitle.replace(" | Internate.org", "");
-  heroTitle = metaTitle;
+  heroTitle.textContent = metaTitle;
 }
