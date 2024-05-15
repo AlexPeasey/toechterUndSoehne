@@ -692,6 +692,14 @@ if (customContentHeadingBtf.textContent === 'Überschrift "Below-the-fold"-Inhal
 
 const customHeroSubheading = document.getElementById("hero-subheading")
 
-if (customHeroSubheading.textContent === 'Text der Unterüberschrift') {
+if (customHeroSubheading.textContent.toLowerCase() === ('Text der Unterüberschrift').toLowerCase()) {
   customHeroSubheading.remove();
+}
+
+const heroTitle = document.getElementById("hero-title")
+
+if (heroTitle.textContent.toLowerCase() === ('Überschrift').toLowerCase()) {
+  let metaTitle = document.title
+  metaTitle = metaTitle.replace(" | Internate.org", "")
+  heroTitle = metaTitle
 }
