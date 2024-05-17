@@ -641,9 +641,11 @@ const insertSections = () => {
     beratungSection.style.marginTop = "2.5rem";
     beratungSection.style.marginBottom = "2.5rem";
   } else {
-    secondDescription.after(beratungSection);
-    beratungSection.style.marginTop = "2.5rem";
-    beratungSection.style.marginBottom = "2.5rem";
+    if (secondDescription) {
+      secondDescription.after(beratungSection);
+      beratungSection.style.marginTop = "2.5rem";
+      beratungSection.style.marginBottom = "2.5rem";
+    }
   }
 
   if (internatItems.length < 5) {
@@ -689,7 +691,7 @@ const customHeroSubheading = document.getElementById("hero-subheading");
 
 if (customHeroSubheading.textContent.toLowerCase() === "Text der Unterüberschrift".toLowerCase()) {
   customHeroSubheading.remove();
-} 
+}
 
 let heroTitle = document.getElementById("hero-title");
 
