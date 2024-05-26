@@ -68,6 +68,7 @@ window.fsAttributes.push([
           bubbles: true,
         });
         inputElements[i].dispatchEvent(event);
+        updateSearchLink("", country)
       }
     } else {
       const inputElements = document.getElementsByClassName("internate_filter_country");
