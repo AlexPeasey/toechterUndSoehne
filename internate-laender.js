@@ -12,6 +12,7 @@ const updateSearchLink = (searchValue, landValue) => {
 
 const updateLandValue = () => {
   const landSelect = document.querySelector(".internat-search-hero_form select");
+  if (country === "schweiz-oesterreich" || country === "spanien-italien") return
   landSelect.value = country;
 };
 
