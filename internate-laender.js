@@ -69,6 +69,15 @@ window.fsAttributes.push([
         });
         inputElements[i].dispatchEvent(event);
       }
+    } else if (country === "schweiz-oesterreich" || country === "spanien-italien") {
+      const inputElements = document.getElementsByClassName("internate_filter_country-shared");
+      for (let i = 0; i < inputElements.length; i++) {
+        inputElements[i].value = country;
+        const event = new Event("input", {
+          bubbles: true,
+        });
+        inputElements[i].dispatchEvent(event);
+      }
     } else {
       const inputElements = document.getElementsByClassName("internate_filter_country");
       for (let i = 0; i < inputElements.length; i++) {
