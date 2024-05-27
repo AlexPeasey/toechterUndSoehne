@@ -68,6 +68,7 @@ window.fsAttributes.push([
           bubbles: true,
         });
         inputElements[i].dispatchEvent(event);
+        updateSearchLink("", country)
       }
     } else if (country === "schweiz-oesterreich" || country === "spanien-italien") {
       const inputElements = document.getElementsByClassName("internate_filter_country-shared");
