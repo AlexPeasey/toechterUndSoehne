@@ -158,6 +158,6 @@ $(document).ready(function () {
   const dynamicContentBtf = document.getElementById('dynamic-content-btf')
 
   if (dynamicRichtext.textContent.startsWith("Töchter und Söhne beobachtet und bewertet Internate in Deutschland seit mehr als zwanzig Jahren.")) {
-    dynamicRichtext.remove()
+    dynamicRichtext.closest(".section_page-intro").remove()
     dynamicContentBtf.remove()
   }
