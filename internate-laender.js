@@ -12,7 +12,7 @@ const updateSearchLink = (searchValue, landValue) => {
 
 const updateLandValue = () => {
   const landSelect = document.querySelector(".internat-search-hero_form select");
-  if (country === "schweiz-oesterreich" || country === "spanien-italien") return
+  if (country === "schweiz-oesterreich" || country === "spanien-italien") return;
   landSelect.value = country;
 };
 
@@ -69,7 +69,7 @@ window.fsAttributes.push([
           bubbles: true,
         });
         inputElements[i].dispatchEvent(event);
-        updateSearchLink("", country)
+        updateSearchLink("", country);
       }
     } else if (country === "schweiz-oesterreich" || country === "spanien-italien") {
       const inputElements = document.getElementsByClassName("internate_filter_country-shared");
@@ -106,8 +106,8 @@ window.fsAttributes.push([
       if (!itemsParent.hasChildNodes()) {
         internateImFokus.remove();
       }
-      const beraterinnenSection = document.querySelector(".section_beraterinnen")
-      beraterinnenSection.style.backgroundColor = "#f8f3ef"
+      const beraterinnenSection = document.querySelector(".section_beraterinnen");
+      beraterinnenSection.style.backgroundColor = "#f8f3ef";
     };
     setTimeout(checkRemoveIIF, 2500);
   },
@@ -164,10 +164,29 @@ $(document).ready(function () {
 
 // HIDE UNEDITED CONTENT
 
-  const dynamicRichtext =  document.getElementById('dynamic-rich-text-atf')
-  const dynamicContentBtf = document.getElementById('dynamic-content-btf')
+const dynamicRichtext = document.getElementById("dynamic-rich-text-atf");
+const dynamicContentBtf = document.getElementById("dynamic-content-btf");
 
-  if (dynamicRichtext.textContent.startsWith("Töchter und Söhne beobachtet und bewertet Internate in Deutschland seit mehr als zwanzig Jahren.")) {
-    dynamicRichtext.closest(".section_page-intro").remove()
-    dynamicContentBtf.remove()
+if (
+  dynamicRichtext.textContent.startsWith(
+    "Töchter und Söhne beobachtet und bewertet Internate in Deutschland seit mehr als zwanzig Jahren."
+  )
+) {
+  dynamicRichtext.closest(".section_page-intro").remove();
+  dynamicContentBtf.remove();
+}
+
+const faqs = document.querySelectorAll(".internat-wissenwertes_item");
+
+for (let i = 0; i < faqs.length; i++) {
+  const element = faqs[i];
+  const heading = element.querySelector(".heading-support").textContent;
+  if (heading === "This is some text inside of a div block.") {
+    element.remove();
   }
+  const updatedFaqs = document.querySelectorAll(".internat-wissenwertes_item");
+  if (updatedFaqs.length === 0) {
+    const faqsContainter = document.querySelector(".faqs");
+    faqsContainter.remove();
+  }
+}
