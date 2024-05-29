@@ -12,6 +12,7 @@ const updateSearchLink = (searchValue, landValue) => {
 
 const updateLandValue = () => {
   const landSelect = document.querySelector(".internat-search-hero_form select");
+  if (country === "schweiz-oesterreich" || country === "spanien-italien") return
   landSelect.value = country;
 };
 
@@ -69,6 +70,15 @@ window.fsAttributes.push([
         });
         inputElements[i].dispatchEvent(event);
         updateSearchLink("", country)
+      }
+    } else if (country === "schweiz-oesterreich" || country === "spanien-italien") {
+      const inputElements = document.getElementsByClassName("internate_filter_country-shared");
+      for (let i = 0; i < inputElements.length; i++) {
+        inputElements[i].value = country;
+        const event = new Event("input", {
+          bubbles: true,
+        });
+        inputElements[i].dispatchEvent(event);
       }
     } else {
       const inputElements = document.getElementsByClassName("internate_filter_country");
