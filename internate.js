@@ -18,6 +18,7 @@ const attributes = {
   kunst: { type: "attribute", name: "Kunst", category: "Schwerpunkt" },
   rudern: { type: "attribute", name: "Rudern", category: "Sport" },
   eishockey: { type: "attribute", name: "Eishockey", category: "Sport" },
+  sportinternat: { type: "attribute", name: "Sport", category: "Sport" },
   fussballinternate: { type: "attribute", name: "Fußball", category: "Sport" },
   hockey: { type: "attribute", name: "Hockey", category: "Sport" },
   tanz: { type: "attribute", name: "Tanz", category: "Schwerpunkt" },
