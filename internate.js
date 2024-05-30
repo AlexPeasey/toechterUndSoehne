@@ -93,6 +93,10 @@ const places = {
     type: "sharedcountry",
     name: "Schweiz / Österreich",
   },
+  "spanien-italien": {
+    type: "sharedcountry",
+    name: "Spanien / Italien",
+  },
   niederlande: {
     type: "country",
     name: "Niederlande",
