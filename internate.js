@@ -3,7 +3,7 @@ const attributes = {
   liberal: { type: "attribute", name: "Liberale Ausrichtung", category: "Schwerpunkt" },
   eliteinternate: { type: "attribute", name: "Eliteinternate", category: "Schwerpunkt" },
   "international-baccalaureate": { type: "attribute", name: "International Baccalaureate", category: "Schwerpunkt" },
-  "abitur": { type: "attribute", name: "Abitur", category: "Schwerpunkt" },
+  abitur: { type: "attribute", name: "Abitur", category: "Schwerpunkt" },
   schuluniform: { type: "attribute", name: "Uniform", category: "Schwerpunkt" },
   erlebnispaedagogik: { type: "attribute", name: "Outdoor Education", category: "Schwerpunkt" },
   "round-square": { type: "attribute", name: "Round Square", category: "Schwerpunkt" },
