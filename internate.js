@@ -89,6 +89,10 @@ const places = {
     type: "country",
     name: "Österreich",
   },
+  "schweiz-oesterreich": {
+    type: "sharedcountry",
+    name: "Schweiz / Österreich",
+  },
   niederlande: {
     type: "country",
     name: "Niederlande",
@@ -240,6 +244,9 @@ window.fsAttributes.push([
           switch (item.type) {
             case "country":
               filterType = "internate_filter_country";
+              break;
+            case "sharedcountry":
+              filterType = "internate_filter_sharedcountry";
               break;
             case "region":
               filterType = "internate_filter_region";
