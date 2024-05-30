@@ -289,6 +289,17 @@ window.fsAttributes.push([
     };
 
     filterInstance.listInstance.on("renderitems", (renderedItems) => {
+      const internateItems = document.querySelectorAll(".internat-liste_item");
+      if (internateItems) {
+        for (let i = 0; i < internateItems.length; i++) {
+          const country = internateItems[i].querySelector(".internatssuche_country");
+          const region = internateItems[i].querySelector(".internatssuche_region");
+          if (country.textContent === "Großbritannien") {
+            country.style.display = "none";
+            region.style.display = "block";
+          }
+        }
+      }
       debounceInsertSections(); // Call the debounced function
     });
   },
