@@ -3,6 +3,7 @@ const attributes = {
   liberal: { type: "attribute", name: "Liberale Ausrichtung", category: "Schwerpunkt" },
   eliteinternate: { type: "attribute", name: "Eliteinternate", category: "Schwerpunkt" },
   "international-baccalaureate": { type: "attribute", name: "International Baccalaureate", category: "Schwerpunkt" },
+  "abitur": { type: "attribute", name: "Abitur", category: "Schwerpunkt" },
   schuluniform: { type: "attribute", name: "Uniform", category: "Schwerpunkt" },
   erlebnispaedagogik: { type: "attribute", name: "Outdoor Education", category: "Schwerpunkt" },
   "round-square": { type: "attribute", name: "Round Square", category: "Schwerpunkt" },
@@ -18,6 +19,7 @@ const attributes = {
   kunst: { type: "attribute", name: "Kunst", category: "Schwerpunkt" },
   rudern: { type: "attribute", name: "Rudern", category: "Sport" },
   eishockey: { type: "attribute", name: "Eishockey", category: "Sport" },
+  sportinternat: { type: "attribute", name: "Sport", category: "Sport" },
   fussballinternate: { type: "attribute", name: "Fußball", category: "Sport" },
   hockey: { type: "attribute", name: "Hockey", category: "Sport" },
   tanz: { type: "attribute", name: "Tanz", category: "Schwerpunkt" },
@@ -88,6 +90,14 @@ const places = {
   oesterreich: {
     type: "country",
     name: "Österreich",
+  },
+  "schweiz-oesterreich": {
+    type: "sharedcountry",
+    name: "Schweiz / Österreich",
+  },
+  "spanien-italien": {
+    type: "sharedcountry",
+    name: "Spanien / Italien",
   },
   niederlande: {
     type: "country",
@@ -240,6 +250,9 @@ window.fsAttributes.push([
           switch (item.type) {
             case "country":
               filterType = "internate_filter_country";
+              break;
+            case "sharedcountry":
+              filterType = "internate_filter_sharedcountry";
               break;
             case "region":
               filterType = "internate_filter_region";
