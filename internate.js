@@ -3,7 +3,7 @@ const attributes = {
   liberal: { type: "attribute", name: "Liberale Ausrichtung", category: "Schwerpunkt" },
   eliteinternate: { type: "attribute", name: "Eliteinternate", category: "Schwerpunkt" },
   "international-baccalaureate": { type: "attribute", name: "International Baccalaureate", category: "Schwerpunkt" },
-  "abitur": { type: "attribute", name: "Abitur", category: "Schwerpunkt" },
+  abitur: { type: "attribute", name: "Abitur", category: "Schwerpunkt" },
   schuluniform: { type: "attribute", name: "Uniform", category: "Schwerpunkt" },
   erlebnispaedagogik: { type: "attribute", name: "Outdoor Education", category: "Schwerpunkt" },
   "round-square": { type: "attribute", name: "Round Square", category: "Schwerpunkt" },
@@ -302,6 +302,17 @@ window.fsAttributes.push([
     };
 
     filterInstance.listInstance.on("renderitems", (renderedItems) => {
+      const internateItems = document.querySelectorAll(".internat-liste_item");
+      if (internateItems) {
+        for (let i = 0; i < internateItems.length; i++) {
+          const country = internateItems[i].querySelector(".internatssuche_country");
+          const region = internateItems[i].querySelector(".internatssuche_region");
+          if (country.textContent === "Großbritannien") {
+            country.style.display = "none";
+            region.style.display = "block";
+          }
+        }
+      }
       debounceInsertSections(); // Call the debounced function
     });
   },
