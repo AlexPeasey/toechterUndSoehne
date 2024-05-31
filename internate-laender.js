@@ -7,7 +7,7 @@ const country = pathname.replace("/internate/", "");
 
 const updateSearchLink = (searchValue, landValue) => {
   let searchButton = document.querySelector(".search-button");
-  searchButton.href = `/internate/internats-suche?suche=${searchValue}&land=${landValue}`;
+  searchButton.href = `/internate/internatssuche?suche=${searchValue}&land=${landValue}`;
 };
 
 const updateLandValue = () => {
