@@ -569,124 +569,6 @@ switch (attributeStrings.length) {
     addInternalLinkSection(places, attributeStrings[1], null);
 }
 
-const sitemapUrl = "https://internate-org-253554.webflow.io/sitemap.xml";
-getUrlsFromSitemap(sitemapUrl).then((sitemapUrls) => {
-  filterLinksBySitemap(sitemapUrls, ".section_internal-links");
-});
-
-async function getUrlsFromSitemap(sitemapUrl) {
-  try {
-    const response = await fetch(sitemapUrl);
-    const xmlText = await response.text();
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-
-    const urls = xmlDoc.querySelectorAll("url loc");
-    const internateUrls = [];
-
-    urls.forEach((urlElement) => {
-      const url = urlElement.textContent.trim(); // Trim the URL
-      if (url.includes("/internate/")) {
-        internateUrls.push(url);
-      }
-    });
-
-    return internateUrls;
-  } catch (error) {
-    console.error("Error fetching or parsing sitemap:", error);
-    return [];
-  }
-}
-
-async function filterLinksBySitemap(sitemapUrls, containerSelector) {
-  // Select all anchor tags within the container
-  const container = document.querySelector(containerSelector);
-  if (!container) {
-    console.error("Container not found");
-    return;
-  }
-
-  const internalLinksContainers = document.querySelectorAll(".internal-links-container");
-
-  internalLinksContainers.forEach((linksContainer) => {
-    const links = linksContainer.querySelectorAll("a.internal-link");
-
-    // Iterate over each link and remove it if its href is not in the sitemapUrls
-    links.forEach((link) => {
-      const href = link.getAttribute("href");
-      if (!sitemapUrls.includes(href)) {
-        link.remove();
-      }
-    });
-    const updatedLinks = linksContainer.querySelectorAll("a.internal-link");
-    if (updatedLinks.length === 0) {
-      linksContainer.remove();
-    }
-  });
-}
-
-const insertSections = () => {
-  const internatItems = document.querySelectorAll(".internat-liste_grid .w-dyn-item:not(.splide__slide)");
-  const beraterinnenSection = document.querySelector(".section_beraterinnen");
-  const nachLaendernSection = document.querySelector(".section_internate-nach-laendern");
-  const beratungSection = document.querySelector(".section_beratung");
-  const secondDescription = document.querySelector(".section_page-second-description");
-
-  if (internatItems.length > 4) {
-    // Ensure the length is greater than 4 to access the index 4
-    internatItems[4].after(beraterinnenSection);
-    beraterinnenSection.style.marginTop = "2.5rem";
-    beraterinnenSection.style.marginBottom = "2.5rem";
-  }
-  if (internatItems.length > 9) {
-    // Ensure the length is greater than 9 to access the index 9
-    internatItems[9].after(nachLaendernSection);
-    nachLaendernSection.style.marginTop = "2.5rem";
-    nachLaendernSection.style.marginBottom = "2.5rem";
-  } else {
-    internatItems[internatItems.length - 1].after(nachLaendernSection);
-    nachLaendernSection.style.marginTop = "2.5rem";
-    nachLaendernSection.style.marginBottom = "2.5rem";
-  }
-  if (internatItems.length > 14) {
-    // Ensure the length is greater than 14 to access the index 14
-    internatItems[14].after(beratungSection);
-    beratungSection.style.marginTop = "2.5rem";
-    beratungSection.style.marginBottom = "2.5rem";
-  } else {
-    if (secondDescription) {
-      secondDescription.after(beratungSection);
-      beratungSection.style.marginTop = "2.5rem";
-      beratungSection.style.marginBottom = "2.5rem";
-    }
-  }
-
-  if (internatItems.length < 5) {
-    nachLaendernSection.classList.remove("background-color-flower", "text-color-red");
-  }
-};
-
-window.onload = () => {
-  const checkDebugMode = async () => {
-    const searchParams = new URLSearchParams(window.location.search);
-    if (searchParams.get("debug") == 1) {
-      const delay = (ms) => new Promise((res) => setTimeout(res, ms));
-
-      await delay(1000);
-      const hiddenFilters = document.querySelector(".hidden-filters");
-      const hiddenFilterStrings = document.querySelectorAll(".filter-strings");
-      hiddenFilters.style.display = "flex";
-      hiddenFilters.style.fontFamily = "Monospace";
-      hiddenFilterStrings.forEach((filter) => {
-        filter.style.display = "flex";
-        filter.style.fontFamily = "Monospace";
-      });
-    }
-  };
-
-  checkDebugMode();
-};
-
 const customContentHeading = document.querySelector(".page-intro-custom_heading");
 if (customContentHeading.textContent === 'Überschrift "Above-the-fold"-Inhalt') {
   const customContentSection = document.getElementById("page-intro-custom");
@@ -713,3 +595,63 @@ if (heroTitle.textContent.toLowerCase() === "Überschrift".toLowerCase()) {
   metaTitle = metaTitle.replace(" | Internate.org", "");
   heroTitle.textContent = metaTitle;
 }
+
+const sitemapUrl = "https://internate-org-253554.webflow.io/sitemap.xml";
+
+// Function to fetch and parse the sitemap XML
+async function getUrlsFromSitemap(sitemapUrl) {
+  try {
+    const response = await fetch(sitemapUrl);
+    if (!response.ok) {
+      throw new Error(`Network response was not ok: ${response.statusText}`);
+    }
+
+    const xmlText = await response.text();
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+
+    const urls = Array.from(xmlDoc.querySelectorAll("url loc")).map((urlElement) =>
+      urlElement.textContent.trim()
+    );
+
+    // Filter URLs containing "/internate/"
+    const internateUrls = urls.filter((url) => url.includes("/internate/"));
+
+    return internateUrls;
+  } catch (error) {
+    console.error("Error fetching or parsing sitemap:", error);
+    return [];
+  }
+}
+
+// Function to filter links within a specified container based on the sitemap URLs
+function filterLinksBySitemap(sitemapUrls, containerSelector) {
+  const container = document.querySelector(containerSelector);
+  if (!container) {
+    console.error("Container not found:", containerSelector);
+    return;
+  }
+
+  const internalLinksContainers = container.querySelectorAll(".internal-links-container");
+
+  internalLinksContainers.forEach((linksContainer) => {
+    const links = linksContainer.querySelectorAll("a.internal-link");
+
+    const linksToRemove = Array.from(links).filter(
+      (link) => !sitemapUrls.includes(link.getAttribute("href"))
+    );
+
+    // Remove invalid links
+    linksToRemove.forEach((link) => link.remove());
+
+    // Remove container if no links remain
+    if (linksContainer.querySelectorAll("a.internal-link").length === 0) {
+      linksContainer.remove();
+    }
+  });
+}
+
+// Fetch URLs from the sitemap and filter links by sitemap URLs
+getUrlsFromSitemap(sitemapUrl).then((sitemapUrls) => {
+  filterLinksBySitemap(sitemapUrls, ".section_internal-links");
+});
