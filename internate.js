@@ -290,17 +290,6 @@ window.fsAttributes.push([
     // console.log('cmsfilter Successfully loaded!');
     const [filterInstance] = filterInstances;
 
-    // Define a debounce function to postpone execution
-    let timeoutId;
-    const debounceInsertSections = () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId); // Cancel the previous timeout
-      }
-      timeoutId = setTimeout(() => {
-        insertSections();
-      }, 500); // Set a delay of 800 milliseconds (adjust as needed)
-    };
-
     filterInstance.listInstance.on("renderitems", (renderedItems) => {
       const internateItems = document.querySelectorAll(".internat-liste_item");
       if (internateItems) {
@@ -313,7 +302,6 @@ window.fsAttributes.push([
           }
         }
       }
-      debounceInsertSections(); // Call the debounced function
     });
   },
 ]);
