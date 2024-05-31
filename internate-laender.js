@@ -1,10 +1,8 @@
 // GLOBALS
-
 const pathname = window.location.pathname;
 const country = pathname.replace("/internate/", "");
 
 // SEARCH BOX
-
 const updateSearchLink = (searchValue, landValue) => {
   let searchButton = document.querySelector(".search-button");
   searchButton.href = `/internate/internatssuche?suche=${searchValue}&land=${landValue}`;
@@ -12,43 +10,50 @@ const updateSearchLink = (searchValue, landValue) => {
 
 const updateLandValue = () => {
   const landSelect = document.querySelector(".internat-search-hero_form select");
-  if (country === "schweiz-oesterreich" || country === "spanien-italien") return;
-  landSelect.value = country;
+  if (country !== "schweiz-oesterreich" && country !== "spanien-italien") {
+    landSelect.value = country;
+  }
 };
 
 updateLandValue();
 
 const inputElements = document.querySelectorAll(".internat-search-hero_form input, .internat-search-hero_form select");
 
+const debounce = (func, delay) => {
+  let debounceTimer;
+  return function () {
+    const context = this;
+    const args = arguments;
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => func.apply(context, args), delay);
+  };
+};
+
 inputElements.forEach((element) => {
-  element.addEventListener("change", () => {
-    updateSearchLink(inputElements[0].value, inputElements[1].value);
-  });
+  element.addEventListener(
+    "change",
+    debounce(() => {
+      updateSearchLink(inputElements[0].value, inputElements[1].value);
+    }, 300)
+  );
 });
 
 const form = document.querySelector(".internat-search-hero_form");
 
 form.addEventListener("keydown", function (event) {
-  // Check if the key pressed was the Enter key
   if (event.key === "Enter") {
-    // Prevent the form from submitting
     event.preventDefault();
-    // Additional actions can be added here if needed
     return false;
   }
 });
 
 // COUNTRY NAMES
-
 const dynamicTextElements = document.querySelectorAll(".land-value");
 
 const countryDisplayName = (country) => {
-  const landSelect = document.querySelectorAll(".internat-search-hero_form select option");
-  for (let i = 0; i < landSelect.length; i++) {
-    if (landSelect[i].value.toLowerCase() === country.toLowerCase()) {
-      return landSelect[i].textContent;
-    }
-  }
+  const landSelect = document.querySelector(".internat-search-hero_form select");
+  const option = Array.from(landSelect.options).find((opt) => opt.value.toLowerCase() === country.toLowerCase());
+  return option ? option.textContent : "";
 };
 
 dynamicTextElements.forEach((element) => {
@@ -56,23 +61,12 @@ dynamicTextElements.forEach((element) => {
 });
 
 // FILTERS
-
 window.fsAttributes = window.fsAttributes || [];
 window.fsAttributes.push([
   "cmsfilter",
   (listInstances) => {
-    if (country === "england" || country === "schottland" || country === "nordirland" || country === "wales") {
-      const inputElements = document.getElementsByClassName("internate_filter_region");
-      for (let i = 0; i < inputElements.length; i++) {
-        inputElements[i].value = country;
-        const event = new Event("input", {
-          bubbles: true,
-        });
-        inputElements[i].dispatchEvent(event);
-        updateSearchLink("", country);
-      }
-    } else if (country === "schweiz-oesterreich" || country === "spanien-italien") {
-      const inputElements = document.getElementsByClassName("internate_filter_country-shared");
+    const updateFilterValues = (className) => {
+      const inputElements = document.getElementsByClassName(className);
       for (let i = 0; i < inputElements.length; i++) {
         inputElements[i].value = country;
         const event = new Event("input", {
@@ -80,15 +74,15 @@ window.fsAttributes.push([
         });
         inputElements[i].dispatchEvent(event);
       }
+    };
+
+    if (["england", "schottland", "nordirland", "wales"].includes(country)) {
+      updateFilterValues("internate_filter_region");
+      updateSearchLink("", country);
+    } else if (["schweiz-oesterreich", "spanien-italien"].includes(country)) {
+      updateFilterValues("internate_filter_country-shared");
     } else {
-      const inputElements = document.getElementsByClassName("internate_filter_country");
-      for (let i = 0; i < inputElements.length; i++) {
-        inputElements[i].value = country;
-        const event = new Event("input", {
-          bubbles: true,
-        });
-        inputElements[i].dispatchEvent(event);
-      }
+      updateFilterValues("internate_filter_country");
     }
 
     let landValue = "";
@@ -99,16 +93,17 @@ window.fsAttributes.push([
         allCountries[i].parentElement.parentElement.parentElement.remove();
       }
     }
-    // GET RID OF INTERNATE IM FOKUS IF NONE APPLY
+
     const checkRemoveIIF = () => {
       const internateImFokus = document.querySelector(".section_internate-im-fokus");
-      const itemsParent = internateImFokus.querySelector(".about_internate-grid.w-dyn-items");
-      if (!itemsParent.hasChildNodes()) {
+      const itemsParent = internateImFokus?.querySelector(".about_internate-grid.w-dyn-items");
+      if (itemsParent && !itemsParent.hasChildNodes()) {
         internateImFokus.remove();
       }
       const beraterinnenSection = document.querySelector(".section_beraterinnen");
-      beraterinnenSection.style.backgroundColor = "#f8f3ef";
+      if (beraterinnenSection) beraterinnenSection.style.backgroundColor = "#f8f3ef";
     };
+
     setTimeout(checkRemoveIIF, 2500);
   },
 ]);
@@ -118,57 +113,52 @@ $(document).ready(function () {
 });
 
 // SPLIDE SLIDER
-
 $(document).ready(function () {
   function categorySlider() {
-    let splides = $(".categoryslider");
-    for (let i = 0, splideLength = splides.length; i < splideLength; i++) {
-      new Splide(splides[i], {
-        // Desktop on down
+    $(".categoryslider").each(function () {
+      new Splide(this, {
         perPage: 5,
         perMove: 1,
         fixedWidth: "16rem",
         fixedHeight: "45rem",
-        focus: 0, // 0 = left and 'center' = center
-        type: "slide", // 'loop' or 'slide'
-        gap: "1.25rem", // space between slides
-        arrows: "slider", // 'slider' or false
-        pagination: false, // 'slider' or false
-        speed: 600, // transition speed in miliseconds
-        dragAngleThreshold: 60, // default is 30
-        autoWidth: false, // for cards with differing widths
-        rewind: false, // go back to beginning when reach end
+        focus: 0,
+        type: "slide",
+        gap: "1.25rem",
+        arrows: "slider",
+        pagination: false,
+        speed: 600,
+        dragAngleThreshold: 60,
+        autoWidth: false,
+        rewind: false,
         rewindSpeed: 400,
         waitForTransition: false,
         updateOnMove: true,
-        trimSpace: false, // true removes empty space from end of list
+        trimSpace: false,
         breakpoints: {
           991: {
             destroy: true,
           },
         },
       }).mount();
-    }
+    });
   }
 
   const combineItems = async (activities, sports) => {
     sports.each((index, element) => {
       activities.append($(element));
     });
-    // Trigger categorySlider() after combineItems has completed
     categorySlider();
   };
 
-  combineItems($(".activities"), $(".sport")); // Call combineItems()
+  combineItems($(".activities"), $(".sport"));
 });
 
 // HIDE UNEDITED CONTENT
-
 const dynamicRichtext = document.getElementById("dynamic-rich-text-atf");
 const dynamicContentBtf = document.getElementById("dynamic-content-btf");
 
 if (
-  dynamicRichtext.textContent.startsWith(
+  dynamicRichtext?.textContent.startsWith(
     "Töchter und Söhne beobachtet und bewertet Internate in Deutschland seit mehr als zwanzig Jahren."
   )
 ) {
@@ -178,15 +168,13 @@ if (
 
 const faqs = document.querySelectorAll(".internat-wissenwertes_item");
 
-for (let i = 0; i < faqs.length; i++) {
-  const element = faqs[i];
+faqs.forEach((element) => {
   const heading = element.querySelector(".heading-support").textContent;
   if (heading === "This is some text inside of a div block.") {
     element.remove();
   }
-  const updatedFaqs = document.querySelectorAll(".internat-wissenwertes_item");
-  if (updatedFaqs.length === 0) {
-    const faqsContainter = document.querySelector(".faqs");
-    faqsContainter.remove();
-  }
+});
+
+if (document.querySelectorAll(".internat-wissenwertes_item").length === 0) {
+  document.querySelector(".faqs").remove();
 }
