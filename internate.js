@@ -419,7 +419,7 @@ const addInternalLinkSection = (attributeList, pageAttribute, secondPageAttribut
           if (country.country === pageAttribute) return;
           // Add link to list
           const link = new Link(
-            `https://internate-org-253554.webflow.io/internate/${country.country}/${secondPageAttribute}`,
+            `/internate/${country.country}/${secondPageAttribute}`,
             `${country.name}`
           );
           link.element.classList.add("internal-link");
@@ -441,7 +441,7 @@ const addInternalLinkSection = (attributeList, pageAttribute, secondPageAttribut
         }
         regions.forEach((region) => {
           const link = new Link(
-            `https://internate-org-253554.webflow.io/internate/deutschland/${region.region}`,
+            `/internate/deutschland/${region.region}`,
             `${region.name}`
           );
           link.element.classList.add("internal-link");
@@ -459,7 +459,7 @@ const addInternalLinkSection = (attributeList, pageAttribute, secondPageAttribut
           // Add link to list
           if (attribute.category === "Sport") {
             const link = new Link(
-              `https://internate-org-253554.webflow.io/internate/${pageAttribute}/${attribute.slug}`,
+              `/internate/${pageAttribute}/${attribute.slug}`,
               `${attribute.name}`
             );
             link.element.classList.add("internal-link");
@@ -474,7 +474,7 @@ const addInternalLinkSection = (attributeList, pageAttribute, secondPageAttribut
           // Add link to list
           if (attribute.category === "Schwerpunkt") {
             const link = new Link(
-              `https://internate-org-253554.webflow.io/internate/${pageAttribute}/${attribute.slug}`,
+              `/internate/${pageAttribute}/${attribute.slug}`,
               `${attribute.name}`
             );
             link.element.classList.add("internal-link");
@@ -487,7 +487,7 @@ const addInternalLinkSection = (attributeList, pageAttribute, secondPageAttribut
         ([key, value]) => value.category === attributeList[pageAttribute].category
       );
       filteredAttributes.forEach(([key, value], index) => {
-        const link = new Link(`https://internate-org-253554.webflow.io/internate/${key}`, `${value.name}`);
+        const link = new Link(`/internate/${key}`, `${value.name}`);
         link.element.classList.add("internal-link");
         link.appendTo(linksContainer);
       });
@@ -538,7 +538,7 @@ const addInternalLinkSectionForCountries = (attributes, places, attributeKey) =>
   Object.entries(places).forEach(([key, value]) => {
     if (value.type === "country") {
       const link = new Link(
-        `https://internate-org-253554.webflow.io/internate/${key}/${attributeKey}`,
+        `/internate/${key}/${attributeKey}`,
         `${value.name}`
       );
       link.element.classList.add("internal-link");
@@ -595,7 +595,7 @@ if (heroTitle.textContent.toLowerCase() === "Überschrift".toLowerCase()) {
   heroTitle.textContent = metaTitle;
 }
 
-const sitemapUrl = "https://internate-org-253554.webflow.io/sitemap.xml";
+const sitemapUrl = "/sitemap.xml";
 
 // Function to fetch and parse the sitemap XML
 async function getUrlsFromSitemap(sitemapUrl) {
