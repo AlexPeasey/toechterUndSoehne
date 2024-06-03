@@ -152,29 +152,3 @@ $(document).ready(function () {
 
   combineItems($(".activities"), $(".sport"));
 });
-
-// HIDE UNEDITED CONTENT
-const dynamicRichtext = document.getElementById("dynamic-rich-text-atf");
-const dynamicContentBtf = document.getElementById("dynamic-content-btf");
-
-if (
-  dynamicRichtext?.textContent.startsWith(
-    "Töchter und Söhne beobachtet und bewertet Internate in Deutschland seit mehr als zwanzig Jahren."
-  )
-) {
-  dynamicRichtext.closest(".section_page-intro").remove();
-  dynamicContentBtf.remove();
-}
-
-const faqs = document.querySelectorAll(".internat-wissenwertes_item");
-
-faqs.forEach((element) => {
-  const heading = element.querySelector(".heading-support").textContent;
-  if (heading === "This is some text inside of a div block.") {
-    element.remove();
-  }
-});
-
-if (document.querySelectorAll(".internat-wissenwertes_item").length === 0) {
-  document.querySelector(".faqs").remove();
-}
