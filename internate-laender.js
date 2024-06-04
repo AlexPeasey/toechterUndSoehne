@@ -99,9 +99,9 @@ window.fsAttributes.push([
       const itemsParent = internateImFokus?.querySelector(".about_internate-grid.w-dyn-items");
       if (itemsParent && !itemsParent.hasChildNodes()) {
         internateImFokus.remove();
+        const beraterinnenSection = document.querySelector(".section_beraterinnen");
+        if (beraterinnenSection) beraterinnenSection.style.backgroundColor = "#f8f3ef";
       }
-      const beraterinnenSection = document.querySelector(".section_beraterinnen");
-      if (beraterinnenSection) beraterinnenSection.style.backgroundColor = "#f8f3ef";
     };
 
     setTimeout(checkRemoveIIF, 2500);
