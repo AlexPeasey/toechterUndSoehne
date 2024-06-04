@@ -61,7 +61,15 @@ dynamicTextElements.forEach((element) => {
 });
 
 // FILTERS
+
 window.fsAttributes = window.fsAttributes || [];
+window.fsAttributes.push([
+  "cmsload",
+  (listInstances) => {
+    window.fsAttributes.cmsfilter.init();
+  },
+]);
+
 window.fsAttributes.push([
   "cmsfilter",
   (listInstances) => {
