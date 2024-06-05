@@ -418,10 +418,7 @@ const addInternalLinkSection = (attributeList, pageAttribute, secondPageAttribut
           // making sure current page is not added to internal links
           if (country.country === pageAttribute) return;
           // Add link to list
-          const link = new Link(
-            `/internate/${country.country}/${secondPageAttribute}`,
-            `${country.name}`
-          );
+          const link = new Link(`/internate/${country.country}/${secondPageAttribute}`, `${country.name}`);
           link.element.classList.add("internal-link");
           link.appendTo(linksContainer);
         });
@@ -440,10 +437,7 @@ const addInternalLinkSection = (attributeList, pageAttribute, secondPageAttribut
           }
         }
         regions.forEach((region) => {
-          const link = new Link(
-            `/internate/deutschland/${region.region}`,
-            `${region.name}`
-          );
+          const link = new Link(`/internate/deutschland/${region.region}`, `${region.name}`);
           link.element.classList.add("internal-link");
           link.appendTo(linksContainer);
         });
@@ -458,10 +452,7 @@ const addInternalLinkSection = (attributeList, pageAttribute, secondPageAttribut
           if (combinedData[secondPageAttribute].name === attribute.name) return;
           // Add link to list
           if (attribute.category === "Sport") {
-            const link = new Link(
-              `/internate/${pageAttribute}/${attribute.slug}`,
-              `${attribute.name}`
-            );
+            const link = new Link(`/internate/${pageAttribute}/${attribute.slug}`, `${attribute.name}`);
             link.element.classList.add("internal-link");
             link.appendTo(linksContainer);
           }
@@ -473,10 +464,7 @@ const addInternalLinkSection = (attributeList, pageAttribute, secondPageAttribut
           if (combinedData[secondPageAttribute].name === attribute.name) return;
           // Add link to list
           if (attribute.category === "Schwerpunkt") {
-            const link = new Link(
-              `/internate/${pageAttribute}/${attribute.slug}`,
-              `${attribute.name}`
-            );
+            const link = new Link(`/internate/${pageAttribute}/${attribute.slug}`, `${attribute.name}`);
             link.element.classList.add("internal-link");
             link.appendTo(linksContainer);
           }
@@ -537,10 +525,7 @@ const addInternalLinkSectionForCountries = (attributes, places, attributeKey) =>
 
   Object.entries(places).forEach(([key, value]) => {
     if (value.type === "country") {
-      const link = new Link(
-        `/internate/${key}/${attributeKey}`,
-        `${value.name}`
-      );
+      const link = new Link(`/internate/${key}/${attributeKey}`, `${value.name}`);
       link.element.classList.add("internal-link");
       link.appendTo(linksContainer);
     }
@@ -609,13 +594,10 @@ async function getUrlsFromSitemap(sitemapUrl) {
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(xmlText, "text/xml");
 
-    const urls = Array.from(xmlDoc.querySelectorAll("url loc")).map((urlElement) =>
-      urlElement.textContent.trim()
-    );
+    const urls = Array.from(xmlDoc.querySelectorAll("url loc")).map((urlElement) => urlElement.textContent.trim());
 
     // Filter URLs containing "/internate/"
     const internateUrls = urls.filter((url) => url.includes("/internate/"));
-
     return internateUrls;
   } catch (error) {
     console.error("Error fetching or parsing sitemap:", error);
@@ -635,11 +617,9 @@ function filterLinksBySitemap(sitemapUrls, containerSelector) {
 
   internalLinksContainers.forEach((linksContainer) => {
     const links = linksContainer.querySelectorAll("a.internal-link");
-
-    const linksToRemove = Array.from(links).filter(
-      (link) => !sitemapUrls.includes(link.getAttribute("href"))
-    );
-
+    const linksToRemove = Array.from(links).filter((link) => {
+      !sitemapUrls.some(url => url.includes(link.getAttribute("href")));
+    });
     // Remove invalid links
     linksToRemove.forEach((link) => link.remove());
 
