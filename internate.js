@@ -553,33 +553,6 @@ switch (attributeStrings.length) {
     addInternalLinkSection(places, attributeStrings[1], null);
 }
 
-const customContentHeading = document.querySelector(".page-intro-custom_heading");
-if (customContentHeading.textContent === 'Überschrift "Above-the-fold"-Inhalt') {
-  const customContentSection = document.getElementById("page-intro-custom");
-  customContentSection.remove();
-}
-
-const customContentHeadingBtf = document.querySelector("#custom-content-btf");
-
-if (customContentHeadingBtf.textContent === 'Überschrift "Below-the-fold"-Inhalt') {
-  const customContentBtf = document.getElementById("desc-2");
-  customContentBtf.remove();
-}
-
-const customHeroSubheading = document.getElementById("hero-subheading");
-
-if (customHeroSubheading.textContent.toLowerCase() === "Text der Unterüberschrift".toLowerCase()) {
-  customHeroSubheading.remove();
-}
-
-let heroTitle = document.getElementById("hero-title");
-
-if (heroTitle.textContent.toLowerCase() === "Überschrift".toLowerCase()) {
-  let metaTitle = document.title;
-  metaTitle = metaTitle.replace(" | Internate.org", "");
-  heroTitle.textContent = metaTitle;
-}
-
 const sitemapUrl = "/sitemap.xml";
 
 // Function to fetch and parse the sitemap XML
@@ -618,8 +591,9 @@ function filterLinksBySitemap(sitemapUrls, containerSelector) {
   internalLinksContainers.forEach((linksContainer) => {
     const links = linksContainer.querySelectorAll("a.internal-link");
     const linksToRemove = Array.from(links).filter((link) => {
-      !sitemapUrls.some(url => url.includes(link.getAttribute("href")));
+      return !sitemapUrls.some(url => url.includes(link.getAttribute("href")));
     });
+
     // Remove invalid links
     linksToRemove.forEach((link) => link.remove());
 
