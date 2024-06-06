@@ -227,13 +227,7 @@ window.fsAttributes = window.fsAttributes || [];
 window.fsAttributes.push([
   "cmsload",
   (listInstances) => {
-    window.fsAttributes.cmsfilter.init();
-  },
-]);
-
-window.fsAttributes.push([
-  "cmsfilter",
-  (listInstances) => {
+    const [listInstance] = listInstances;
     function processSlugs(...attributeSlugs) {
       const [attributes] = attributeSlugs;
 
@@ -591,7 +585,7 @@ function filterLinksBySitemap(sitemapUrls, containerSelector) {
   internalLinksContainers.forEach((linksContainer) => {
     const links = linksContainer.querySelectorAll("a.internal-link");
     const linksToRemove = Array.from(links).filter((link) => {
-      return !sitemapUrls.some(url => url.includes(link.getAttribute("href")));
+      return !sitemapUrls.some((url) => url.includes(link.getAttribute("href")));
     });
 
     // Remove invalid links
