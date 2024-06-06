@@ -227,7 +227,13 @@ window.fsAttributes = window.fsAttributes || [];
 window.fsAttributes.push([
   "cmsload",
   (listInstances) => {
-    const [listInstance] = listInstances;
+    window.fsAttributes.cmsfilter.init();
+  },
+]);
+
+window.fsAttributes.push([
+  "cmsfilter",
+  (listInstances) => {
     function processSlugs(...attributeSlugs) {
       const [attributes] = attributeSlugs;
 
@@ -285,8 +291,6 @@ window.fsAttributes.push([
     const [filterInstance] = filterInstances;
 
     filterInstance.listInstance.on("renderitems", (renderedItems) => {
-      const listItems = document.querySelector(".internate-list-wrapper");
-      listItems.style.opacity = "100%";
       const internateItems = document.querySelectorAll(".internat-liste_item");
       if (internateItems) {
         for (let i = 0; i < internateItems.length; i++) {
