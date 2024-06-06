@@ -285,6 +285,8 @@ window.fsAttributes.push([
     const [filterInstance] = filterInstances;
 
     filterInstance.listInstance.on("renderitems", (renderedItems) => {
+      const listItems = document.querySelector(".internate-list-wrapper");
+      listItems.style.opacity = "100%";
       const internateItems = document.querySelectorAll(".internat-liste_item");
       if (internateItems) {
         for (let i = 0; i < internateItems.length; i++) {
