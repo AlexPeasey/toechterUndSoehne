@@ -228,81 +228,81 @@ window.fsAttributes.push([
   "cmsload",
   (listInstances) => {
     window.fsAttributes.cmsfilter.init();
-  },
-]);
-
-window.fsAttributes.push([
-  "cmsfilter",
-  (listInstances) => {
-    function processSlugs(...attributeSlugs) {
-      const [attributes] = attributeSlugs;
-
-      attributes.forEach((slug) => {
-        if (!slug) return; // Skip if slug is undefined or null
-        // Convert slug to camelCase and find corresponding item
-        const item = combinedData[slug];
-
-        // Check if item exists in the combinedData
-        if (item) {
-          // Generalize element ID construction and value assignment
-          let filterType;
-
-          switch (item.type) {
-            case "country":
-              filterType = "internate_filter_country";
-              break;
-            case "sharedcountry":
-              filterType = "internate_filter_sharedcountry";
-              break;
-            case "region":
-              filterType = "internate_filter_region";
-              break;
-            case "attribute":
-              filterType = "internate_filter_attribute";
-              break;
-          }
-
-          const inputElement = document.getElementById(filterType);
-
-          if (inputElement) {
-            // Check if element exists
-            inputElement.value = slug;
-            const event = new Event("input", { bubbles: true });
-            inputElement.dispatchEvent(event);
-          }
-
-          // Here, you can add any additional logic specific to the item type
-          // For example, you might have special handling for certain places or sports
-        } else {
-          console.log(`Slug not found: ${slug}`);
+    window.fsAttributes.push([
+      "cmsfilter",
+      (listInstances) => {
+        function processSlugs(...attributeSlugs) {
+          const [attributes] = attributeSlugs;
+    
+          attributes.forEach((slug) => {
+            if (!slug) return; // Skip if slug is undefined or null
+            // Convert slug to camelCase and find corresponding item
+            const item = combinedData[slug];
+    
+            // Check if item exists in the combinedData
+            if (item) {
+              // Generalize element ID construction and value assignment
+              let filterType;
+    
+              switch (item.type) {
+                case "country":
+                  filterType = "internate_filter_country";
+                  break;
+                case "sharedcountry":
+                  filterType = "internate_filter_sharedcountry";
+                  break;
+                case "region":
+                  filterType = "internate_filter_region";
+                  break;
+                case "attribute":
+                  filterType = "internate_filter_attribute";
+                  break;
+              }
+    
+              const inputElement = document.getElementById(filterType);
+    
+              if (inputElement) {
+                // Check if element exists
+                inputElement.value = slug;
+                const event = new Event("input", { bubbles: true });
+                inputElement.dispatchEvent(event);
+              }
+    
+              // Here, you can add any additional logic specific to the item type
+              // For example, you might have special handling for certain places or sports
+            } else {
+              console.log(`Slug not found: ${slug}`);
+            }
+          });
         }
-      });
-    }
-    // Assuming attributeStrings is defined and accessible here
-    processSlugs(attributeStrings);
-  },
-]);
-
-window.fsAttributes = window.fsAttributes || [];
-window.fsAttributes.push([
-  "cmsfilter",
-  (filterInstances) => {
-    // console.log('cmsfilter Successfully loaded!');
-    const [filterInstance] = filterInstances;
-
-    filterInstance.listInstance.on("renderitems", (renderedItems) => {
-      const internateItems = document.querySelectorAll(".internat-liste_item");
-      if (internateItems) {
-        for (let i = 0; i < internateItems.length; i++) {
-          const country = internateItems[i].querySelector(".internatssuche_country");
-          const region = internateItems[i].querySelector(".internatssuche_region");
-          if (country.textContent === "Großbritannien") {
-            country.style.display = "none";
-            region.style.display = "block";
+        // Assuming attributeStrings is defined and accessible here
+        processSlugs(attributeStrings);
+      },
+    ]);
+    
+    window.fsAttributes.push([
+      "cmsfilter",
+      (filterInstances) => {
+        // console.log('cmsfilter Successfully loaded!');
+        const [filterInstance] = filterInstances;
+    
+        filterInstance.listInstance.on("renderitems", (renderedItems) => {
+          const listWrapper = document.querySelector(".internate-list-wrapper")
+          listWrapper.style.display = "block"
+          const internateItems = document.querySelectorAll(".internat-liste_item");
+          if (internateItems) {
+            for (let i = 0; i < internateItems.length; i++) {
+              const country = internateItems[i].querySelector(".internatssuche_country");
+              const region = internateItems[i].querySelector(".internatssuche_region");
+              if (country.textContent === "Großbritannien") {
+                country.style.display = "none";
+                region.style.display = "block";
+              }
+            }
           }
-        }
-      }
-    });
+        });
+      },
+    ]);
   },
 ]);
 
