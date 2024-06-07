@@ -67,54 +67,55 @@ window.fsAttributes.push([
   "cmsload",
   (listInstances) => {
     window.fsAttributes.cmsfilter.init();
+    window.fsAttributes.push([
+      "cmsfilter",
+      (listInstances) => {
+        const updateFilterValues = (className) => {
+          const inputElements = document.getElementsByClassName(className);
+          for (let i = 0; i < inputElements.length; i++) {
+            inputElements[i].value = country;
+            const event = new Event("input", {
+              bubbles: true,
+            });
+            inputElements[i].dispatchEvent(event);
+          }
+        };
+    
+        if (["england", "schottland", "nordirland", "wales"].includes(country)) {
+          updateFilterValues("internate_filter_region");
+          updateSearchLink("", country);
+        } else if (["schweiz-oesterreich", "spanien-italien"].includes(country)) {
+          updateFilterValues("internate_filter_country-shared");
+        } else {
+          updateFilterValues("internate_filter_country");
+        }
+    
+        let landValue = "";
+        const allCountries = document.getElementsByClassName("about-internate-internat_country-slug");
+        for (let i = 0; i < allCountries.length; i++) {
+          if (allCountries[i].innerText === country) {
+            landValue = allCountries[i].parentElement.querySelector(".about-internate-internat_country-name").innerText;
+            allCountries[i].parentElement.parentElement.parentElement.remove();
+          }
+        }
+    
+        const checkRemoveIIF = () => {
+          const internateImFokus = document.querySelector(".section_internate-im-fokus");
+          const itemsParent = internateImFokus?.querySelector(".about_internate-grid.w-dyn-items");
+          if (itemsParent && !itemsParent.hasChildNodes()) {
+            internateImFokus.remove();
+            const beraterinnenSection = document.querySelector(".section_beraterinnen");
+            if (beraterinnenSection) beraterinnenSection.style.backgroundColor = "#f8f3ef";
+          }
+        };
+    
+        setTimeout(checkRemoveIIF, 2500);
+      },
+    ]);
   },
 ]);
 
-window.fsAttributes.push([
-  "cmsfilter",
-  (listInstances) => {
-    const updateFilterValues = (className) => {
-      const inputElements = document.getElementsByClassName(className);
-      for (let i = 0; i < inputElements.length; i++) {
-        inputElements[i].value = country;
-        const event = new Event("input", {
-          bubbles: true,
-        });
-        inputElements[i].dispatchEvent(event);
-      }
-    };
 
-    if (["england", "schottland", "nordirland", "wales"].includes(country)) {
-      updateFilterValues("internate_filter_region");
-      updateSearchLink("", country);
-    } else if (["schweiz-oesterreich", "spanien-italien"].includes(country)) {
-      updateFilterValues("internate_filter_country-shared");
-    } else {
-      updateFilterValues("internate_filter_country");
-    }
-
-    let landValue = "";
-    const allCountries = document.getElementsByClassName("about-internate-internat_country-slug");
-    for (let i = 0; i < allCountries.length; i++) {
-      if (allCountries[i].innerText === country) {
-        landValue = allCountries[i].parentElement.querySelector(".about-internate-internat_country-name").innerText;
-        allCountries[i].parentElement.parentElement.parentElement.remove();
-      }
-    }
-
-    const checkRemoveIIF = () => {
-      const internateImFokus = document.querySelector(".section_internate-im-fokus");
-      const itemsParent = internateImFokus?.querySelector(".about_internate-grid.w-dyn-items");
-      if (itemsParent && !itemsParent.hasChildNodes()) {
-        internateImFokus.remove();
-        const beraterinnenSection = document.querySelector(".section_beraterinnen");
-        if (beraterinnenSection) beraterinnenSection.style.backgroundColor = "#f8f3ef";
-      }
-    };
-
-    setTimeout(checkRemoveIIF, 2500);
-  },
-]);
 
 $(document).ready(function () {
   $(".alle-laender-zeigen").appendTo($(".internate-nach-laendern_grid")).show();
