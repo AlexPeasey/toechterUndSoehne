@@ -227,23 +227,27 @@ window.fsAttributes = window.fsAttributes || [];
 window.fsAttributes.push([
   "cmsload",
   (listInstances) => {
+    const [listInstance] = listInstances;
     window.fsAttributes.cmsfilter.init();
+    window.fsAttributes = window.fsAttributes || [];
     window.fsAttributes.push([
       "cmsfilter",
-      (listInstances) => {
-        function processSlugs(...attributeSlugs) {
-          const [attributes] = attributeSlugs;
-    
-          attributes.forEach((slug) => {
+      (filterInstances) => {
+        function processSlugs(attributeSlugs) {
+          // Check if attributeSlugs is defined and is an array
+          if (!Array.isArray(attributeSlugs)) return;
+
+          attributeSlugs.flat().forEach((slug) => {
             if (!slug) return; // Skip if slug is undefined or null
-            // Convert slug to camelCase and find corresponding item
+
+            // Find corresponding item
             const item = combinedData[slug];
-    
+
             // Check if item exists in the combinedData
             if (item) {
               // Generalize element ID construction and value assignment
               let filterType;
-    
+
               switch (item.type) {
                 case "country":
                   filterType = "internate_filter_country";
@@ -257,49 +261,49 @@ window.fsAttributes.push([
                 case "attribute":
                   filterType = "internate_filter_attribute";
                   break;
+                default:
+                  console.log(`Unknown item type: ${item.type}`);
+                  return;
               }
-    
+
               const inputElement = document.getElementById(filterType);
-    
+
               if (inputElement) {
-                // Check if element exists
                 inputElement.value = slug;
                 const event = new Event("input", { bubbles: true });
                 inputElement.dispatchEvent(event);
+              } else {
+                console.log(`Element not found for filterType: ${filterType}`);
               }
-    
-              // Here, you can add any additional logic specific to the item type
-              // For example, you might have special handling for certain places or sports
+
+              // Additional logic specific to the item type can be added here
             } else {
               console.log(`Slug not found: ${slug}`);
             }
           });
         }
-        // Assuming attributeStrings is defined and accessible here
+
+        // Ensure attributeStrings is defined and accessible here
         processSlugs(attributeStrings);
-      },
-    ]);
-    
-    window.fsAttributes.push([
-      "cmsfilter",
-      (filterInstances) => {
-        // console.log('cmsfilter Successfully loaded!');
+
         const [filterInstance] = filterInstances;
-    
+
         filterInstance.listInstance.on("renderitems", (renderedItems) => {
-          const listWrapper = document.querySelector(".internate-list-wrapper")
-          listWrapper.style.display = "block"
-          const internateItems = document.querySelectorAll(".internat-liste_item");
-          if (internateItems) {
-            for (let i = 0; i < internateItems.length; i++) {
-              const country = internateItems[i].querySelector(".internatssuche_country");
-              const region = internateItems[i].querySelector(".internatssuche_region");
-              if (country.textContent === "Großbritannien") {
-                country.style.display = "none";
-                region.style.display = "block";
-              }
-            }
+          const listWrapper = document.querySelector(".internate-list-wrapper");
+          if (listWrapper) {
+            listWrapper.style.display = "block";
           }
+
+          const internateItems = document.querySelectorAll(".internat-liste_item");
+          internateItems.forEach((item) => {
+            const countryElement = item.querySelector(".internatssuche_country");
+            const regionElement = item.querySelector(".internatssuche_region");
+
+            if (countryElement && regionElement && countryElement.textContent === "Großbritannien") {
+              countryElement.style.display = "none";
+              regionElement.style.display = "block";
+            }
+          });
         });
       },
     ]);
@@ -313,16 +317,16 @@ const internalLinksSection = document.querySelector(
 );
 
 const addInternalLinkSection = (attributeList, pageAttribute, secondPageAttribute) => {
-  // PARENT DIV
+  const fragment = document.createDocumentFragment(); // Create a document fragment
 
+  // PARENT DIV
   const internalLinkDiv = document.createElement("div");
   internalLinkDiv.classList.add("internal-links-container");
-  internalLinksSection.append(internalLinkDiv);
+  fragment.appendChild(internalLinkDiv); // Append to fragment
 
   // HEADING
 
   const internalLinkHeading = document.createElement("h2");
-  const combinedData = { ...attributes, ...places };
 
   if (secondPageAttribute) {
     if (attributeList === places) {
@@ -353,20 +357,18 @@ const addInternalLinkSection = (attributeList, pageAttribute, secondPageAttribut
         internalLinkHeading.innerText = `Internate mit anderen Schwerpunkten`;
         break;
     }
-    internalLinkDiv.append(internalLinkHeading);
+    internalLinkDiv.appendChild(internalLinkHeading);
   }
 
   // SPACER
-
   const spacer = document.createElement("div");
   spacer.classList.add("spacer-medium");
-  internalLinkDiv.append(spacer);
+  internalLinkDiv.appendChild(spacer); // Append to internalLinkDiv
 
   // LINKS CONTAINER
-
   const linksContainer = document.createElement("div");
   linksContainer.classList.add("internal-links_flex-container");
-  internalLinkDiv.append(linksContainer);
+  internalLinkDiv.appendChild(linksContainer); // Append to internalLinkDiv
 
   // LINKS
 
@@ -483,10 +485,11 @@ const addInternalLinkSection = (attributeList, pageAttribute, secondPageAttribut
   }
 
   // SPACER
-
   const largeSpacer = document.createElement("div");
   largeSpacer.classList.add("spacer-huge");
-  internalLinkDiv.append(largeSpacer);
+  internalLinkDiv.appendChild(largeSpacer); // Append to internalLinkDiv
+
+  internalLinksSection.appendChild(fragment); // Append the fragment to the DOM
 };
 
 // ADD INTERNAL LINKS FOR COUNTRIES
