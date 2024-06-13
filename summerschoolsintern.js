@@ -245,7 +245,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const beraterinnenElement = document.querySelector("#beraterinnen-between");
         const schoolsList = document.querySelector(".summer-schools_list");
         const emptyState = document.querySelector(".summer-schools_empty-state");
-        console.log(items.length);
         if (items.length < 6 && items.length) {
           emptyState.style.display = "none";
           schoolsList.style.removeProperty("display");
