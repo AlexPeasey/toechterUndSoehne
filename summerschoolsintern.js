@@ -53,8 +53,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const removeAgeFilter = () => {
     document.querySelector(".age-select").selectedIndex = 0;
-    resetItemsVisibility()
-  }
+    resetItemsVisibility();
+  };
 
   // Event listener for the select field
   document.querySelector(".age-select").addEventListener("change", (event) => {
@@ -68,43 +68,40 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-
   const schwerpunktDropdown = document.querySelector(".schwerpunkt-dropdown");
   schwerpunktDropdown[0].value = "";
 
+  // Select all elements with the class 'summer-schools_schwerpunkte'
+  const elements = document.querySelectorAll(".summer-schools_schwerpunkte");
 
-    // Select all elements with the class 'summer-schools_schwerpunkte'
-    const elements = document.querySelectorAll('.summer-schools_schwerpunkte');
+  elements.forEach((element) => {
+    // Get the text content of the element
+    const text = element.textContent;
 
-    elements.forEach(element => {
-        // Get the text content of the element
-        const text = element.textContent;
+    // Split the text by commas
+    const items = text.split(",");
 
-        // Split the text by commas
-        const items = text.split(',');
+    // Create a container for the new div blocks
+    const container = document.createElement("div");
+    container.classList.add("new-elements-container");
 
-        // Create a container for the new div blocks
-        const container = document.createElement('div');
-        container.classList.add('new-elements-container');
+    // Create new div blocks with span elements for each item
+    items.forEach((item) => {
+      const div = document.createElement("div");
+      div.classList.add("hide");
 
-        // Create new div blocks with span elements for each item
-        items.forEach(item => {
-            const div = document.createElement('div');
-            div.classList.add('hide');
+      const span = document.createElement("span");
+      span.setAttribute("fs-cmsfilter-field", "schwerpunkt-2");
+      span.setAttribute("fs-cmsfilter-match", "all");
+      span.textContent = item.trim();
 
-            const span = document.createElement('span');
-            span.setAttribute('fs-cmsfilter-field', 'schwerpunkt-2');
-            span.setAttribute('fs-cmsfilter-match', 'all');
-            span.textContent = item.trim();
-
-            div.appendChild(span);
-            container.appendChild(div);
-        });
-
-        // Append the container below the original text box
-        element.insertAdjacentElement('afterend', container);
+      div.appendChild(span);
+      container.appendChild(div);
     });
 
+    // Append the container below the original text box
+    element.insertAdjacentElement("afterend", container);
+  });
 
   window.fsAttributes.push([
     "cmsfilter",
@@ -147,5 +144,10 @@ document.addEventListener("DOMContentLoaded", () => {
   schwerpunktDropdown.addEventListener("input", () => {
     schwerpunktHelper.value = schwerpunktDropdown.value;
     schwerpunktHelper.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+
+  const clearFilters = document.querySelector("#clear-button-form");
+  clearFilters.addEventListener("click", () => {
+    schwerpunktDropdown.selectedIndex = 0;
   });
 });
