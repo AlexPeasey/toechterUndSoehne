@@ -113,24 +113,13 @@ document.addEventListener("DOMContentLoaded", () => {
       filterInstance.listInstance.on("renderitems", (renderedItems) => {
         const items = document.querySelectorAll(".summer-schools-item:not(.fade-out)");
         const nixDabei = document.querySelector(".summer-schools_nix-dabei");
-        const beraterinnenElement = document.querySelector("#beraterinnen-between");
         const schoolsList = document.querySelector(".summer-schools_list");
         const emptyState = document.querySelector(".summer-schools_empty-state");
-        if (items.length < 6 && items.length) {
+        if (items.length) {
           emptyState.style.display = "none";
           schoolsList.style.removeProperty("display");
           nixDabei.style.display = "flex";
-          beraterinnenElement.style.display = "block";
           items[items.length - 1].after(nixDabei);
-          nixDabei.after(beraterinnenElement);
-        }
-        if (items.length > 5) {
-          emptyState.style.display = "none";
-          schoolsList.style.removeProperty("display");
-          nixDabei.style.display = "flex";
-          beraterinnenElement.style.display = "block";
-          items[4].after(nixDabei);
-          nixDabei.after(beraterinnenElement);
         }
         if (items.length === 0) {
           emptyState.style.display = "block";
@@ -142,12 +131,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
   ]);
-
-  const clearButtonForm = document.getElementById("clear-button-form");
-  const clearButtonInline = document.getElementById("clear-button-inline");
-  clearButtonInline.addEventListener("click", () => {
-    clearButtonForm.dispatchEvent(new Event("click", { bubbles: true }));
-  });
 
   const landSelect = document.querySelector(".land-select");
   const landInputHelper = document.querySelector(".land-input-helper");
