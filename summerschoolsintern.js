@@ -149,5 +149,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const clearFilters = document.querySelector("#clear-button-form");
   clearFilters.addEventListener("click", () => {
     schwerpunktDropdown.selectedIndex = 0;
+    landSelect.selectedIndex = 0;
   });
 });
