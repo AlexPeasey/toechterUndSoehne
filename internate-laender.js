@@ -69,7 +69,7 @@ window.fsAttributes.push([
     window.fsAttributes.cmsfilter.init();
     window.fsAttributes.push([
       "cmsfilter",
-      (listInstances) => {
+      (filterInstances) => {
         const updateFilterValues = (className) => {
           const inputElements = document.getElementsByClassName(className);
           for (let i = 0; i < inputElements.length; i++) {
@@ -79,6 +79,11 @@ window.fsAttributes.push([
             });
             inputElements[i].dispatchEvent(event);
           }
+          const [filterInstance] = filterInstances;
+
+        filterInstance.listInstance.on("renderitems", (renderedItems) => {
+          checkRemoveIIF()
+        })
         };
     
         if (["england", "schottland", "nordirland", "wales"].includes(country)) {
@@ -108,8 +113,6 @@ window.fsAttributes.push([
             if (beraterinnenSection) beraterinnenSection.style.backgroundColor = "#f8f3ef";
           }
         };
-    
-        setTimeout(checkRemoveIIF, 2500);
       },
     ]);
   },
