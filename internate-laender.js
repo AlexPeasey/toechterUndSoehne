@@ -80,7 +80,7 @@ window.fsAttributes.push([
             inputElements[i].dispatchEvent(event);
           }
           const [filterInstance] = filterInstances;
-          if (filterInstance.listInstance) {
+          if (filterInstance) {
             filterInstance.listInstance.on("renderitems", (renderedItems) => {
               checkRemoveIIF();
             });
