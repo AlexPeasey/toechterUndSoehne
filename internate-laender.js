@@ -80,12 +80,13 @@ window.fsAttributes.push([
             inputElements[i].dispatchEvent(event);
           }
           const [filterInstance] = filterInstances;
-
-        filterInstance.listInstance.on("renderitems", (renderedItems) => {
-          checkRemoveIIF()
-        })
+          if (filterInstance.listInstance) {
+            filterInstance.listInstance.on("renderitems", (renderedItems) => {
+              checkRemoveIIF();
+            });
+          }
         };
-    
+
         if (["england", "schottland", "nordirland", "wales"].includes(country)) {
           updateFilterValues("internate_filter_region");
           updateSearchLink("", country);
@@ -94,7 +95,7 @@ window.fsAttributes.push([
         } else {
           updateFilterValues("internate_filter_country");
         }
-    
+
         let landValue = "";
         const allCountries = document.getElementsByClassName("about-internate-internat_country-slug");
         for (let i = 0; i < allCountries.length; i++) {
@@ -103,7 +104,7 @@ window.fsAttributes.push([
             allCountries[i].parentElement.parentElement.parentElement.remove();
           }
         }
-    
+
         const checkRemoveIIF = () => {
           const internateImFokus = document.querySelector(".section_internate-im-fokus");
           const itemsParent = internateImFokus?.querySelector(".about_internate-grid.w-dyn-items");
@@ -117,8 +118,6 @@ window.fsAttributes.push([
     ]);
   },
 ]);
-
-
 
 $(document).ready(function () {
   $(".alle-laender-zeigen").appendTo($(".internate-nach-laendern_grid")).show();
