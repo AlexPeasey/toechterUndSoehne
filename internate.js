@@ -1,16 +1,3 @@
-(function() {
-  // Get the current URL without the query string
-  var url = window.location.protocol + "//" + window.location.host + window.location.pathname;
-
-  // Create a new link element for the canonical URL
-  var canonicalLink = document.createElement("link");
-  canonicalLink.rel = "canonical";
-  canonicalLink.href = url;
-
-  // Append the canonical link to the head section
-  document.head.appendChild(canonicalLink);
-})();
-
 const attributes = {
   lernschwaechen: { type: "attribute", name: "Lernschwächen", category: "Schwerpunkt" },
   liberal: { type: "attribute", name: "Liberale Ausrichtung", category: "Schwerpunkt" },
