@@ -19,7 +19,6 @@ checkRemoveIIF();
 const updateSearchLink = (searchValue, landValue) => {
   let searchButton = document.querySelector(".search-button");
   searchButton.href = `/internate/internatssuche?suche=${searchValue}&land=${landValue}`;
-  console.log(searchButton.href);
 };
 
 const updateLandValue = () => {
