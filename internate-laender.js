@@ -19,6 +19,7 @@ checkRemoveIIF();
 const updateSearchLink = (searchValue, landValue) => {
   let searchButton = document.querySelector(".search-button");
   searchButton.href = `/internate/internatssuche?suche=${searchValue}&land=${landValue}`;
+  console.log(searchButton.href);
 };
 
 const updateLandValue = () => {
@@ -32,23 +33,8 @@ updateLandValue();
 
 const inputElements = document.querySelectorAll(".internat-search-hero_form input, .internat-search-hero_form select");
 
-const debounce = (func, delay) => {
-  let debounceTimer;
-  return function () {
-    const context = this;
-    const args = arguments;
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => func.apply(context, args), delay);
-  };
-};
-
 inputElements.forEach((element) => {
-  element.addEventListener(
-    "change",
-    debounce(() => {
-      updateSearchLink(inputElements[0].value, inputElements[1].value);
-    }, 300)
-  );
+  element.addEventListener("input", () => updateSearchLink(inputElements[0].value, inputElements[1].value));
 });
 
 const form = document.querySelector(".internat-search-hero_form");
