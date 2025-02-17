@@ -426,7 +426,7 @@ const addInternalLinkSectionForCountries = (attributes, places, attributeKey) =>
   internalLinksSection.append(internalLinkDiv);
 
   const internalLinkHeading = document.createElement("h2");
-  internalLinkHeading.innerText = `Internate nach Länder mit Schwerpunkt ${attributes[attributeKey].name}`;
+  internalLinkHeading.innerText = `Internate nach Ländern mit Schwerpunkt ${attributes[attributeKey].name}`;
   internalLinkDiv.append(internalLinkHeading);
 
   const spacer = document.createElement("div");
