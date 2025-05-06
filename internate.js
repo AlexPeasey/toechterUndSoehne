@@ -48,7 +48,6 @@ const attributes = {
   aufbaugymnasium: { type: "attribute", name: "Aufbaugymnasium", category: "Schwerpunkt" },
   jungeninternate: { type: "attribute", name: "Jungeninternate", category: "Schwerpunkt" },
   maedcheninternate: { type: "attribute", name: "Mädcheninternate", category: "Schwerpunkt" },
-  adhs: { type: "attribute", name: "ADHS", category: "Schwerpunkt" },
   dyskalkulie: { type: "attribute", name: "Dyskalkulie", category: "Schwerpunkt" },
   hochbegabung: { type: "attribute", name: "Hochbegabung", category: "Schwerpunkt" },
   lrs: { type: "attribute", name: "LRS", category: "Schwerpunkt" },
