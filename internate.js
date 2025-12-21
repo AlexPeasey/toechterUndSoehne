@@ -742,3 +742,14 @@ function filterLinksBySitemap(sitemapUrls, containerSelector) {
 getUrlsFromSitemap(sitemapUrl).then((sitemapUrls) => {
   filterLinksBySitemap(sitemapUrls, ".section_internal-links");
 });
+
+// Translate link text for English pages
+document.addEventListener("DOMContentLoaded", () => {
+  if (isEnglish) {
+    document.querySelectorAll(".internate-liste_link-text").forEach((element) => {
+      if (element.textContent.trim() === "entdecke dieses Internat") {
+        element.textContent = "Discover this boarding school";
+      }
+    });
+  }
+});
