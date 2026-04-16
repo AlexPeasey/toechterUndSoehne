@@ -52,6 +52,7 @@ function driveMin(km){if(km===null)return 60;if(km<30)return 35;if(km<60)return 
 // Asynchron: callback(durationMin, distanceKm)
 // Fallback auf Luftlinie wenn API nicht verfügbar
 // ============================================================
+var getDriveDuration=function(a,b,c,d,cb){getRoadDuration(a,b,c,d,cb);};
 function getRoadDuration(originLat, originLng, destLat, destLng, callback){
   if(!gmapsReady || typeof google==='undefined' || !google.maps || !google.maps.DirectionsService){
     var km = haversineKm(originLat, originLng, destLat, destLng);
@@ -262,7 +263,7 @@ function feasibilityCheck(schoolsWithSlot, tripDays, maxD, vd, buf, ac, trans){
 // AUTO-SCHEDULER für flexible Schulen
 // Weist Tage + Zeiten zu, optimiert Route (nearest-neighbor)
 // ============================================================
-function tsRpAutoSchedule(flexSchools, fixedDayMap, tripDays, vd, buf, maxD, ac){
+function tsRpAutoSchedule(flexSchools, fixedDayMap, tripDays, vd, buf, maxD, ac, arrivalDayCode){
   // Verfügbare Wochentage berechnen (Mo-Fr, so viele wie Reisetage)
   // Nur Tage ab Ankunftstag verwenden
   var allDaysAll = ['Mo','Di','Mi','Do','Fr'];
@@ -350,328 +351,341 @@ function tsRpAutoSchedule(flexSchools, fixedDayMap, tripDays, vd, buf, maxD, ac)
 }
 
 // ============================================================
-// PLAN GENERIEREN
+// PLAN GENERIEREN — synchron + async Nachladen
 // ============================================================
 window.tsRpGenerate=function(){
-  var family=document.getElementById('ts-familyName').value||'Familie';
-  var arrDate=document.getElementById('ts-arrivalDate').value;
-  var vd=parseInt(document.getElementById('ts-visitDur').value,10);
-  var buf=parseInt(document.getElementById('ts-buffer').value,10);
-  var maxD=parseInt(document.getElementById('ts-maxDay').value,10);
-  var trans=document.getElementById('ts-transport').value;
+  try{
+    var family=document.getElementById('ts-familyName').value||'Familie';
+    var arrDate=document.getElementById('ts-arrivalDate').value;
+    var vd=parseInt(document.getElementById('ts-visitDur').value,10);
+    var buf=parseInt(document.getElementById('ts-buffer').value,10);
+    var maxD=parseInt(document.getElementById('ts-maxDay').value,10);
+    var trans=document.getElementById('ts-transport').value;
 
-  // Ankunftstag berechnen — Reise startet ab diesem Wochentag
-  var arrivalDayCode = null; // z.B. 'Do'
-  var arrivalDayOrder = 0;
-  if(arrDate){
-    var dayNames = ['So','Mo','Di','Mi','Do','Fr','Sa'];
-    var dayJS = new Date(arrDate+'T12:00:00').getDay(); // 0=So, 1=Mo...
-    arrivalDayCode = dayNames[dayJS];
-    arrivalDayOrder = DO[arrivalDayCode] !== undefined ? DO[arrivalDayCode] : 0;
-  }
-
-  var valid=rpSchools.filter(function(s){return s.name&&s.lat&&(s.flexible===true||s.slots.some(function(sl){return sl.day&&sl.start;}));});
-  if(!valid.length){alert('Bitte mindestens eine Schule mit Termin auswählen.');return;}
-
-  var ac=AIRPORT_COORDS[rpAirport]||AIRPORT_COORDS.LHR;
-
-  // Schulen aufteilen: feste Zeitfenster vs. flexibel
-  var fixedSchools = valid.filter(function(s){ return !s.flexible; });
-  var flexSchools  = valid.filter(function(s){ return s.flexible===true; });
-
-  // Feste Schulen: optimales Zeitfenster wählen
-  var fixedWithSlot = fixedSchools.map(function(s){
-    return{school:s, slot:bestSlot(s.slots)};
-  }).filter(function(x){return x.slot;});
-
-  // Feste dayMap für Auto-Scheduler (damit er freie Tage kennt)
-  var fixedDayMapPreview={};
-  fixedWithSlot.forEach(function(item){
-    var d=item.slot.day;
-    if(!fixedDayMapPreview[d])fixedDayMapPreview[d]=[];
-    fixedDayMapPreview[d].push(item);
-  });
-
-  // Flexible Schulen: automatisch Tage + Zeiten zuweisen
-  var flexWithSlot = flexSchools.length
-    ? tsRpAutoSchedule(flexSchools, fixedDayMapPreview, rpTripDays, vd, buf, maxD, ac)
-    : [];
-
-  // Alle Schulen zusammenführen
-  var schoolsWithSlot = fixedWithSlot.concat(flexWithSlot);
-
-  // Machbarkeits-Check
-  var errors=feasibilityCheck(schoolsWithSlot,rpTripDays,maxD,vd,buf,ac,trans);
-  if(errors.length){
-    var html='<div class="ts-rp-error">'
-      +'<strong>Der Reiseplan ist so nicht umsetzbar:</strong>'
-      +'<ul>'+errors.map(function(e){return'<li>'+e+'</li>';}).join('')+'</ul>'
-      +'<div style="margin-top:10px;font-size:13px;color:#666">Bitte gehen Sie zurück und entfernen Sie eine Schule, wählen Sie ein anderes Zeitfenster oder erhöhen Sie die Anzahl der Reisetage.</div>'
-      +'</div>';
-    document.getElementById('ts-rp-planOutput').innerHTML=html;
-    tsRpGoStep(4);
-    return;
-  }
-
-  var warnings=[];
-
-  // Tage vor dem Ankunftstag entfernen (Reise startet ab Ankunftstag)
-  if(arrivalDayCode && DO[arrivalDayCode] !== undefined){
-    var tooEarly = schoolsWithSlot.filter(function(x){
-      return DO[x.slot.day] !== undefined && DO[x.slot.day] < DO[arrivalDayCode];
-    });
-    if(tooEarly.length){
-      var earlyNames = tooEarly.map(function(x){return safe(x.school.name)+' ('+DF[x.slot.day]+')';}).join(', ');
-      warnings.push('Folgende Schultermine liegen vor dem Ankunftstag ('+DF[arrivalDayCode]+'): '+earlyNames+'. Bitte andere Zeitfenster wählen.');
+    // Ankunftstag berechnen
+    var arrivalDayCode=null, arrivalDayOrder=0;
+    if(arrDate){
+      var dayNames=['So','Mo','Di','Mi','Do','Fr','Sa'];
+      var dayJS=new Date(arrDate+'T12:00:00').getDay();
+      arrivalDayCode=dayNames[dayJS];
+      arrivalDayOrder=DO[arrivalDayCode]!==undefined?DO[arrivalDayCode]:0;
     }
-    schoolsWithSlot = schoolsWithSlot.filter(function(x){
-      return DO[x.slot.day] === undefined || DO[x.slot.day] >= DO[arrivalDayCode];
+
+    // Gültige Schulen
+    var valid=rpSchools.filter(function(s){
+      return s.name&&s.lat&&(s.flexible===true||s.slots.some(function(sl){return sl.day&&sl.start;}));
     });
-  }
+    if(!valid.length){alert('Bitte mindestens eine Schule auswählen.');return;}
 
-  // Nach Tag + Zeit sortieren
-  schoolsWithSlot.sort(function(a,b){return(DO[a.slot.day]-DO[b.slot.day])||(t2m(a.slot.start)-t2m(b.slot.start));});
+    var ac=AIRPORT_COORDS[rpAirport]||AIRPORT_COORDS.LHR;
 
-  var dayMap={};
-  schoolsWithSlot.forEach(function(item){
-    var d=item.slot.day;
-    if(!dayMap[d])dayMap[d]=[];
-    dayMap[d].push(item);
-  });
+    // Feste vs. flexible Schulen
+    var fixedSchools=valid.filter(function(s){return !s.flexible;});
+    var flexSchools=valid.filter(function(s){return s.flexible===true;});
 
-  var days=Object.keys(dayMap).sort(function(a,b){return DO[a]-DO[b];});
-  var plan=[];
+    var fixedWithSlot=fixedSchools.map(function(s){
+      return{school:s,slot:bestSlot(s.slots)};
+    }).filter(function(x){return x.slot;});
 
-  // ============================================================
-  // HOTEL-STADT ENTSCHEIDUNG (19-Uhr-Regel)
-  // Prüft per Directions API: wenn Ankunft bei nächster Schule <= 19:00 Uhr
-  // → Hotel bei letzter Schule. Sonst → Hotel bei nächster Schule.
-  // Ergebnis asynchron via callback({lat, lng, city, reason})
-  // ============================================================
-  function hotelCityAsync(lastSchool, nextSchool, lastEndMin, callback){
-    // Kein nächster Tag → Hotel bei letzter Schule
-    if(!nextSchool){
-      callback({lat:lastSchool.lat, lng:lastSchool.lng, city:lastSchool.city||lastSchool.name, reason:'Letzter Tag'});
+    var fixedDayMapPreview={};
+    fixedWithSlot.forEach(function(item){
+      var d=item.slot.day;
+      if(!fixedDayMapPreview[d])fixedDayMapPreview[d]=[];
+      fixedDayMapPreview[d].push(item);
+    });
+
+    var flexWithSlot=flexSchools.length
+      ?tsRpAutoSchedule(flexSchools,fixedDayMapPreview,rpTripDays,vd,buf,maxD,ac,arrivalDayCode)
+      :[];
+
+    var schoolsWithSlot=fixedWithSlot.concat(flexWithSlot);
+
+    // Ankunftstag-Filter
+    var warnings=[];
+    if(arrivalDayCode&&DO[arrivalDayCode]!==undefined){
+      var tooEarly=schoolsWithSlot.filter(function(x){
+        return DO[x.slot.day]!==undefined&&DO[x.slot.day]<DO[arrivalDayCode];
+      });
+      if(tooEarly.length){
+        warnings.push('Schultermine vor Ankunftstag ('+DF[arrivalDayCode]+'): '+
+          tooEarly.map(function(x){return safe(x.school.name);}).join(', '));
+      }
+      schoolsWithSlot=schoolsWithSlot.filter(function(x){
+        return DO[x.slot.day]===undefined||DO[x.slot.day]>=DO[arrivalDayCode];
+      });
+    }
+
+    if(!schoolsWithSlot.length){
+      showError(['Keine gültigen Schultermine ab Ankunftstag gefunden. Bitte Zeitfenster prüfen.']);
       return;
     }
-    // Abfahrt von letzter Schule = Ende + 30 Min
-    var departureMin = lastEndMin + 30;
-    getRoadDuration(lastSchool.lat, lastSchool.lng, nextSchool.lat, nextSchool.lng, function(durationMin, distKm){
-      var arrivalAtNextMin = departureMin + durationMin;
-      // Regel: Ankunft bei nächster Schule <= 19:00 Uhr (1140 Min) → Hotel bei letzter Schule
-      if(arrivalAtNextMin <= 19 * 60){
-        // Ankunft bei nächster Schule vor 19:00 → Hotel bei nächster Schule (morgen kurze Fahrt)
-        callback({
-          lat: nextSchool.lat,
-          lng: nextSchool.lng,
-          city: nextSchool.city || nextSchool.name,
-          reason: 'Ankunft bei ' + (nextSchool.city||nextSchool.name) + ' um ' + m2t(arrivalAtNextMin) + ' — noch möglich → Hotel bei nächster Schule',
-          driveToNextMin: durationMin,
-          driveToNextKm: distKm
-        });
-      } else {
-        // Ankunft nach 19:00 → zu spät, Hotel bei letzter Schule bleiben
-        callback({
-          lat: lastSchool.lat,
-          lng: lastSchool.lng,
-          city: lastSchool.city || lastSchool.name,
-          reason: 'Ankunft bei ' + (nextSchool.city||nextSchool.name) + ' wäre ' + m2t(arrivalAtNextMin) + ' (nach 19:00) → Hotel bei letzter Schule',
-          driveToNextMin: durationMin,
-          driveToNextKm: distKm
-        });
+
+    // Machbarkeits-Check (Luftlinie)
+    schoolsWithSlot.sort(function(a,b){return(DO[a.slot.day]-DO[b.slot.day])||(t2m(a.slot.start)-t2m(b.slot.start));});
+    var dayMap={};
+    schoolsWithSlot.forEach(function(item){
+      var d=item.slot.day;
+      if(!dayMap[d])dayMap[d]=[];
+      dayMap[d].push(item);
+    });
+    var days=Object.keys(dayMap).sort(function(a,b){return DO[a]-DO[b];});
+
+    if(days.length>rpTripDays){
+      showError(['Die Schultermine benötigen <strong>'+days.length+' Tage</strong>, aber nur <strong>'+rpTripDays+' Reisetage</strong> geplant.']);
+      return;
+    }
+
+    var feasErrors=[];
+    days.forEach(function(day){
+      var items=dayMap[day].slice(0,maxD);
+      for(var i=1;i<items.length;i++){
+        var prev=items[i-1],curr=items[i];
+        var pe=prev.slot.end?t2m(prev.slot.end):t2m(prev.slot.start)+vd;
+        var cs=t2m(curr.slot.start);
+        var km=haversineKm(prev.school.lat,prev.school.lng,curr.school.lat,curr.school.lng);
+        var needed=driveMin(km)+buf;
+        if(cs-pe<needed){
+          feasErrors.push('<strong>'+DF[day]+':</strong> Zwischen '+safe(prev.school.name)+
+            ' und '+safe(curr.school.name)+' fehlen ca. '+(needed-(cs-pe))+' Min.');
+        }
       }
     });
-  }
+    if(feasErrors.length){showError(feasErrors);return;}
 
-  // Zeige Ladeindikator während API-Anfragen laufen
-  document.getElementById('ts-rp-planOutput').innerHTML='<div style="text-align:center;padding:2rem;color:#844332;font-size:14px">Fahrtzeiten werden berechnet ...</div>';
+    // ---- Plan synchron aufbauen (Luftlinie als Platzhalter) ----
+    var plan=[];
+    var hotelCache={}; // dayIdx → {lat,lng,city}
 
-  // Async Plan-Builder: verarbeitet Tage sequenziell wegen API-Limits
-  var pendingDays = days.slice();
-  var hotelCityCache = {}; // Cache: "lat,lng->lat,lng" => {city, lat, lng}
+    days.forEach(function(day,di){
+      var items=dayMap[day].slice(0,maxD);
+      var lastItem=items[items.length-1];
+      var lastEndMin=lastItem.slot.end?t2m(lastItem.slot.end):t2m(lastItem.slot.start)+vd;
+      var isLastDay=(di===days.length-1);
+      var nextFirst=di<days.length-1?dayMap[days[di+1]][0].school:null;
+      var events=[];
 
-  function buildNextDay(){
-    if(!pendingDays.length){
-      renderPlan();
-      return;
-    }
-    var day = pendingDays.shift();
-    var di = days.indexOf(day);
-    var items = dayMap[day].slice(0,maxD);
-    var nextDayFirst = di<days.length-1 ? dayMap[days[di+1]][0].school : null;
-    var lastItem = items[items.length-1];
-    var lastEndMin = lastItem.slot.end ? t2m(lastItem.slot.end) : t2m(lastItem.slot.start)+vd;
-    var isLastDay = (di === days.length-1);
-
-    // Schritt 1: Fahrtzeiten für diesen Tag berechnen
-    var travelTasks = [];
-
-    // Abfahrt vom Hotel/Flughafen zur ersten Schule
-    if(di === 0){
-      travelTasks.push({from:{lat:ac.lat,lng:ac.lng}, to:items[0].school, type:'first', puffer:30});
-    } else {
-      var prevLastSchool = dayMap[days[di-1]][dayMap[days[di-1]].length-1].school;
-      var prevHc = hotelCityCache['day'+(di-1)] || {lat:prevLastSchool.lat, lng:prevLastSchool.lng, city:prevLastSchool.city||prevLastSchool.name};
-      travelTasks.push({from:{lat:prevHc.lat,lng:prevHc.lng,city:prevHc.city}, to:items[0].school, type:'hotel_to_first', puffer:20});
-    }
-
-    // Fahrten zwischen Schulen
-    for(var ix=1;ix<items.length;ix++){
-      travelTasks.push({from:items[ix-1].school, to:items[ix].school, type:'between', idx:ix});
-    }
-
-    // Alle Fahrtzeiten parallel abrufen
-    var results = new Array(travelTasks.length);
-    var done = 0;
-    travelTasks.forEach(function(task, ti){
-      getRoadDuration(task.from.lat, task.from.lng, task.to.lat, task.to.lng, function(dMin, dKm){
-        results[ti] = {dMin:dMin, dKm:dKm, task:task};
-        done++;
-        if(done === travelTasks.length) continueDay();
-      });
-    });
-
-    function continueDay(){
-      var events = [];
-
-      // Ankunft-Event aufbauen
-      var r0 = results[0];
-      if(di === 0){
-        var dep = t2m(items[0].slot.start) - r0.dMin - 30;
-        events.push({type:'travel', time:dep>0?m2t(dep):'Morgens früh',
+      // Abfahrt
+      if(di===0){
+        var km0=haversineKm(ac.lat,ac.lng,items[0].school.lat,items[0].school.lng);
+        var dm0=driveMin(km0);
+        var dep0=t2m(items[0].slot.start)-dm0-30;
+        events.push({
+          type:'travel',
+          time:dep0>0?m2t(dep0):'Morgens früh',
           label:'Abfahrt '+AIRPORTS[rpAirport]+' ('+rpAirport+')',
-          sub:(trans==='car'?'Mietwagen':'Zug + Taxi')+(r0.dKm?' — ca. '+r0.dMin+' Min. / '+r0.dKm+' km':'')});
+          sub:(trans==='car'?'Mietwagen':'Zug + Taxi')+(km0?' — ca. '+dm0+' Min. / '+Math.round(km0)+' km':''),
+          evId:'dep0',
+          updateFrom:{lat:ac.lat,lng:ac.lng},
+          updateTo:{lat:items[0].school.lat,lng:items[0].school.lng},
+          targetStart:t2m(items[0].slot.start),puffer:30,trans:trans
+        });
       } else {
-        var prevHc2 = hotelCityCache['day'+(di-1)];
-        var dep2 = t2m(items[0].slot.start) - r0.dMin - 20;
-        events.push({type:'travel', time:dep2>0?m2t(dep2):'Morgens früh',
-          label:'Abfahrt Hotel in '+(prevHc2?prevHc2.city:'Hotel'),
-          sub:(trans==='car'?'Mietwagen':'Zug + Taxi')+(r0.dKm?' — ca. '+r0.dMin+' Min. / '+r0.dKm+' km bis '+items[0].school.name:'')});
+        var prevLast=dayMap[days[di-1]][dayMap[days[di-1]].length-1].school;
+        var prevHc=hotelCache['d'+(di-1)]||{lat:prevLast.lat,lng:prevLast.lng,city:prevLast.city||prevLast.name};
+        var km1=haversineKm(prevHc.lat,prevHc.lng,items[0].school.lat,items[0].school.lng);
+        var dm1=driveMin(km1);
+        var dep1=t2m(items[0].slot.start)-dm1-20;
+        events.push({
+          type:'travel',
+          time:dep1>0?m2t(dep1):'Morgens früh',
+          label:'Abfahrt Hotel in '+prevHc.city,
+          sub:(trans==='car'?'Mietwagen':'Zug + Taxi')+(km1?' — ca. '+dm1+' Min. / '+Math.round(km1)+' km':''),
+          evId:'dep'+di,
+          updateFrom:{lat:prevHc.lat,lng:prevHc.lng},
+          updateTo:{lat:items[0].school.lat,lng:items[0].school.lng},
+          targetStart:t2m(items[0].slot.start),puffer:20,trans:trans,
+          isHotelDep:true,dayIdx:di
+        });
       }
 
       // Schulbesuche
-      items.forEach(function(item, idx){
-        var sl=item.slot, s=item.school, sm=t2m(sl.start);
-        if(idx > 0){
-          var ri = results[idx]; // results[0] = Ankunft, results[1..] = zwischen Schulen
-          var pe = items[idx-1].slot.end ? t2m(items[idx-1].slot.end) : t2m(items[idx-1].slot.start)+vd;
-          events.push({type:'travel', time:m2t(pe),
-            label:'Fahrt nach '+s.name,
-            sub:ri?(ri.dKm?'ca. '+ri.dKm+' km · '+ri.dMin+' Min. Fahrzeit':'Fahrtzeit berechnet'):'Fahrtzeit wird ermittelt'});
+      items.forEach(function(item,idx){
+        var sl=item.slot,s=item.school,sm=t2m(sl.start);
+        if(idx>0){
+          var pv=items[idx-1];
+          var pe=pv.slot.end?t2m(pv.slot.end):t2m(pv.slot.start)+vd;
+          var tkm=haversineKm(pv.school.lat,pv.school.lng,s.lat,s.lng);
+          var tm=driveMin(tkm);
+          events.push({
+            type:'travel',time:m2t(pe),
+            label:'Fahrt nach '+safe(s.name),
+            sub:'ca. '+Math.round(tkm||0)+' km · '+tm+' Min.',
+            evId:'between_'+di+'_'+idx,
+            updateFrom:{lat:pv.school.lat,lng:pv.school.lng},
+            updateTo:{lat:s.lat,lng:s.lng},fixedTime:pe
+          });
         }
-        events.push({type:'visit', time:m2t(sm), label:s.name,
-          sub:(s.address||'Schulbesuch')+(sl.end?' — bis '+m2t(t2m(sl.end)):'  — ca. '+(vd/60).toFixed(1).replace('.',',')+' Std.')});
+        events.push({
+          type:'visit',time:m2t(sm),label:s.name,
+          sub:(s.address||'Schulbesuch')+(sl.end?' — bis '+m2t(t2m(sl.end)):' — ca. '+(vd/60).toFixed(1).replace('.',',')+' Std.')
+        });
       });
 
-      // Hotel-Entscheidung oder Abflug
-      var ci = lastEndMin + 30;
-
-      if(isLastDay && lastEndMin < 17*60){
-        // Letzter Tag, vor 17 Uhr → Abflughafen per Directions API
-        var nearest = nearestAirport(lastItem.school.lat, lastItem.school.lng);
-        getRoadDuration(lastItem.school.lat, lastItem.school.lng, AIRPORT_COORDS[nearest.code].lat, AIRPORT_COORDS[nearest.code].lng, function(apMin, apKm){
-          events.push({type:'travel', time:m2t(lastEndMin+30),
-            label:'Fahrt zum Flughafen '+AIRPORTS[nearest.code]+' ('+nearest.code+')',
-            sub:'ca. '+apMin+' Min. / '+(apKm||nearest.km)+' km'});
-          events.push({type:'departure', time:'',
-            label:'Abflug ab '+AIRPORTS[nearest.code]+' ('+nearest.code+')',
-            sub:'Direktflüge nach Deutschland:', departureAirport:nearest.code});
-          plan.push({day:day, dayNum:di+1, events:events});
-          buildNextDay();
+      // Hotel oder Abflug
+      var ci=lastEndMin+30;
+      if(isLastDay&&lastEndMin<17*60){
+        // Abflug
+        var nearest=nearestAirport(lastItem.school.lat,lastItem.school.lng);
+        var dmAp=driveMin(nearest.km);
+        events.push({
+          type:'travel',time:m2t(lastEndMin+30),
+          label:'Fahrt zum Flughafen '+AIRPORTS[nearest.code]+' ('+nearest.code+')',
+          sub:'ca. '+dmAp+' Min. / '+nearest.km+' km',
+          evId:'ap_dep',
+          updateFrom:{lat:lastItem.school.lat,lng:lastItem.school.lng},
+          updateTo:{lat:AIRPORT_COORDS[nearest.code].lat,lng:AIRPORT_COORDS[nearest.code].lng},
+          fixedTime:lastEndMin+30
         });
-      } else if(!isLastDay){
-        // Nicht letzter Tag → Hotel per 19-Uhr-Regel bestimmen
-        hotelCityAsync(lastItem.school, nextDayFirst, lastEndMin, function(hc){
-          hotelCityCache['day'+di] = hc;
-          // Fahrt zum Hotel wenn nötig
-          if(hc.lat !== lastItem.school.lat || hc.lng !== lastItem.school.lng){
-            getRoadDuration(lastItem.school.lat, lastItem.school.lng, hc.lat, hc.lng, function(htMin, htKm){
-              if(htKm && htKm > 3){
-                events.push({type:'travel', time:m2t(ci),
-                  label:'Fahrt nach '+hc.city,
-                  sub:'ca. '+htMin+' Min. / '+htKm+' km'});
-                ci = ci + htMin;
-              }
-              pushHotelEvent(hc, ci, di, events);
-              plan.push({day:day, dayNum:di+1, events:events});
-              buildNextDay();
-            });
-          } else {
-            pushHotelEvent(hc, ci, di, events);
-            plan.push({day:day, dayNum:di+1, events:events});
-            buildNextDay();
-          }
+        events.push({
+          type:'departure',time:'',
+          label:'Abflug ab '+AIRPORTS[nearest.code]+' ('+nearest.code+')',
+          sub:'Direktflüge nach Deutschland:',
+          departureAirport:nearest.code
         });
       } else {
-        // Letzter Tag, nach 17 Uhr → Hotel
-        hotelCityAsync(lastItem.school, null, lastEndMin, function(hc){
-          hotelCityCache['day'+di] = hc;
-          pushHotelEvent(hc, ci, di, events);
-          plan.push({day:day, dayNum:di+1, events:events});
-          buildNextDay();
+        // Hotel: vorläufig bei letzter Schule, async korrigiert via 19-Uhr-Regel
+        var hCity=lastItem.school.city||lastItem.school.name;
+        var hLat=lastItem.school.lat,hLng=lastItem.school.lng;
+        hotelCache['d'+di]={lat:hLat,lng:hLng,city:hCity};
+        var hotelId='ts-hotels-day'+di;
+        events.push({
+          type:'hotel',time:m2t(ci),
+          label:'Hotel Check-in · '+safe(hCity),
+          sub:'Hotels werden gesucht ...',
+          hotelId:hotelId,hotelLat:hLat,hotelLng:hLng,hotelCity:hCity,
+          needsHotelDecision:!isLastDay,
+          lastLat:lastItem.school.lat,lastLng:lastItem.school.lng,
+          lastCity:lastItem.school.city||lastItem.school.name,
+          nextLat:nextFirst?nextFirst.lat:null,
+          nextLng:nextFirst?nextFirst.lng:null,
+          nextCity:nextFirst?nextFirst.city||nextFirst.name:null,
+          lastEndMin:lastEndMin,dayIdx:di
         });
       }
-    }
-  }
-
-  function pushHotelEvent(hc, ci, di, events){
-    var hotelId = 'ts-hotels-day'+di;
-    events.push({type:'hotel', time:m2t(ci),
-      label:'Hotel Check-in · '+hc.city,
-      sub:'Hotels in '+hc.city+' werden gesucht ...'+(hc.reason?' · '+hc.reason:''),
-      hotelId:hotelId, hotelLat:hc.lat, hotelLng:hc.lng, hotelCity:hc.city});
-  }
-
-  buildNextDay();
-  tsRpGoStep(4);
-
-  // Kein Abreisetag — Familie entscheidet selbst wann sie abreist
-
-  function renderPlan(){
-    var html='';
-    html+='<div class="ts-rp-plan-header"><div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">'
-      +'<div><div class="ts-label">Reiseplan für</div><div class="ts-name">'+safe(family)+'</div><div class="ts-sub">'+AIRPORTS[rpAirport]+' ('+rpAirport+') · '+rpTripDays+' Reisetage</div></div>'
-      +'<div><div class="ts-label">Ankunft</div><div class="ts-date-val">'+(arrDate?new Date(arrDate+'T12:00').toLocaleDateString('de-DE',{day:'2-digit',month:'long',year:'numeric'}):'—')+'</div></div>'
-      +'</div></div>';
-    html+='<div class="ts-rp-summary">'
-      +'<div class="ts-rp-metric"><div class="ts-rp-ml">Schulen</div><div class="ts-rp-mv">'+valid.length+'</div></div>'
-      +'<div class="ts-rp-metric"><div class="ts-rp-ml">Reisetage</div><div class="ts-rp-mv">'+rpTripDays+'</div></div>'
-      +'<div class="ts-rp-metric"><div class="ts-rp-ml">Flughafen</div><div class="ts-rp-mv">'+rpAirport+'</div></div>'
-      +'<div class="ts-rp-metric"><div class="ts-rp-ml">Transport</div><div class="ts-rp-mv" style="font-size:15px">'+(trans==='car'?'Mietwagen':'Zug')+'</div></div>'
-      +'</div>';
-    if(warnings.length)html+='<div class="ts-rp-warn"><strong>Hinweis:</strong> '+warnings.map(safe).join(' &nbsp;&middot;&nbsp; ')+'</div>';
-    plan.forEach(function(d){
-      var lbl=DF[d.day]||d.day;
-      html+='<div class="ts-rp-day"><div class="ts-rp-day-header"><span class="ts-rp-day-pill">TAG '+d.dayNum+'</span><span class="ts-rp-day-title">'+safe(lbl)+'</span></div><div class="ts-rp-timeline">';
-      d.events.forEach(function(ev){
-        var bl=ev.type==='visit'?'Besuch':ev.type==='hotel'?'Hotel':ev.type==='departure'?'Abflug':'Fahrt';
-        html+='<div class="ts-rp-tl"><div class="ts-rp-dot '+ev.type+'"></div>'
-          +'<div class="ts-rp-ttime">'+safe(ev.time)+'</div>'
-          +'<div class="ts-rp-tmain"><span class="ts-rp-tlabel">'+safe(ev.label)+'</span><span class="ts-rp-badge '+ev.type+'">'+bl+'</span></div>'
-          +(ev.sub?'<div class="ts-rp-tsub">'+safe(ev.sub)+'</div>':'')
-          +(ev.hotelId?'<div class="ts-rp-hotels-wrap" id="'+ev.hotelId+'"><div class="ts-rp-hotel-loading">Hotels in '+safe(ev.hotelCity||'der Nähe')+' werden gesucht ...</div></div>':'')
-          +(ev.departureAirport?(function(){
-              var flights=FLIGHTS_DE[ev.departureAirport]||[];
-              if(!flights.length)return '';
-              return '<div class="ts-rp-flights"><div class="ts-rp-flights-title">Direktflüge nach Deutschland ab '+safe(AIRPORTS[ev.departureAirport])+'</div>'
-                +flights.map(function(city){return '<div class="ts-rp-flight-row"><span class="ts-rp-flight-city">'+safe(city)+'</span></div>';}).join('')
-                +'</div>';
-            })():'')
-          +'</div>';
-      });
-      html+='</div></div>';
+      plan.push({day:day,dayNum:di+1,events:events});
     });
-    document.getElementById('ts-rp-planOutput').innerHTML=html;
+
+    // Rendern + zu Schritt 4
+    renderPlan(plan,family,arrDate,valid,trans,warnings);
     tsRpGoStep(4);
-    setTimeout(function(){
-      plan.forEach(function(d){
-        d.events.forEach(function(ev){
-          if(ev.hotelId){var el=document.getElementById(ev.hotelId);if(el)tsRpLoadHotels(ev.hotelLat,ev.hotelLng,el);}
-        });
-      });
-    },400);
+
+    // Async: Fahrtzeiten + Hotel-Entscheidung nachladen
+    setTimeout(function(){ updateAsync(plan,trans,hotelCache,days,dayMap); },100);
+
+  }catch(err){
+    console.error('[Reiseplaner]',err);
+    showError(['Fehler: '+err.message]);
   }
 };
+
+function updateAsync(plan,trans,hotelCache,days,dayMap){
+  plan.forEach(function(d){
+    d.events.forEach(function(ev){
+
+      // Fahrtzeiten updaten
+      if(ev.evId&&ev.updateFrom&&ev.updateTo){
+        (function(ev){
+          getDriveDuration(ev.updateFrom.lat,ev.updateFrom.lng,ev.updateTo.lat,ev.updateTo.lng,function(dMin,dKm){
+            var subEl=document.getElementById('ev-sub-'+ev.evId);
+            var timeEl=document.getElementById('ev-time-'+ev.evId);
+            if(!subEl)return;
+            if(ev.fixedTime!==undefined){
+              subEl.textContent='ca. '+(dKm?dKm+' km · ':'')+dMin+' Min. Fahrzeit';
+            } else {
+              var dep=ev.targetStart-dMin-ev.puffer;
+              if(timeEl)timeEl.textContent=dep>0?m2t(dep):'Morgens früh';
+              subEl.textContent=(ev.trans==='car'?'Mietwagen':'Zug + Taxi')+(dKm?' — ca. '+dMin+' Min. / '+dKm+' km':'');
+            }
+          });
+        })(ev);
+      }
+
+      // Hotel 19-Uhr-Entscheidung
+      if(ev.type==='hotel'&&ev.needsHotelDecision&&ev.nextLat){
+        (function(ev){
+          getDriveDuration(ev.lastLat,ev.lastLng,ev.nextLat,ev.nextLng,function(dMin){
+            var arrNext=ev.lastEndMin+30+dMin;
+            var useNext=(arrNext<=19*60);
+            var finalLat=useNext?ev.nextLat:ev.lastLat;
+            var finalLng=useNext?ev.nextLng:ev.lastLng;
+            var finalCity=useNext?ev.nextCity:ev.lastCity;
+            hotelCache['d'+ev.dayIdx]={lat:finalLat,lng:finalLng,city:finalCity};
+
+            var labelEl=document.getElementById('ev-label-'+ev.hotelId);
+            var subEl=document.getElementById('ev-sub-'+ev.hotelId);
+            if(labelEl)labelEl.textContent='Hotel Check-in · '+finalCity;
+            if(subEl)subEl.textContent='Hotels in '+finalCity+' werden gesucht ...';
+
+            // Abfahrt nächster Tag updaten
+            var nextPlan=plan.find(function(p){return p.dayNum===ev.dayIdx+2;});
+            if(nextPlan){
+              nextPlan.events.forEach(function(nev){
+                if(nev.isHotelDep&&nev.dayIdx===ev.dayIdx+1){
+                  getDriveDuration(finalLat,finalLng,nev.updateTo.lat,nev.updateTo.lng,function(dm2,dk2){
+                    var dep2=nev.targetStart-dm2-20;
+                    var tEl=document.getElementById('ev-time-'+nev.evId);
+                    var sEl=document.getElementById('ev-sub-'+nev.evId);
+                    var lEl=document.getElementById('ev-label-'+nev.evId);
+                    if(tEl)tEl.textContent=dep2>0?m2t(dep2):'Morgens früh';
+                    if(lEl)lEl.textContent='Abfahrt Hotel in '+finalCity;
+                    if(sEl)sEl.textContent=(trans==='car'?'Mietwagen':'Zug + Taxi')+(dk2?' — ca. '+dm2+' Min. / '+dk2+' km':'');
+                  });
+                }
+              });
+            }
+            // Hotels laden
+            var hotelEl=document.getElementById(ev.hotelId);
+            if(hotelEl)tsRpLoadHotels(finalLat,finalLng,hotelEl);
+          });
+        })(ev);
+      } else if(ev.type==='hotel'&&!ev.needsHotelDecision){
+        var hotelEl=document.getElementById(ev.hotelId);
+        if(hotelEl)tsRpLoadHotels(ev.hotelLat,ev.hotelLng,hotelEl);
+      }
+    });
+  });
+}
+function renderPlan(plan,family,arrDate,valid,trans,warnings){
+  var html='';
+  html+='<div class="ts-rp-plan-header"><div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">'
+    +'<div><div class="ts-label">Reiseplan für</div><div class="ts-name">'+safe(family)+'</div>'
+    +'<div class="ts-sub">'+AIRPORTS[rpAirport]+' ('+rpAirport+') · '+rpTripDays+' Reisetage</div></div>'
+    +'<div><div class="ts-label">Ankunft</div><div class="ts-date-val">'+(arrDate?new Date(arrDate+'T12:00').toLocaleDateString('de-DE',{day:'2-digit',month:'long',year:'numeric'}):'—')+'</div></div>'
+    +'</div></div>';
+  html+='<div class="ts-rp-summary">'
+    +'<div class="ts-rp-metric"><div class="ts-rp-ml">Schulen</div><div class="ts-rp-mv">'+valid.length+'</div></div>'
+    +'<div class="ts-rp-metric"><div class="ts-rp-ml">Reisetage</div><div class="ts-rp-mv">'+rpTripDays+'</div></div>'
+    +'<div class="ts-rp-metric"><div class="ts-rp-ml">Flughafen</div><div class="ts-rp-mv">'+rpAirport+'</div></div>'
+    +'<div class="ts-rp-metric"><div class="ts-rp-ml">Transport</div><div class="ts-rp-mv" style="font-size:15px">'+(trans==='car'?'Mietwagen':'Zug')+'</div></div>'
+    +'</div>';
+  if(warnings&&warnings.length)html+='<div class="ts-rp-warn"><strong>Hinweis:</strong> '+warnings.map(safe).join(' · ')+'</div>';
+  plan.forEach(function(d){
+    var lbl=DF[d.day]||d.day;
+    html+='<div class="ts-rp-day"><div class="ts-rp-day-header"><span class="ts-rp-day-pill">TAG '+d.dayNum+'</span><span class="ts-rp-day-title">'+safe(lbl)+'</span></div><div class="ts-rp-timeline">';
+    d.events.forEach(function(ev){
+      var bl=ev.type==='visit'?'Besuch':ev.type==='hotel'?'Hotel':ev.type==='departure'?'Abflug':'Fahrt';
+      var eid=ev.evId||ev.hotelId||('e'+Math.random().toString(36).slice(2,7));
+      html+='<div class="ts-rp-tl"><div class="ts-rp-dot '+ev.type+'"></div>'
+        +'<div class="ts-rp-ttime" id="ev-time-'+eid+'">'+safe(ev.time)+'</div>'
+        +'<div class="ts-rp-tmain"><span class="ts-rp-tlabel" id="ev-label-'+eid+'">'+safe(ev.label)+'</span><span class="ts-rp-badge '+ev.type+'">'+bl+'</span></div>'
+        +(ev.sub?'<div class="ts-rp-tsub" id="ev-sub-'+eid+'">'+safe(ev.sub)+'</div>':'')
+        +(ev.hotelId?'<div class="ts-rp-hotels-wrap" id="'+ev.hotelId+'"><div class="ts-rp-hotel-loading">Hotels werden gesucht ...</div></div>':'')
+        +(ev.departureAirport?(function(){
+            var fl=FLIGHTS_DE[ev.departureAirport]||[];
+            return fl.length?'<div class="ts-rp-flights"><div class="ts-rp-flights-title">Direktflüge nach Deutschland ab '+safe(AIRPORTS[ev.departureAirport])+'</div>'
+              +fl.map(function(c){return'<div class="ts-rp-flight-row"><span class="ts-rp-flight-city">'+safe(c)+'</span></div>';}).join('')+'</div>':'';
+          })():'')
+        +'</div>';
+    });
+    html+='</div></div>';
+  });
+  document.getElementById('ts-rp-planOutput').innerHTML=html;
+}
+
+function showError(errors){
+  document.getElementById('ts-rp-planOutput').innerHTML='<div class="ts-rp-error"><strong>Nicht umsetzbar:</strong><ul>'+errors.map(function(e){return'<li>'+e+'</li>';}).join('')+'</ul><div style="margin-top:8px;font-size:13px;color:#666">Bitte zurück und anpassen.</div></div>';
+  tsRpGoStep(4);
+}
 
 // ============================================================
 // GOOGLE MAPS HOTELS LADEN
