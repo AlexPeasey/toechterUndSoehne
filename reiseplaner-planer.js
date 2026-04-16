@@ -27,6 +27,19 @@ var FLIGHTS_DE={
 };
 
 // Nächsten Flughafen zur letzten Schule finden
+function tsRpExtractCity(school){
+  if(school.city&&school.city.trim()) return school.city.trim();
+  var addr=school.address||'';
+  var parts=addr.split(',');
+  for(var pi=parts.length-1;pi>=0;pi--){
+    var p=parts[pi].trim().replace(/\s+[A-Z]{1,2}[0-9][0-9A-Z]?\s*[0-9][A-Z]{2}/,'').trim();
+    if(p&&p!=='Vereinigtes Königreich'&&p!=='United Kingdom'&&p.length>2&&!/^[A-Z]{1,2}[0-9]/.test(p)){
+      return p;
+    }
+  }
+  return school.name;
+}
+
 function nearestAirport(lat,lng){
   var best=null,bestKm=Infinity;
   Object.keys(AIRPORT_COORDS).forEach(function(code){
@@ -544,7 +557,22 @@ window.tsRpGenerate=function(){
         });
       } else {
         // Hotel: vorläufig bei letzter Schule, async korrigiert via 19-Uhr-Regel
-        var hCity=lastItem.school.city||lastItem.school.name;
+        // Stadt aus Datenbank — Fallback: aus Adresse extrahieren
+        var hCity=lastItem.school.city||(function(){
+          var addr=lastItem.school.address||'';
+          // Adressformat: "Straße, Stadt PLZ, Land" — zweites Komma-Segment
+          var parts=addr.split(',');
+          if(parts.length>=2){
+            // Letztes nicht-UK-Segment nehmen
+            for(var pi=parts.length-1;pi>=0;pi--){
+              var p=parts[pi].trim();
+              if(p&&p!=='Vereinigtes Königreich'&&p!=='United Kingdom'&&!/^[A-Z]{1,2}[0-9]/.test(p)){
+                return p;
+              }
+            }
+          }
+          return lastItem.school.name;
+        })();
         var hLat=lastItem.school.lat,hLng=lastItem.school.lng;
         hotelCache['d'+di]={lat:hLat,lng:hLng,city:hCity};
         var hotelId='ts-hotels-day'+di;
@@ -555,10 +583,11 @@ window.tsRpGenerate=function(){
           hotelId:hotelId,hotelLat:hLat,hotelLng:hLng,hotelCity:hCity,
           needsHotelDecision:!isLastDay,
           lastLat:lastItem.school.lat,lastLng:lastItem.school.lng,
-          lastCity:lastItem.school.city||lastItem.school.name,
+          lastCity:tsRpExtractCity(lastItem.school),lastName:lastItem.school.name,
           nextLat:nextFirst?nextFirst.lat:null,
           nextLng:nextFirst?nextFirst.lng:null,
-          nextCity:nextFirst?nextFirst.city||nextFirst.name:null,
+          nextCity:nextFirst?(nextFirst.city||tsRpExtractCity(nextFirst)):null,
+          nextName:nextFirst?nextFirst.name:null,
           lastEndMin:lastEndMin,dayIdx:di
         });
       }
@@ -608,7 +637,8 @@ function updateAsync(plan,trans,hotelCache,days,dayMap){
             var useNext=(arrNext<=19*60);
             var finalLat=useNext?ev.nextLat:ev.lastLat;
             var finalLng=useNext?ev.nextLng:ev.lastLng;
-            var finalCity=useNext?ev.nextCity:ev.lastCity;
+            // Stadtname bereinigen (kein Schulname)
+          var finalCity=useNext?(ev.nextCity||ev.nextName):(ev.lastCity||ev.lastName);
             hotelCache['d'+ev.dayIdx]={lat:finalLat,lng:finalLng,city:finalCity};
 
             var labelEl=document.getElementById('ev-label-'+ev.hotelId);
@@ -692,8 +722,16 @@ function showError(errors){
 // Sucht Hotels mit min. 4.0 Sterne in 12km Umkreis
 // ============================================================
 function tsRpLoadHotels(lat,lng,container){
-  if(!gmapsReady||typeof google==='undefined'||!google.maps){
-    container.innerHTML='<div class="ts-rp-hotel-loading">Google Maps nicht geladen — API Key prüfen.</div>';
+  // Warten bis Google Maps geladen ist (max 10 Sekunden)
+  if(!gmapsReady||typeof google==='undefined'||!google.maps||!google.maps.places){
+    var attempts = parseInt(container.dataset.attempts||'0',10);
+    if(attempts < 20){
+      container.dataset.attempts = attempts + 1;
+      container.innerHTML='<div class="ts-rp-hotel-loading">Hotels werden geladen ...</div>';
+      setTimeout(function(){ tsRpLoadHotels(lat,lng,container); }, 500);
+    } else {
+      container.innerHTML='<div class="ts-rp-hotel-loading">Hotels konnten nicht geladen werden — bitte Seite neu laden.</div>';
+    }
     return;
   }
   var svc=new google.maps.places.PlacesService(document.createElement('div'));
