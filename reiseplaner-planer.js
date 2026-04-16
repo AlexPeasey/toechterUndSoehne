@@ -264,7 +264,11 @@ function feasibilityCheck(schoolsWithSlot, tripDays, maxD, vd, buf, ac, trans){
 // ============================================================
 function tsRpAutoSchedule(flexSchools, fixedDayMap, tripDays, vd, buf, maxD, ac){
   // Verfügbare Wochentage berechnen (Mo-Fr, so viele wie Reisetage)
-  var allDays = ['Mo','Di','Mi','Do','Fr'];
+  // Nur Tage ab Ankunftstag verwenden
+  var allDaysAll = ['Mo','Di','Mi','Do','Fr'];
+  var startDayIdx = (arrivalDayCode && DO[arrivalDayCode] !== undefined) ? DO[arrivalDayCode] : 0;
+  var allDays = allDaysAll.filter(function(d){ return DO[d] >= startDayIdx; });
+  if(!allDays.length) allDays = allDaysAll;
   // Bereits belegte Tage durch feste Zeitfenster
   var usedDays = Object.keys(fixedDayMap);
   // Freie Tage = alle Mo-Fr die noch nicht belegt sind, bis tripDays
@@ -356,6 +360,16 @@ window.tsRpGenerate=function(){
   var maxD=parseInt(document.getElementById('ts-maxDay').value,10);
   var trans=document.getElementById('ts-transport').value;
 
+  // Ankunftstag berechnen — Reise startet ab diesem Wochentag
+  var arrivalDayCode = null; // z.B. 'Do'
+  var arrivalDayOrder = 0;
+  if(arrDate){
+    var dayNames = ['So','Mo','Di','Mi','Do','Fr','Sa'];
+    var dayJS = new Date(arrDate+'T12:00:00').getDay(); // 0=So, 1=Mo...
+    arrivalDayCode = dayNames[dayJS];
+    arrivalDayOrder = DO[arrivalDayCode] !== undefined ? DO[arrivalDayCode] : 0;
+  }
+
   var valid=rpSchools.filter(function(s){return s.name&&s.lat&&(s.flexible===true||s.slots.some(function(sl){return sl.day&&sl.start;}));});
   if(!valid.length){alert('Bitte mindestens eine Schule mit Termin auswählen.');return;}
 
@@ -399,6 +413,22 @@ window.tsRpGenerate=function(){
     return;
   }
 
+  var warnings=[];
+
+  // Tage vor dem Ankunftstag entfernen (Reise startet ab Ankunftstag)
+  if(arrivalDayCode && DO[arrivalDayCode] !== undefined){
+    var tooEarly = schoolsWithSlot.filter(function(x){
+      return DO[x.slot.day] !== undefined && DO[x.slot.day] < DO[arrivalDayCode];
+    });
+    if(tooEarly.length){
+      var earlyNames = tooEarly.map(function(x){return safe(x.school.name)+' ('+DF[x.slot.day]+')';}).join(', ');
+      warnings.push('Folgende Schultermine liegen vor dem Ankunftstag ('+DF[arrivalDayCode]+'): '+earlyNames+'. Bitte andere Zeitfenster wählen.');
+    }
+    schoolsWithSlot = schoolsWithSlot.filter(function(x){
+      return DO[x.slot.day] === undefined || DO[x.slot.day] >= DO[arrivalDayCode];
+    });
+  }
+
   // Nach Tag + Zeit sortieren
   schoolsWithSlot.sort(function(a,b){return(DO[a.slot.day]-DO[b.slot.day])||(t2m(a.slot.start)-t2m(b.slot.start));});
 
@@ -410,7 +440,7 @@ window.tsRpGenerate=function(){
   });
 
   var days=Object.keys(dayMap).sort(function(a,b){return DO[a]-DO[b];});
-  var plan=[],warnings=[],isFirst=true;
+  var plan=[];
 
   // ============================================================
   // HOTEL-STADT ENTSCHEIDUNG (19-Uhr-Regel)
