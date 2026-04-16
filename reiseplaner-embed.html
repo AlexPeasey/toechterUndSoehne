@@ -1,0 +1,141 @@
+<!-- Reiseplaner HTML — eingebettet via GitHub/jsDelivr -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/AlexPeasey/toechterUndSoehne@main/reiseplaner-styles.css">
+
+<div class="ts-rp">
+  <div class="ts-rp-header">
+    <h2>Reiseplaner</h2>
+    <p>Planen Sie die optimale Schulbesuchsroute für Ihre Familie</p>
+    <div class="ts-rp-divider"></div>
+  </div>
+
+  <div class="ts-rp-progress">
+    <div class="ts-rp-ps"><div class="ts-rp-pc active" id="ts-pc1">1</div><span class="ts-rp-pl active" id="ts-pl1">Familie</span></div>
+    <div class="ts-rp-pline" id="ts-pline1"></div>
+    <div class="ts-rp-ps"><div class="ts-rp-pc" id="ts-pc2">2</div><span class="ts-rp-pl" id="ts-pl2">Schulen</span></div>
+    <div class="ts-rp-pline" id="ts-pline2"></div>
+    <div class="ts-rp-ps"><div class="ts-rp-pc" id="ts-pc3">3</div><span class="ts-rp-pl" id="ts-pl3">Einstellungen</span></div>
+    <div class="ts-rp-pline" id="ts-pline3"></div>
+    <div class="ts-rp-ps"><div class="ts-rp-pc" id="ts-pc4">4</div><span class="ts-rp-pl" id="ts-pl4">Ihr Plan</span></div>
+  </div>
+
+  <!-- Schritt 1: Familie & Reisedaten -->
+  <div class="ts-rp-step active" id="ts-rp-step1">
+    <div class="ts-rp-card">
+      <div class="ts-rp-card-title">Familie & Anreise</div>
+      <div class="ts-rp-r2" style="margin-bottom:1.1rem">
+        <div class="ts-rp-field">
+          <label class="ts-rp-lbl">Familienname</label>
+          <input type="text" id="ts-familyName" placeholder="z.B. Müller">
+        </div>
+        <div class="ts-rp-field">
+          <label class="ts-rp-lbl">Ankunftsdatum</label>
+          <input type="date" id="ts-arrivalDate">
+        </div>
+      </div>
+      <div class="ts-rp-field">
+        <label class="ts-rp-lbl">Wie viele Reisetage sind geplant?</label>
+        <div class="ts-rp-days-btns" id="ts-days-btns">
+          <button type="button" class="ts-rp-day-btn" data-val="2" onclick="tsRpSelectDays(this)">2 Tage</button>
+          <button type="button" class="ts-rp-day-btn" data-val="3" onclick="tsRpSelectDays(this)">3 Tage</button>
+          <button type="button" class="ts-rp-day-btn" data-val="4" onclick="tsRpSelectDays(this)">4 Tage</button>
+          <button type="button" class="ts-rp-day-btn" data-val="5" onclick="tsRpSelectDays(this)">5 Tage</button>
+        </div>
+        <div class="ts-rp-help" style="margin-top:8px">Schulbesuche finden nur an Wochentagen statt</div>
+      </div>
+      <div class="ts-rp-field" style="margin-top:1rem">
+        <label class="ts-rp-lbl">Ankunftsflughafen</label>
+        <div class="ts-rp-airports">
+          <button type="button" class="ts-rp-ap selected" data-val="LHR" onclick="tsRpSelectAirport(this)"><div class="ts-rp-apcode">LHR</div><div class="ts-rp-apname">London Heathrow</div></button>
+          <button type="button" class="ts-rp-ap" data-val="LGW" onclick="tsRpSelectAirport(this)"><div class="ts-rp-apcode">LGW</div><div class="ts-rp-apname">London Gatwick</div></button>
+          <button type="button" class="ts-rp-ap" data-val="MAN" onclick="tsRpSelectAirport(this)"><div class="ts-rp-apcode">MAN</div><div class="ts-rp-apname">Manchester</div></button>
+          <button type="button" class="ts-rp-ap" data-val="EDI" onclick="tsRpSelectAirport(this)"><div class="ts-rp-apcode">EDI</div><div class="ts-rp-apname">Edinburgh</div></button>
+          <button type="button" class="ts-rp-ap" data-val="BRS" onclick="tsRpSelectAirport(this)"><div class="ts-rp-apcode">BRS</div><div class="ts-rp-apname">Bristol</div></button>
+          <button type="button" class="ts-rp-ap" data-val="BHX" onclick="tsRpSelectAirport(this)"><div class="ts-rp-apcode">BHX</div><div class="ts-rp-apname">Birmingham</div></button>
+        </div>
+      </div>
+    </div>
+    <div class="ts-rp-actions">
+      <button class="ts-rp-btn ts-rp-btn-primary" onclick="tsRpGoStep(2)">Weiter &rarr;</button>
+    </div>
+  </div>
+
+  <!-- Schritt 2: Schulen -->
+  <div class="ts-rp-step" id="ts-rp-step2">
+    <div class="ts-rp-info">Wählen Sie die zu besuchenden Schulen aus. Bei mehreren Zeitfenstern wird automatisch das optimale ausgewählt.</div>
+    <div id="ts-rp-schoolList"></div>
+    <button class="ts-rp-btn-add-school" onclick="tsRpAddSchool()">+ Weitere Schule hinzufügen</button>
+    <div class="ts-rp-actions">
+      <button class="ts-rp-btn ts-rp-btn-outline" onclick="tsRpGoStep(1)">&larr; Zurück</button>
+      <button class="ts-rp-btn ts-rp-btn-primary" onclick="tsRpGoStep(3)">Weiter &rarr;</button>
+    </div>
+  </div>
+
+  <!-- Schritt 3: Einstellungen -->
+  <div class="ts-rp-step" id="ts-rp-step3">
+    <div class="ts-rp-card">
+      <div class="ts-rp-card-title">Planungseinstellungen</div>
+      <div class="ts-rp-r2" style="margin-bottom:1.1rem">
+        <div class="ts-rp-field">
+          <label class="ts-rp-lbl">Besuchsdauer pro Schule</label>
+          <select id="ts-visitDur">
+            <option value="60">1 Stunde</option>
+            <option value="120">2 Stunden</option>
+            <option value="150" selected>2,5 Stunden</option>
+            <option value="180">3 Stunden</option>
+          </select>
+        </div>
+        <div class="ts-rp-field">
+          <label class="ts-rp-lbl">Pufferzeit zwischen Terminen</label>
+          <select id="ts-buffer">
+            <option value="30">30 Minuten</option>
+            <option value="45" selected>45 Minuten</option>
+            <option value="60">60 Minuten</option>
+          </select>
+        </div>
+      </div>
+      <div class="ts-rp-r2">
+        <div class="ts-rp-field">
+          <label class="ts-rp-lbl">Max. Besuche pro Tag</label>
+          <select id="ts-maxDay">
+            <option value="1">1 Besuch</option>
+            <option value="2" selected>2 Besuche</option>
+            <option value="3">3 Besuche</option>
+          </select>
+        </div>
+        <div class="ts-rp-field">
+          <label class="ts-rp-lbl">Transportmittel</label>
+          <select id="ts-transport">
+            <option value="car" selected>Mietwagen</option>
+            <option value="train">Zug + Taxi</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="ts-rp-actions">
+      <button class="ts-rp-btn ts-rp-btn-outline" onclick="tsRpGoStep(2)">&larr; Zurück</button>
+      <button class="ts-rp-btn ts-rp-btn-primary" onclick="tsRpGenerate()">Reiseplan erstellen</button>
+    </div>
+  </div>
+
+  <!-- Schritt 4: Plan -->
+  <div class="ts-rp-step" id="ts-rp-step4">
+    <div id="ts-rp-planOutput"></div>
+    <div class="ts-rp-print-row">
+      <button class="ts-rp-btn ts-rp-btn-outline" onclick="tsRpGoStep(3)">&larr; Bearbeiten</button>
+      <button class="ts-rp-btn ts-rp-btn-primary" onclick="tsRpShareLink()">Link teilen</button>
+      <button class="ts-rp-btn ts-rp-btn-outline" onclick="window.print()">Als PDF</button>
+      <button class="ts-rp-btn ts-rp-btn-outline" onclick="tsRpReset()">Neuer Plan</button>
+    </div>
+    <div id="ts-rp-share-box" style="display:none;margin-top:1rem;background:#f7f0ee;border:1.5px solid #ecddd8;border-radius:12px;padding:1rem 1.25rem">
+      <div style="font-size:13px;font-weight:600;color:#844332;margin-bottom:8px">Plan-Link — zum Teilen kopieren:</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="text" id="ts-rp-share-url" readonly style="font-size:12px;background:#fff;flex:1;cursor:text">
+        <button class="ts-rp-btn ts-rp-btn-primary" style="padding:8px 16px;font-size:13px;flex-shrink:0" onclick="tsRpCopyLink()">Kopieren</button>
+      </div>
+      <div id="ts-rp-copy-msg" style="font-size:12px;color:#27ae60;margin-top:6px;display:none">Link kopiert!</div>
+    </div>
+  </div>
+</div>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBOeLeI6YQSrJeys0i6HwGaVa-mQmwsd0Y&libraries=places,directions" async defer onload="tsRpMapsLoaded()"></script>
+<script src="https://cdn.jsdelivr.net/gh/AlexPeasey/toechterUndSoehne@main/reiseplaner-planer.js"></script>
