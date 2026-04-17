@@ -1,5 +1,26 @@
 <!-- Reiseplaner HTML — eingebettet via GitHub/jsDelivr -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/AlexPeasey/toechterUndSoehne@main/reiseplaner-styles.css">
+<script>
+// Stub-Funktionen — warten bis planer.js von jsDelivr geladen ist
+function _tsWait(name, args){
+  if(window._tsRpReady && typeof window[name]==='function'){
+    window[name].apply(window, args);
+  } else {
+    setTimeout(function(){ _tsWait(name, args); }, 80);
+  }
+}
+// Diese Funktionen sind in onclick= Attributen — müssen sofort existieren
+['tsRpSelectDays','tsRpSelectAirport','tsRpGoStep','tsRpAddSchool',
+ 'tsRpRemoveSchool','tsRpAddSlot','tsRpRemoveSlot','tsRpUpdSlot',
+ 'tsRpUpdComment','tsRpSetMode','tsRpSelectCmsSchool',
+ 'tsRpGenerate','tsRpReset','tsRpShareLink','tsRpCopyLink',
+ 'tsRpExportPDF','tsRpExportCalendar'].forEach(function(fn){
+  window[fn] = function(){
+    var args = Array.prototype.slice.call(arguments);
+    _tsWait(fn, args);
+  };
+});
+</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/AlexPeasey/toechterUndSoehne@v2.0/reiseplaner-styles.css">
 <div class="ts-rp" style="position:relative;z-index:1">
   <div class="ts-rp-header">
     <h2>Reiseplaner</h2>
@@ -139,5 +160,5 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/AlexPeasey/toechterUndSoehne@main/reiseplaner-planer.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/AlexPeasey/toechterUndSoehne@v2.0/reiseplaner-planer.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBOeLeI6YQSrJeys0i6HwGaVa-mQmwsd0Y&libraries=places" async defer onload="tsRpMapsLoaded()"></script>
