@@ -646,21 +646,44 @@ function updateAsync(plan,trans,hotelCache,days,dayMap){
       // Hotel 19-Uhr-Entscheidung
       if(ev.type==='hotel'&&ev.needsHotelDecision&&ev.nextLat){
         (function(ev){
-          getDriveDuration(ev.lastLat,ev.lastLng,ev.nextLat,ev.nextLng,function(dMin){
+          getDriveDuration(ev.lastLat,ev.lastLng,ev.nextLat,ev.nextLng,function(dMin,dKm){
             var arrNext=ev.lastEndMin+30+dMin;
             var useNext=(arrNext<=19*60);
             var finalLat=useNext?ev.nextLat:ev.lastLat;
             var finalLng=useNext?ev.nextLng:ev.lastLng;
-            // Stadtname bereinigen (kein Schulname)
-          var finalCity=useNext?(ev.nextCity||ev.nextName):(ev.lastCity||ev.lastName);
+            var finalCity=useNext?(ev.nextCity||ev.nextName):(ev.lastCity||ev.lastName);
             hotelCache['d'+ev.dayIdx]={lat:finalLat,lng:finalLng,city:finalCity};
 
+            // Hotel-Label updaten
             var labelEl=document.getElementById('ev-label-'+ev.hotelId);
             var subEl=document.getElementById('ev-sub-'+ev.hotelId);
+            var timeEl=document.getElementById('ev-time-'+ev.hotelId);
             if(labelEl)labelEl.textContent='Hotel Check-in · '+finalCity;
             if(subEl)subEl.textContent='Hotels in '+finalCity+' werden gesucht ...';
 
-            // Abfahrt nächster Tag updaten
+            // Wenn Hotel bei NÄCHSTER Schule → Fahrt-Event VOR Hotel einfügen
+            if(useNext && dMin > 0){
+              var hotelParent=document.getElementById(ev.hotelId);
+              var hotelTl=hotelParent?hotelParent.closest('.ts-rp-tl'):null;
+              if(hotelTl){
+                var depMin=ev.lastEndMin+30;
+                var arrMin=depMin+dMin;
+                // Fahrt-Div vor dem Hotel-Div einfügen
+                var fahrtDiv=document.createElement('div');
+                fahrtDiv.className='ts-rp-tl';
+                fahrtDiv.innerHTML=''
+                  +'<div class="ts-rp-dot travel"></div>'
+                  +'<div class="ts-rp-ttime">'+m2t(depMin)+'</div>'
+                  +'<div class="ts-rp-tmain"><span class="ts-rp-tlabel">Fahrt nach '+safe(finalCity)+'</span>'
+                  +'<span class="ts-rp-badge travel">Fahrt</span></div>'
+                  +'<div class="ts-rp-tsub">ca. '+dMin+' Min.'+(dKm?' / '+dKm+' km':'')+(trans==='car'?' · Mietwagen':' · Zug + Taxi')+'</div>';
+                hotelTl.parentNode.insertBefore(fahrtDiv,hotelTl);
+                // Hotel-Check-in Zeit = Ankunft
+                if(timeEl)timeEl.textContent=m2t(arrMin);
+              }
+            }
+
+            // Abfahrt nächster Tag updaten (kurze Fahrt vom Hotel)
             var nextPlan=plan.find(function(p){return p.dayNum===ev.dayIdx+2;});
             if(nextPlan){
               nextPlan.events.forEach(function(nev){
