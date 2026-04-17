@@ -1,8 +1,16 @@
+// Globaler Maps-Callback — muss VOR dem IIFE definiert sein
+window.tsRpMapsLoaded = function(){
+  if(window._tsRpSetMapsReady) window._tsRpSetMapsReady();
+  else window._tsRpMapsPending = true;
+};
+
 (function(){
 
 var GMAPS_KEY = 'AIzaSyBOeLeI6YQSrJeys0i6HwGaVa-mQmwsd0Y';
 var gmapsReady = false;
-window.tsRpMapsLoaded = function(){ gmapsReady = true; };
+// Interne Maps-Ready Funktion registrieren
+window._tsRpSetMapsReady = function(){ gmapsReady = true; };
+if(window._tsRpMapsPending){ gmapsReady = true; }
 
 var rpSchools=[], rpCmsSchools=[], rpAirport='LHR', rpSC=0, rpTripDays=0;
 
@@ -1127,5 +1135,20 @@ document.addEventListener('DOMContentLoaded',function(){
   if(!rpCmsSchools.length)console.warn('[Reiseplaner] Keine .rp-cms-school Elemente gefunden.');
   tsRpRestoreFromUrl();
 });
+
+// Echte Funktionen registrieren nachdem JS geladen ist
+window._tsRpSelectDays = window.tsRpSelectDays;
+window._tsRpSelectAirport = window.tsRpSelectAirport;
+window._tsRpGoStep = window.tsRpGoStep;
+window._tsRpAddSchool = window.tsRpAddSchool;
+window._tsRpRemoveSchool = window.tsRpRemoveSchool;
+window._tsRpGenerate = window.tsRpGenerate;
+window._tsRpReset = window.tsRpReset;
+window._tsRpShareLink = window.tsRpShareLink;
+window._tsRpExportPDF = window.tsRpExportPDF;
+window._tsRpExportCalendar = window.tsRpExportCalendar;
+window._tsRpMapsLoaded = function(){ gmapsReady=true; };
+if(window._tsRpMapsLoadedPending){ gmapsReady=true; }
+window._tsRpReady = true;
 
 })();
