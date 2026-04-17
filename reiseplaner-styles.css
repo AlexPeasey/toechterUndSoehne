@@ -118,5 +118,17 @@
 .ts-rp-mode-btn.active{background:#844332;color:#fff}
 .ts-rp-mode-btn:hover:not(.active){background:#f7f0ee}
 .ts-rp-slot-section{margin-top:10px}
+.ts-rp-comment{margin-top:10px}
+.ts-rp-comment textarea{min-height:60px;font-size:13px}
+.ts-rp-visit-comment{margin-top:5px;font-size:13px;color:#555;font-style:italic;border-left:3px solid #e0cfc8;padding-left:10px}
+@media print{
+  .ts-rp-header,.ts-rp-progress,.ts-rp-actions,.ts-rp-print-row{display:none!important}
+  .ts-rp-step{display:none!important}
+  #ts-rp-step4{display:block!important}
+  .ts-rp-card{border:none}
+}
+.ts-rp-pdf-btn{display:inline-flex;align-items:center;gap:8px;margin-top:10px;padding:10px 16px;background:#f7f0ee;border:1.5px solid #844332;border-radius:10px;color:#844332;font-size:13px;font-weight:700;text-decoration:none;font-family:inherit;transition:all .2s}
+.ts-rp-pdf-btn:hover{background:#844332;color:#fff}
+.ts-rp-pdf-btn svg{flex-shrink:0}
 @media(max-width:600px){.ts-rp-r2,.ts-rp-r3{grid-template-columns:1fr}.ts-rp-airports{grid-template-columns:repeat(2,1fr)}.ts-rp-summary{grid-template-columns:repeat(2,1fr)}}
 @media print{.ts-rp-header,.ts-rp-progress,.ts-rp-actions,.ts-rp-print-row{display:none!important}.ts-rp-step{display:none!important}#ts-rp-step4{display:block!important}.ts-rp-card{border:none}}
