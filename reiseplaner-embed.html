@@ -1,5 +1,7 @@
 <!-- Reiseplaner HTML — eingebettet via GitHub/jsDelivr -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/AlexPeasey/toechterUndSoehne@main/reiseplaner-styles.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <div class="ts-rp">
   <div class="ts-rp-header">
@@ -122,8 +124,8 @@
     <div id="ts-rp-planOutput"></div>
     <div class="ts-rp-print-row">
       <button class="ts-rp-btn ts-rp-btn-outline" onclick="tsRpGoStep(3)">&larr; Bearbeiten</button>
-      <button class="ts-rp-btn ts-rp-btn-primary" onclick="tsRpShareLink()">Link teilen</button>
-      <button class="ts-rp-btn ts-rp-btn-outline" onclick="window.print()">Als PDF</button>
+      <button class="ts-rp-btn ts-rp-btn-primary" onclick="tsRpExportPDF()">PDF herunterladen</button>
+      <button class="ts-rp-btn ts-rp-btn-outline" onclick="tsRpShareLink()">Link teilen</button>
       <button class="ts-rp-btn ts-rp-btn-outline" onclick="tsRpReset()">Neuer Plan</button>
     </div>
     <div id="ts-rp-share-box" style="display:none;margin-top:1rem;background:#f7f0ee;border:1.5px solid #ecddd8;border-radius:12px;padding:1rem 1.25rem">
