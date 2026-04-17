@@ -1083,9 +1083,8 @@ window.tsRpExportCalendar = function(){
       // Uhrzeit aus ev.time extrahieren
       var startTime = ev.time || '10:00 Uhr';
       var summary = ev.label + ' — Schulbesuch Familie ' + family;
-      var desc = (ev.sub||'').replace(/,/g,'\,').replace(/
-/g,'\n');
-      if(ev.comment) desc += '\nKommentar: ' + ev.comment.replace(/,/g,'\,');
+      var desc = (ev.sub||'').replace(/,/g,'\,');
+      if(ev.comment) desc += ' | Kommentar: ' + ev.comment.replace(/,/g,'\,');
       icsLines = icsLines.concat([
         'BEGIN:VEVENT',
         'UID:tsrp-'+(uid++)+'@internate.org',
