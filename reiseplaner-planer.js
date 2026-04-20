@@ -65,6 +65,22 @@ function parseNum(v){if(v===null||v===undefined||v==='')return null;var n=parseF
 function parseGpsPair(raw){var s=String(raw||'').trim();if(!s)return{lat:null,lng:null};var p=s.split(',');if(p.length<2)return{lat:null,lng:null};return{lat:parseNum(p[0]),lng:parseNum(p[1])};}
 function t2m(t){if(!t)return 0;var p=t.split(':').map(Number);return p[0]*60+p[1];}
 function m2t(m){return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')+' Uhr';}
+function formatMin(min){
+  if(!min||min<=0)return min+' Min.';
+  if(min<60)return min+' Min.';
+  var h=Math.floor(min/60);
+  var m=min%60;
+  if(m===0)return h+' Std.';
+  return h+' Std. '+m+' Min.';
+}
+function formatMin(min){
+  if(!min||min<=0)return min+' Min.';
+  if(min<60)return min+' Min.';
+  var h=Math.floor(min/60);
+  var m=min%60;
+  if(m===0)return h+' Std.';
+  return h+' Std. '+m+' Min.';
+}
 function haversineKm(a,b,c,d){if([a,b,c,d].some(function(v){return typeof v!=='number'||isNaN(v);}))return null;var R=6371,dL=(c-a)*Math.PI/180,dN=(d-b)*Math.PI/180,e=Math.sin(dL/2)*Math.sin(dL/2)+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dN/2)*Math.sin(dN/2);return R*2*Math.atan2(Math.sqrt(e),Math.sqrt(1-e));}
 function driveMin(km){if(km===null)return 60;if(km<30)return 35;if(km<60)return 55;if(km<100)return 85;if(km<150)return 120;if(km<220)return 165;if(km<320)return 220;return 300;}
 
@@ -498,7 +514,7 @@ window.tsRpGenerate=function(){
           type:'travel',
           time:dep0>0?m2t(dep0):'Morgens früh',
           label:'Abfahrt '+AIRPORTS[rpAirport]+' ('+rpAirport+')',
-          sub:(trans==='car'?'Mietwagen':'Zug + Taxi')+(km0?' — ca. '+dm0+' Min. / '+Math.round(km0)+' km':''),
+          sub:(trans==='car'?'Mietwagen':'Zug + Taxi')+(km0?' — ca. '+formatMin(dm0)+' / '+Math.round(km0)+' km':''),
           evId:'dep0',
           updateFrom:{lat:ac.lat,lng:ac.lng},
           updateTo:{lat:items[0].school.lat,lng:items[0].school.lng},
@@ -514,7 +530,7 @@ window.tsRpGenerate=function(){
           type:'travel',
           time:dep1>0?m2t(dep1):'Morgens früh',
           label:'Abfahrt Hotel in '+prevHc.city,
-          sub:(trans==='car'?'Mietwagen':'Zug + Taxi')+(km1?' — ca. '+dm1+' Min. / '+Math.round(km1)+' km':''),
+          sub:(trans==='car'?'Mietwagen':'Zug + Taxi')+(km1?' — ca. '+formatMin(dm1)+' / '+Math.round(km1)+' km':''),
           evId:'dep'+di,
           updateFrom:{lat:prevHc.lat,lng:prevHc.lng},
           updateTo:{lat:items[0].school.lat,lng:items[0].school.lng},
@@ -534,7 +550,7 @@ window.tsRpGenerate=function(){
           events.push({
             type:'travel',time:m2t(pe),
             label:'Fahrt nach '+safe(s.name),
-            sub:'ca. '+Math.round(tkm||0)+' km · '+tm+' Min.',
+            sub:'ca. '+Math.round(tkm||0)+' km · '+formatMin(tm),
             evId:'between_'+di+'_'+idx,
             updateFrom:{lat:pv.school.lat,lng:pv.school.lng},
             updateTo:{lat:s.lat,lng:s.lng},fixedTime:pe
@@ -556,7 +572,7 @@ window.tsRpGenerate=function(){
         events.push({
           type:'travel',time:m2t(lastEndMin+30),
           label:'Fahrt zum Flughafen '+AIRPORTS[nearest.code]+' ('+nearest.code+')',
-          sub:'ca. '+dmAp+' Min. / '+nearest.km+' km',
+          sub:'ca. '+formatMin(dmAp)+' / '+nearest.km+' km',
           evId:'ap_dep',
           updateFrom:{lat:lastItem.school.lat,lng:lastItem.school.lng},
           updateTo:{lat:AIRPORT_COORDS[nearest.code].lat,lng:AIRPORT_COORDS[nearest.code].lng},
@@ -633,11 +649,11 @@ function updateAsync(plan,trans,hotelCache,days,dayMap){
             var timeEl=document.getElementById('ev-time-'+ev.evId);
             if(!subEl)return;
             if(ev.fixedTime!==undefined){
-              subEl.textContent='ca. '+(dKm?dKm+' km · ':'')+dMin+' Min. Fahrzeit';
+              subEl.textContent='ca. '+(dKm?dKm+' km · ':'')+formatMin(dMin)+' Fahrzeit';
             } else {
               var dep=ev.targetStart-dMin-ev.puffer;
               if(timeEl)timeEl.textContent=dep>0?m2t(dep):'Morgens früh';
-              subEl.textContent=(ev.trans==='car'?'Mietwagen':'Zug + Taxi')+(dKm?' — ca. '+dMin+' Min. / '+dKm+' km':'');
+              subEl.textContent=(ev.trans==='car'?'Mietwagen':'Zug + Taxi')+(dKm?' — ca. '+formatMin(dMin)+' / '+dKm+' km':'');
             }
           });
         })(ev);
@@ -675,7 +691,7 @@ function updateAsync(plan,trans,hotelCache,days,dayMap){
                 +'<div class="ts-rp-ttime">'+m2t(depMin)+'</div>'
                 +'<div class="ts-rp-tmain"><span class="ts-rp-tlabel">Fahrt nach '+safe(finalCity)+'</span>'
                 +'<span class="ts-rp-badge travel">Fahrt</span></div>'
-                +'<div class="ts-rp-tsub">ca. '+dMin+' Min.'+(dKm?' / '+dKm+' km':'')+(trans==='car'?' · Mietwagen':' · Zug + Taxi')+'</div>';
+                +'<div class="ts-rp-tsub">ca. '+formatMin(dMin)+(dKm?' / '+dKm+' km':'')+(trans==='car'?' · Mietwagen':' · Zug + Taxi')+'</div>';
               hotelTl.parentNode.insertBefore(fahrtDiv,hotelTl);
               // Hotel-Check-in Zeit = echte Ankunftszeit
               if(timeEl)timeEl.textContent=m2t(arrMin);
@@ -693,7 +709,7 @@ function updateAsync(plan,trans,hotelCache,days,dayMap){
                     var lEl=document.getElementById('ev-label-'+nev.evId);
                     if(tEl)tEl.textContent=dep2>0?m2t(dep2):'Morgens früh';
                     if(lEl)lEl.textContent='Abfahrt Hotel in '+finalCity;
-                    if(sEl)sEl.textContent=(trans==='car'?'Mietwagen':'Zug + Taxi')+(dk2?' — ca. '+dm2+' Min. / '+dk2+' km':'');
+                    if(sEl)sEl.textContent=(trans==='car'?'Mietwagen':'Zug + Taxi')+(dk2?' — ca. '+formatMin(dm2)+' / '+dk2+' km':'');
                   });
                 }
               });
@@ -704,8 +720,29 @@ function updateAsync(plan,trans,hotelCache,days,dayMap){
           });
         })(ev);
       } else if(ev.type==='hotel'&&!ev.needsHotelDecision){
-        var hotelEl=document.getElementById(ev.hotelId);
-        if(hotelEl)tsRpLoadHotels(ev.hotelLat,ev.hotelLng,hotelEl,ev.accommodationPdf||'');
+        // Letzter Tag: Fahrt von letzter Schule zum Hotel einfügen
+        (function(ev){
+          getDriveDuration(ev.lastLat,ev.lastLng,ev.hotelLat,ev.hotelLng,function(dMin,dKm){
+            var hotelEl=document.getElementById(ev.hotelId);
+            var hotelTl=hotelEl?hotelEl.closest('.ts-rp-tl'):null;
+            var timeEl=document.getElementById('ev-time-'+ev.hotelId);
+            if(hotelTl && dMin > 5){
+              var depMin=ev.lastEndMin+30;
+              var arrMin=depMin+dMin;
+              var fahrtDiv=document.createElement('div');
+              fahrtDiv.className='ts-rp-tl';
+              fahrtDiv.innerHTML=''
+                +'<div class="ts-rp-dot travel"></div>'
+                +'<div class="ts-rp-ttime">'+m2t(depMin)+'</div>'
+                +'<div class="ts-rp-tmain"><span class="ts-rp-tlabel">Fahrt nach '+safe(ev.hotelCity)+'</span>'
+                +'<span class="ts-rp-badge travel">Fahrt</span></div>'
+                +'<div class="ts-rp-tsub">ca. '+formatMin(dMin)+(dKm?' / '+dKm+' km':'')+(trans==='car'?' · Mietwagen':' · Zug + Taxi')+'</div>';
+              hotelTl.parentNode.insertBefore(fahrtDiv,hotelTl);
+              if(timeEl)timeEl.textContent=m2t(arrMin);
+            }
+            if(hotelEl)tsRpLoadHotels(ev.hotelLat,ev.hotelLng,hotelEl,ev.accommodationPdf||'');
+          });
+        })(ev);
       }
     });
   });
