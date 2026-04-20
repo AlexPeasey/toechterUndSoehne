@@ -661,26 +661,24 @@ function updateAsync(plan,trans,hotelCache,days,dayMap){
             if(labelEl)labelEl.textContent='Hotel Check-in · '+finalCity;
             if(subEl)subEl.textContent='Hotels in '+finalCity+' werden gesucht ...';
 
-            // Wenn Hotel bei NÄCHSTER Schule → Fahrt-Event VOR Hotel einfügen
-            if(useNext && dMin > 0){
-              var hotelParent=document.getElementById(ev.hotelId);
-              var hotelTl=hotelParent?hotelParent.closest('.ts-rp-tl'):null;
-              if(hotelTl){
-                var depMin=ev.lastEndMin+30;
-                var arrMin=depMin+dMin;
-                // Fahrt-Div vor dem Hotel-Div einfügen
-                var fahrtDiv=document.createElement('div');
-                fahrtDiv.className='ts-rp-tl';
-                fahrtDiv.innerHTML=''
-                  +'<div class="ts-rp-dot travel"></div>'
-                  +'<div class="ts-rp-ttime">'+m2t(depMin)+'</div>'
-                  +'<div class="ts-rp-tmain"><span class="ts-rp-tlabel">Fahrt nach '+safe(finalCity)+'</span>'
-                  +'<span class="ts-rp-badge travel">Fahrt</span></div>'
-                  +'<div class="ts-rp-tsub">ca. '+dMin+' Min.'+(dKm?' / '+dKm+' km':'')+(trans==='car'?' · Mietwagen':' · Zug + Taxi')+'</div>';
-                hotelTl.parentNode.insertBefore(fahrtDiv,hotelTl);
-                // Hotel-Check-in Zeit = Ankunft
-                if(timeEl)timeEl.textContent=m2t(arrMin);
-              }
+            // Fahrt zum Hotel einfügen wenn Hotel nicht direkt bei letzter Schule
+            // Das gilt für BEIDE Fälle: useNext=true UND useNext=false
+            var hotelParent=document.getElementById(ev.hotelId);
+            var hotelTl=hotelParent?hotelParent.closest('.ts-rp-tl'):null;
+            if(hotelTl && dMin > 5){
+              var depMin=ev.lastEndMin+30;
+              var arrMin=depMin+dMin;
+              var fahrtDiv=document.createElement('div');
+              fahrtDiv.className='ts-rp-tl';
+              fahrtDiv.innerHTML=''
+                +'<div class="ts-rp-dot travel"></div>'
+                +'<div class="ts-rp-ttime">'+m2t(depMin)+'</div>'
+                +'<div class="ts-rp-tmain"><span class="ts-rp-tlabel">Fahrt nach '+safe(finalCity)+'</span>'
+                +'<span class="ts-rp-badge travel">Fahrt</span></div>'
+                +'<div class="ts-rp-tsub">ca. '+dMin+' Min.'+(dKm?' / '+dKm+' km':'')+(trans==='car'?' · Mietwagen':' · Zug + Taxi')+'</div>';
+              hotelTl.parentNode.insertBefore(fahrtDiv,hotelTl);
+              // Hotel-Check-in Zeit = echte Ankunftszeit
+              if(timeEl)timeEl.textContent=m2t(arrMin);
             }
 
             // Abfahrt nächster Tag updaten (kurze Fahrt vom Hotel)
