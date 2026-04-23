@@ -13,7 +13,7 @@ function _tsWait(name, args){
  'tsRpRemoveSchool','tsRpAddSlot','tsRpRemoveSlot','tsRpUpdSlot',
  'tsRpUpdComment','tsRpSetMode','tsRpSelectCmsSchool',
  'tsRpGenerate','tsRpReset','tsRpShareLink','tsRpCopyLink',
- 'tsRpExportPDF','tsRpExportCalendar'].forEach(function(fn){
+ 'tsRpExportPDF','tsRpExportCalendar','tsRpMapShowDay'].forEach(function(fn){
   window[fn] = function(){
     var args = Array.prototype.slice.call(arguments);
     _tsWait(fn, args);
