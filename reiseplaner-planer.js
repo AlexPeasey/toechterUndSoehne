@@ -790,143 +790,174 @@ function renderPlan(plan,family,arrDate,valid,trans,warnings){
 }
 
 // ============================================================
-// KARTE — Route + Pins für alle Schulen und Hotels
+// KARTE — Leaflet.js mit Tages-Tabs, Route + Pins
 // ============================================================
+var leafletLoaded = false;
+
+function tsRpLoadLeaflet(cb){
+  if(leafletLoaded){ cb(); return; }
+  // Leaflet CSS
+  if(!document.getElementById('leaflet-css')){
+    var link = document.createElement('link');
+    link.id = 'leaflet-css';
+    link.rel = 'stylesheet';
+    link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+    document.head.appendChild(link);
+  }
+  // Leaflet JS
+  if(!window.L){
+    var script = document.createElement('script');
+    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    script.onload = function(){ leafletLoaded=true; cb(); };
+    document.head.appendChild(script);
+  } else {
+    leafletLoaded=true; cb();
+  }
+}
+
+var _tsMap = null; // Leaflet Map Instanz
+
 function tsRpRenderMap(plan, ac){
   var mapWrap = document.getElementById('ts-rp-map-wrap');
   if(!mapWrap) return;
 
-  if(!gmapsReady || typeof google==='undefined' || !google.maps){
-    mapWrap.innerHTML = '<div class="ts-rp-map-loading">Karte wird geladen ...</div>';
-    setTimeout(function(){ tsRpRenderMap(plan, ac); }, 800);
-    return;
-  }
-
-  mapWrap.innerHTML = '<div class="ts-rp-map-container" id="ts-rp-map"></div>';
-  var mapEl = document.getElementById('ts-rp-map');
-
-  var map = new google.maps.Map(mapEl, {
-    zoom: 6,
-    center: {lat: 52.5, lng: -1.5},
-    mapTypeId: 'roadmap',
-    styles: [
-      {featureType:'poi',elementType:'labels',stylers:[{visibility:'off'}]},
-      {featureType:'transit',elementType:'labels',stylers:[{visibility:'off'}]}
-    ],
-    mapTypeControl: false,
-    streetViewControl: false,
-    fullscreenControl: true
+  // Tabs + Map Container aufbauen
+  var days = plan.filter(function(d){
+    return d.events.some(function(ev){ return ev.type==='visit'; });
   });
 
-  var bounds = new google.maps.LatLngBounds();
-  var routePoints = [];
-  var infoWindow = new google.maps.InfoWindow();
+  var tabsHtml = '<div class="ts-rp-map-tabs" id="ts-map-tabs">'
+    + '<button class="ts-rp-map-tab active" onclick="tsRpMapShowDay(0,'+days.length+')" data-day="0">Alle Tage</button>'
+    + days.map(function(d,i){
+        return '<button class="ts-rp-map-tab" onclick="tsRpMapShowDay('+(i+1)+','+days.length+')" data-day="'+(i+1)+'">Tag '+d.dayNum+' · '+DF[d.day]+'</button>';
+      }).join('')
+    + '</div>';
 
-  // Flughafen als Startpunkt
-  var apPos = {lat: ac.lat, lng: ac.lng};
-  routePoints.push(apPos);
-  bounds.extend(apPos);
+  mapWrap.innerHTML = tabsHtml + '<div class="ts-rp-map-container" id="ts-rp-map"></div>';
 
-  // Marker + Route aufbauen
-  var dayColors = ['#84332f','#2563eb','#059669','#d97706','#7c3aed'];
+  tsRpLoadLeaflet(function(){
+    if(_tsMap){ _tsMap.remove(); _tsMap=null; }
 
-  plan.forEach(function(d, di){
-    var color = dayColors[di % dayColors.length];
-    d.events.forEach(function(ev){
-      if(ev.type === 'visit'){
-        // Schul-Pin
-        var pos = ev.updateTo || (ev.updateFrom ? null : null);
-        // Koordinaten aus dem Event holen
-        if(!pos && ev.evId && ev.evId.indexOf('between') >= 0) return;
+    _tsMap = L.map('ts-rp-map', {zoomControl:true, scrollWheelZoom:false});
 
-        // Koordinaten direkt aus Plan nehmen
-        var lat = null, lng = null;
-        if(ev.updateTo){ lat = ev.updateTo.lat; lng = ev.updateTo.lng; }
-        if(!lat) return;
+    // OpenStreetMap Tiles (kostenlos)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 18
+    }).addTo(_tsMap);
 
-        var marker = new google.maps.Marker({
-          position: {lat: lat, lng: lng},
-          map: map,
-          title: ev.label,
-          icon: {
-            path: google.maps.SymbolPath.CIRCLE,
-            scale: 10,
-            fillColor: '#84332f',
-            fillOpacity: 1,
-            strokeColor: '#fff',
-            strokeWeight: 2.5
-          },
-          label: {
-            text: String(d.dayNum),
-            color: '#fff',
-            fontSize: '11px',
-            fontWeight: 'bold'
-          }
-        });
-        marker.addListener('click', function(){
-          infoWindow.setContent(
-            '<div style="font-family:Arial,sans-serif;padding:4px 0">'
-            + '<strong style="color:#84332f;font-size:13px">'+ev.label+'</strong>'
-            + '<div style="font-size:12px;color:#666;margin-top:3px">'+safe(ev.sub||'')+'</div>'
-            + '<div style="font-size:11px;color:#84332f;margin-top:3px">Tag '+d.dayNum+' · '+ev.time+'</div>'
-            + '</div>'
-          );
-          infoWindow.open(map, marker);
-        });
-        routePoints.push({lat: lat, lng: lng});
-        bounds.extend({lat: lat, lng: lng});
-      }
+    // Farben pro Tag
+    var dayColors = ['#84332f','#2563eb','#059669','#d97706','#7c3aed','#db2777'];
 
-      if(ev.type === 'hotel' && ev.hotelLat){
-        // Hotel-Pin (grün)
-        new google.maps.Marker({
-          position: {lat: ev.hotelLat, lng: ev.hotelLng},
-          map: map,
-          title: 'Hotel · ' + ev.hotelCity,
-          icon: {
-            path: google.maps.SymbolPath.CIRCLE,
-            scale: 9,
-            fillColor: '#059669',
-            fillOpacity: 1,
-            strokeColor: '#fff',
-            strokeWeight: 2
-          }
-        });
-        bounds.extend({lat: ev.hotelLat, lng: ev.hotelLng});
+    // Alle Layer speichern für Tab-Filterung
+    window._tsMapLayers = {all:[], byDay:{}};
+
+    // Flughafen-Marker
+    var apIcon = L.divIcon({
+      html: '<div style="background:#84332f;color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:16px;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3)">✈</div>',
+      className:'',iconSize:[32,32],iconAnchor:[16,16]
+    });
+    var apMarker = L.marker([ac.lat, ac.lng], {icon:apIcon})
+      .bindPopup('<strong style="color:#84332f">'+AIRPORTS[rpAirport]+' ('+rpAirport+')</strong><br><small>Ankunftsflughafen</small>');
+    apMarker.addTo(_tsMap);
+    window._tsMapLayers.all.push(apMarker);
+
+    var bounds = [[ac.lat, ac.lng]];
+
+    plan.forEach(function(d, di){
+      var color = dayColors[di % dayColors.length];
+      var dayKey = 'day'+(di+1);
+      window._tsMapLayers.byDay[dayKey] = [];
+
+      var routeCoords = [];
+      // Flughafen als Startpunkt für Tag 1
+      if(di === 0) routeCoords.push([ac.lat, ac.lng]);
+
+      d.events.forEach(function(ev){
+        if(ev.type === 'visit' && ev.updateTo){
+          var lat = ev.updateTo.lat, lng = ev.updateTo.lng;
+          if(!lat || !lng) return;
+
+          bounds.push([lat, lng]);
+          routeCoords.push([lat, lng]);
+
+          // Nummerierten Pin erstellen
+          var icon = L.divIcon({
+            html: '<div style="background:'+color+';color:#fff;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.25)">'+d.dayNum+'</div>',
+            className:'',iconSize:[30,30],iconAnchor:[15,15]
+          });
+
+          var popup = '<div style="font-family:Arial,sans-serif;min-width:180px">'
+            + '<div style="font-weight:800;color:'+color+';font-size:13px;margin-bottom:4px">'+safe(ev.label)+'</div>'
+            + '<div style="font-size:11px;color:#666;margin-bottom:4px">'+safe(ev.sub||'')+'</div>'
+            + '<div style="font-size:11px;background:'+color+'22;color:'+color+';padding:3px 8px;border-radius:99px;display:inline-block;font-weight:700">Tag '+d.dayNum+' · '+DF[d.day]+' · '+ev.time+'</div>'
+            + '</div>';
+
+          var marker = L.marker([lat, lng], {icon:icon}).bindPopup(popup);
+          marker.addTo(_tsMap);
+          window._tsMapLayers.all.push(marker);
+          window._tsMapLayers.byDay[dayKey].push(marker);
+        }
+
+        if(ev.type === 'hotel' && ev.hotelLat){
+          bounds.push([ev.hotelLat, ev.hotelLng]);
+          routeCoords.push([ev.hotelLat, ev.hotelLng]);
+
+          var hotelIcon = L.divIcon({
+            html: '<div style="background:#059669;color:#fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.2)">🏨</div>',
+            className:'',iconSize:[26,26],iconAnchor:[13,13]
+          });
+          var hMarker = L.marker([ev.hotelLat, ev.hotelLng], {icon:hotelIcon})
+            .bindPopup('<strong style="color:#059669">Hotel · '+safe(ev.hotelCity||'')+'</strong><br><small>Tag '+d.dayNum+'</small>');
+          hMarker.addTo(_tsMap);
+          window._tsMapLayers.all.push(hMarker);
+          window._tsMapLayers.byDay[dayKey].push(hMarker);
+        }
+      });
+
+      // Route-Linie für diesen Tag
+      if(routeCoords.length > 1){
+        var line = L.polyline(routeCoords, {
+          color: color,
+          weight: 3.5,
+          opacity: 0.75,
+          dashArray: di === 0 ? null : '8,4'
+        }).addTo(_tsMap);
+        window._tsMapLayers.all.push(line);
+        window._tsMapLayers.byDay[dayKey].push(line);
       }
     });
-  });
 
-  // Route als Linie zeichnen
-  if(routePoints.length > 1){
-    new google.maps.Polyline({
-      path: routePoints,
-      geodesic: true,
-      strokeColor: '#84332f',
-      strokeOpacity: 0.7,
-      strokeWeight: 3,
-      map: map
-    });
-  }
-
-  // Flughafen-Marker
-  new google.maps.Marker({
-    position: apPos,
-    map: map,
-    title: AIRPORTS[rpAirport] + ' (' + rpAirport + ')',
-    icon: {
-      path: 'M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z',
-      fillColor: '#84332f',
-      fillOpacity: 1,
-      strokeColor: '#fff',
-      strokeWeight: 1,
-      scale: 1.2,
-      anchor: new google.maps.Point(12, 12)
+    // Karte auf alle Punkte zoomen
+    if(bounds.length > 1){
+      _tsMap.fitBounds(bounds, {padding:[30,30]});
     }
   });
-
-  map.fitBounds(bounds, {top: 40, right: 40, bottom: 40, left: 40});
 }
+
+// Tab-Umschaltung
+window.tsRpMapShowDay = function(dayIdx, totalDays){
+  if(!_tsMap || !window._tsMapLayers) return;
+
+  // Tabs updaten
+  document.querySelectorAll('.ts-rp-map-tab').forEach(function(btn,i){
+    btn.classList.toggle('active', parseInt(btn.dataset.day)===dayIdx);
+  });
+
+  if(dayIdx === 0){
+    // Alle anzeigen
+    window._tsMapLayers.all.forEach(function(l){ if(!_tsMap.hasLayer(l)) l.addTo(_tsMap); });
+  } else {
+    // Alle verstecken, nur gewählten Tag zeigen
+    window._tsMapLayers.all.forEach(function(l){ if(_tsMap.hasLayer(l)) _tsMap.removeLayer(l); });
+    var dayKey = 'day'+dayIdx;
+    if(window._tsMapLayers.byDay[dayKey]){
+      window._tsMapLayers.byDay[dayKey].forEach(function(l){ l.addTo(_tsMap); });
+    }
+  }
+  setTimeout(function(){ _tsMap.invalidateSize(); }, 100);
+};
+
 
 function showError(errors){
   document.getElementById('ts-rp-planOutput').innerHTML='<div class="ts-rp-error"><strong>Nicht umsetzbar:</strong><ul>'+errors.map(function(e){return'<li>'+e+'</li>';}).join('')+'</ul><div style="margin-top:8px;font-size:13px;color:#666">Bitte zurück und anpassen.</div></div>';
