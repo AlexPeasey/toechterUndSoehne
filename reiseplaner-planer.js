@@ -682,7 +682,8 @@ function updateAsync(plan,trans,hotelCache,days,dayMap){
             // Das gilt für BEIDE Fälle: useNext=true UND useNext=false
             var hotelParent=document.getElementById(ev.hotelId);
             var hotelTl=hotelParent?hotelParent.closest('.ts-rp-tl'):null;
-            if(hotelTl && dMin > 5){
+            var distKmCheck = haversineKm(ev.lastLat,ev.lastLng,finalLat,finalLng);
+            if(hotelTl && dMin > 5 && distKmCheck !== null && distKmCheck > 3){
               var depMin=ev.lastEndMin+30;
               var arrMin=depMin+dMin;
               var fahrtDiv=document.createElement('div');
@@ -727,7 +728,8 @@ function updateAsync(plan,trans,hotelCache,days,dayMap){
             var hotelEl=document.getElementById(ev.hotelId);
             var hotelTl=hotelEl?hotelEl.closest('.ts-rp-tl'):null;
             var timeEl=document.getElementById('ev-time-'+ev.hotelId);
-            if(hotelTl && dMin > 5){
+            var distKmCheck2 = haversineKm(ev.lastLat,ev.lastLng,ev.hotelLat,ev.hotelLng);
+            if(hotelTl && dMin > 5 && distKmCheck2 !== null && distKmCheck2 > 3){
               var depMin=ev.lastEndMin+30;
               var arrMin=depMin+dMin;
               var fahrtDiv=document.createElement('div');
