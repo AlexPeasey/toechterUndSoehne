@@ -559,7 +559,8 @@ window.tsRpGenerate=function(){
         events.push({
           type:'visit',time:m2t(sm),label:s.name,
           sub:(s.address||'Schulbesuch')+(sl.end?' — bis '+m2t(t2m(sl.end)):' — ca. '+(vd/60).toFixed(1).replace('.',',')+' Std.'),
-          comment:s.comment||''
+          comment:s.comment||'',
+          updateTo:{lat:s.lat,lng:s.lng}
         });
       });
 
@@ -627,6 +628,7 @@ window.tsRpGenerate=function(){
     // Rendern + zu Schritt 4
     renderPlan(plan,family,arrDate,valid,trans,warnings);
     tsRpGoStep(4);
+    setTimeout(function(){ tsRpRenderMap(plan, ac); }, 200);
 
     // Async: Fahrtzeiten + Hotel-Entscheidung nachladen
     setTimeout(function(){ updateAsync(plan,trans,hotelCache,days,dayMap); },100);
@@ -761,6 +763,7 @@ function renderPlan(plan,family,arrDate,valid,trans,warnings){
     +'<div class="ts-rp-metric"><div class="ts-rp-ml">Transport</div><div class="ts-rp-mv" style="font-size:15px">'+(trans==='car'?'Mietwagen':'Zug')+'</div></div>'
     +'</div>';
   if(warnings&&warnings.length)html+='<div class="ts-rp-warn"><strong>Hinweis:</strong> '+warnings.map(safe).join(' · ')+'</div>';
+  html+='<div class="ts-rp-map-wrap" id="ts-rp-map-wrap"><div class="ts-rp-map-loading">Karte wird vorbereitet ...</div></div>';
   plan.forEach(function(d){
     var lbl=DF[d.day]||d.day;
     html+='<div class="ts-rp-day"><div class="ts-rp-day-header"><span class="ts-rp-day-pill">TAG '+d.dayNum+'</span><span class="ts-rp-day-title">'+safe(lbl)+'</span></div><div class="ts-rp-timeline">';
@@ -784,6 +787,145 @@ function renderPlan(plan,family,arrDate,valid,trans,warnings){
   });
   document.getElementById('ts-rp-planOutput').innerHTML=html;
   window._tsRpLastPlan = plan;
+}
+
+// ============================================================
+// KARTE — Route + Pins für alle Schulen und Hotels
+// ============================================================
+function tsRpRenderMap(plan, ac){
+  var mapWrap = document.getElementById('ts-rp-map-wrap');
+  if(!mapWrap) return;
+
+  if(!gmapsReady || typeof google==='undefined' || !google.maps){
+    mapWrap.innerHTML = '<div class="ts-rp-map-loading">Karte wird geladen ...</div>';
+    setTimeout(function(){ tsRpRenderMap(plan, ac); }, 800);
+    return;
+  }
+
+  mapWrap.innerHTML = '<div class="ts-rp-map-container" id="ts-rp-map"></div>';
+  var mapEl = document.getElementById('ts-rp-map');
+
+  var map = new google.maps.Map(mapEl, {
+    zoom: 6,
+    center: {lat: 52.5, lng: -1.5},
+    mapTypeId: 'roadmap',
+    styles: [
+      {featureType:'poi',elementType:'labels',stylers:[{visibility:'off'}]},
+      {featureType:'transit',elementType:'labels',stylers:[{visibility:'off'}]}
+    ],
+    mapTypeControl: false,
+    streetViewControl: false,
+    fullscreenControl: true
+  });
+
+  var bounds = new google.maps.LatLngBounds();
+  var routePoints = [];
+  var infoWindow = new google.maps.InfoWindow();
+
+  // Flughafen als Startpunkt
+  var apPos = {lat: ac.lat, lng: ac.lng};
+  routePoints.push(apPos);
+  bounds.extend(apPos);
+
+  // Marker + Route aufbauen
+  var dayColors = ['#84332f','#2563eb','#059669','#d97706','#7c3aed'];
+
+  plan.forEach(function(d, di){
+    var color = dayColors[di % dayColors.length];
+    d.events.forEach(function(ev){
+      if(ev.type === 'visit'){
+        // Schul-Pin
+        var pos = ev.updateTo || (ev.updateFrom ? null : null);
+        // Koordinaten aus dem Event holen
+        if(!pos && ev.evId && ev.evId.indexOf('between') >= 0) return;
+
+        // Koordinaten direkt aus Plan nehmen
+        var lat = null, lng = null;
+        if(ev.updateTo){ lat = ev.updateTo.lat; lng = ev.updateTo.lng; }
+        if(!lat) return;
+
+        var marker = new google.maps.Marker({
+          position: {lat: lat, lng: lng},
+          map: map,
+          title: ev.label,
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 10,
+            fillColor: '#84332f',
+            fillOpacity: 1,
+            strokeColor: '#fff',
+            strokeWeight: 2.5
+          },
+          label: {
+            text: String(d.dayNum),
+            color: '#fff',
+            fontSize: '11px',
+            fontWeight: 'bold'
+          }
+        });
+        marker.addListener('click', function(){
+          infoWindow.setContent(
+            '<div style="font-family:Arial,sans-serif;padding:4px 0">'
+            + '<strong style="color:#84332f;font-size:13px">'+ev.label+'</strong>'
+            + '<div style="font-size:12px;color:#666;margin-top:3px">'+safe(ev.sub||'')+'</div>'
+            + '<div style="font-size:11px;color:#84332f;margin-top:3px">Tag '+d.dayNum+' · '+ev.time+'</div>'
+            + '</div>'
+          );
+          infoWindow.open(map, marker);
+        });
+        routePoints.push({lat: lat, lng: lng});
+        bounds.extend({lat: lat, lng: lng});
+      }
+
+      if(ev.type === 'hotel' && ev.hotelLat){
+        // Hotel-Pin (grün)
+        new google.maps.Marker({
+          position: {lat: ev.hotelLat, lng: ev.hotelLng},
+          map: map,
+          title: 'Hotel · ' + ev.hotelCity,
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 9,
+            fillColor: '#059669',
+            fillOpacity: 1,
+            strokeColor: '#fff',
+            strokeWeight: 2
+          }
+        });
+        bounds.extend({lat: ev.hotelLat, lng: ev.hotelLng});
+      }
+    });
+  });
+
+  // Route als Linie zeichnen
+  if(routePoints.length > 1){
+    new google.maps.Polyline({
+      path: routePoints,
+      geodesic: true,
+      strokeColor: '#84332f',
+      strokeOpacity: 0.7,
+      strokeWeight: 3,
+      map: map
+    });
+  }
+
+  // Flughafen-Marker
+  new google.maps.Marker({
+    position: apPos,
+    map: map,
+    title: AIRPORTS[rpAirport] + ' (' + rpAirport + ')',
+    icon: {
+      path: 'M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z',
+      fillColor: '#84332f',
+      fillOpacity: 1,
+      strokeColor: '#fff',
+      strokeWeight: 1,
+      scale: 1.2,
+      anchor: new google.maps.Point(12, 12)
+    }
+  });
+
+  map.fitBounds(bounds, {top: 40, right: 40, bottom: 40, left: 40});
 }
 
 function showError(errors){
@@ -1015,7 +1157,7 @@ window.tsRpExportPDF = function(){
 
   // Kopfzeile
   var header = document.createElement('div');
-  header.style.cssText = 'background:#844332;padding:24px 36px;display:flex;justify-content:space-between;align-items:center;box-sizing:border-box;width:100%';
+  header.style.cssText = 'background:#84332f;padding:24px 36px;display:flex;justify-content:space-between;align-items:center;box-sizing:border-box;width:100%';
   header.innerHTML = ''
     + '<div style="font-family:Georgia,Times New Roman,serif;font-size:24px;font-weight:400;color:#fff;letter-spacing:3px;line-height:1">'
     + 'TÖCHTER <span style="font-size:18px;letter-spacing:1px">und</span> SÖHNE'
@@ -1028,8 +1170,8 @@ window.tsRpExportPDF = function(){
 
   // Fusszeile
   var footer = document.createElement('div');
-  footer.style.cssText = 'background:#f7f0ee;padding:12px 36px;display:flex;justify-content:space-between;align-items:center;border-top:3px solid #844332;box-sizing:border-box;width:100%';
-  footer.innerHTML = '<span style="font-size:11px;color:#844332;font-weight:600">Töchter & Söhne — Individuelle Internatsberatung</span>'
+  footer.style.cssText = 'background:#f7efee;padding:12px 36px;display:flex;justify-content:space-between;align-items:center;border-top:3px solid #84332f;box-sizing:border-box;width:100%';
+  footer.innerHTML = '<span style="font-size:11px;color:#84332f;font-weight:600">Töchter & Söhne — Individuelle Internatsberatung</span>'
     + '<span style="font-size:11px;color:#999">internate.org</span>';
 
   wrap.appendChild(header);
