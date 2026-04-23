@@ -135,10 +135,3 @@
 .ts-rp-pdf-btn svg{flex-shrink:0}
 @media(max-width:600px){.ts-rp-r2,.ts-rp-r3{grid-template-columns:1fr}.ts-rp-airports{grid-template-columns:repeat(2,1fr)}.ts-rp-summary{grid-template-columns:repeat(2,1fr)}}
 @media print{.ts-rp-header,.ts-rp-progress,.ts-rp-actions,.ts-rp-print-row{display:none!important}.ts-rp-step{display:none!important}#ts-rp-step4{display:block!important}.ts-rp-card{border:none}}
-.ts-rp-map-wrap{margin:1.5rem 0;border-radius:14px;overflow:hidden;border:1.5px solid #ecdcd8;box-shadow:0 2px 12px rgba(132,51,47,.08)}
-.ts-rp-map-container{width:100%;height:420px;border:none;display:block}
-.ts-rp-map-loading{height:420px;display:flex;align-items:center;justify-content:center;background:#faf4f3;color:#84332f;font-size:14px;font-style:italic}
-.ts-rp-map-tabs{display:flex;gap:6px;padding:12px 14px 0;background:#fff;flex-wrap:wrap;border-bottom:1px solid #ecdcd8}
-.ts-rp-map-tab{padding:6px 14px;font-size:12px;font-weight:700;font-family:inherit;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#888;cursor:pointer;transition:all .2s}
-.ts-rp-map-tab.active{background:#84332f;color:#fff;border-color:#84332f}
-.ts-rp-map-tab:hover:not(.active){border-color:#84332f;color:#84332f}
