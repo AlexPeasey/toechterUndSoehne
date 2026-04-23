@@ -628,7 +628,6 @@ window.tsRpGenerate=function(){
     // Rendern + zu Schritt 4
     renderPlan(plan,family,arrDate,valid,trans,warnings);
     tsRpGoStep(4);
-    setTimeout(function(){ tsRpRenderMap(plan, ac); }, 200);
 
     // Async: Fahrtzeiten + Hotel-Entscheidung nachladen
     setTimeout(function(){ updateAsync(plan,trans,hotelCache,days,dayMap); },100);
@@ -763,7 +762,6 @@ function renderPlan(plan,family,arrDate,valid,trans,warnings){
     +'<div class="ts-rp-metric"><div class="ts-rp-ml">Transport</div><div class="ts-rp-mv" style="font-size:15px">'+(trans==='car'?'Mietwagen':'Zug')+'</div></div>'
     +'</div>';
   if(warnings&&warnings.length)html+='<div class="ts-rp-warn"><strong>Hinweis:</strong> '+warnings.map(safe).join(' · ')+'</div>';
-  html+='<div class="ts-rp-map-wrap" id="ts-rp-map-wrap"><div class="ts-rp-map-loading">Karte wird vorbereitet ...</div></div>';
   plan.forEach(function(d){
     var lbl=DF[d.day]||d.day;
     html+='<div class="ts-rp-day"><div class="ts-rp-day-header"><span class="ts-rp-day-pill">TAG '+d.dayNum+'</span><span class="ts-rp-day-title">'+safe(lbl)+'</span></div><div class="ts-rp-timeline">';
@@ -788,175 +786,6 @@ function renderPlan(plan,family,arrDate,valid,trans,warnings){
   document.getElementById('ts-rp-planOutput').innerHTML=html;
   window._tsRpLastPlan = plan;
 }
-
-// ============================================================
-// KARTE — Leaflet.js mit Tages-Tabs, Route + Pins
-// ============================================================
-var leafletLoaded = false;
-
-function tsRpLoadLeaflet(cb){
-  if(leafletLoaded){ cb(); return; }
-  // Leaflet CSS
-  if(!document.getElementById('leaflet-css')){
-    var link = document.createElement('link');
-    link.id = 'leaflet-css';
-    link.rel = 'stylesheet';
-    link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-    document.head.appendChild(link);
-  }
-  // Leaflet JS
-  if(!window.L){
-    var script = document.createElement('script');
-    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-    script.onload = function(){ leafletLoaded=true; cb(); };
-    document.head.appendChild(script);
-  } else {
-    leafletLoaded=true; cb();
-  }
-}
-
-var _tsMap = null; // Leaflet Map Instanz
-
-function tsRpRenderMap(plan, ac){
-  var mapWrap = document.getElementById('ts-rp-map-wrap');
-  if(!mapWrap) return;
-
-  // Tabs + Map Container aufbauen
-  var days = plan.filter(function(d){
-    return d.events.some(function(ev){ return ev.type==='visit'; });
-  });
-
-  var tabsHtml = '<div class="ts-rp-map-tabs" id="ts-map-tabs">'
-    + '<button class="ts-rp-map-tab active" onclick="tsRpMapShowDay(0,'+days.length+')" data-day="0">Alle Tage</button>'
-    + days.map(function(d,i){
-        return '<button class="ts-rp-map-tab" onclick="tsRpMapShowDay('+(i+1)+','+days.length+')" data-day="'+(i+1)+'">Tag '+d.dayNum+' · '+DF[d.day]+'</button>';
-      }).join('')
-    + '</div>';
-
-  mapWrap.innerHTML = tabsHtml + '<div class="ts-rp-map-container" id="ts-rp-map"></div>';
-
-  tsRpLoadLeaflet(function(){
-    if(_tsMap){ _tsMap.remove(); _tsMap=null; }
-
-    _tsMap = L.map('ts-rp-map', {zoomControl:true, scrollWheelZoom:false});
-
-    // OpenStreetMap Tiles (kostenlos)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      maxZoom: 18
-    }).addTo(_tsMap);
-
-    // Farben pro Tag
-    var dayColors = ['#84332f','#2563eb','#059669','#d97706','#7c3aed','#db2777'];
-
-    // Alle Layer speichern für Tab-Filterung
-    window._tsMapLayers = {all:[], byDay:{}};
-
-    // Flughafen-Marker
-    var apIcon = L.divIcon({
-      html: '<div style="background:#84332f;color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:16px;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3)">✈</div>',
-      className:'',iconSize:[32,32],iconAnchor:[16,16]
-    });
-    var apMarker = L.marker([ac.lat, ac.lng], {icon:apIcon})
-      .bindPopup('<strong style="color:#84332f">'+AIRPORTS[rpAirport]+' ('+rpAirport+')</strong><br><small>Ankunftsflughafen</small>');
-    apMarker.addTo(_tsMap);
-    window._tsMapLayers.all.push(apMarker);
-
-    var bounds = [[ac.lat, ac.lng]];
-
-    plan.forEach(function(d, di){
-      var color = dayColors[di % dayColors.length];
-      var dayKey = 'day'+(di+1);
-      window._tsMapLayers.byDay[dayKey] = [];
-
-      var routeCoords = [];
-      // Flughafen als Startpunkt für Tag 1
-      if(di === 0) routeCoords.push([ac.lat, ac.lng]);
-
-      d.events.forEach(function(ev){
-        if(ev.type === 'visit' && ev.updateTo){
-          var lat = ev.updateTo.lat, lng = ev.updateTo.lng;
-          if(!lat || !lng) return;
-
-          bounds.push([lat, lng]);
-          routeCoords.push([lat, lng]);
-
-          // Nummerierten Pin erstellen
-          var icon = L.divIcon({
-            html: '<div style="background:'+color+';color:#fff;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.25)">'+d.dayNum+'</div>',
-            className:'',iconSize:[30,30],iconAnchor:[15,15]
-          });
-
-          var popup = '<div style="font-family:Arial,sans-serif;min-width:180px">'
-            + '<div style="font-weight:800;color:'+color+';font-size:13px;margin-bottom:4px">'+safe(ev.label)+'</div>'
-            + '<div style="font-size:11px;color:#666;margin-bottom:4px">'+safe(ev.sub||'')+'</div>'
-            + '<div style="font-size:11px;background:'+color+'22;color:'+color+';padding:3px 8px;border-radius:99px;display:inline-block;font-weight:700">Tag '+d.dayNum+' · '+DF[d.day]+' · '+ev.time+'</div>'
-            + '</div>';
-
-          var marker = L.marker([lat, lng], {icon:icon}).bindPopup(popup);
-          marker.addTo(_tsMap);
-          window._tsMapLayers.all.push(marker);
-          window._tsMapLayers.byDay[dayKey].push(marker);
-        }
-
-        if(ev.type === 'hotel' && ev.hotelLat){
-          bounds.push([ev.hotelLat, ev.hotelLng]);
-          routeCoords.push([ev.hotelLat, ev.hotelLng]);
-
-          var hotelIcon = L.divIcon({
-            html: '<div style="background:#059669;color:#fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.2)">🏨</div>',
-            className:'',iconSize:[26,26],iconAnchor:[13,13]
-          });
-          var hMarker = L.marker([ev.hotelLat, ev.hotelLng], {icon:hotelIcon})
-            .bindPopup('<strong style="color:#059669">Hotel · '+safe(ev.hotelCity||'')+'</strong><br><small>Tag '+d.dayNum+'</small>');
-          hMarker.addTo(_tsMap);
-          window._tsMapLayers.all.push(hMarker);
-          window._tsMapLayers.byDay[dayKey].push(hMarker);
-        }
-      });
-
-      // Route-Linie für diesen Tag
-      if(routeCoords.length > 1){
-        var line = L.polyline(routeCoords, {
-          color: color,
-          weight: 3.5,
-          opacity: 0.75,
-          dashArray: di === 0 ? null : '8,4'
-        }).addTo(_tsMap);
-        window._tsMapLayers.all.push(line);
-        window._tsMapLayers.byDay[dayKey].push(line);
-      }
-    });
-
-    // Karte auf alle Punkte zoomen
-    if(bounds.length > 1){
-      _tsMap.fitBounds(bounds, {padding:[30,30]});
-    }
-  });
-}
-
-// Tab-Umschaltung
-window.tsRpMapShowDay = function(dayIdx, totalDays){
-  if(!_tsMap || !window._tsMapLayers) return;
-
-  // Tabs updaten
-  document.querySelectorAll('.ts-rp-map-tab').forEach(function(btn,i){
-    btn.classList.toggle('active', parseInt(btn.dataset.day)===dayIdx);
-  });
-
-  if(dayIdx === 0){
-    // Alle anzeigen
-    window._tsMapLayers.all.forEach(function(l){ if(!_tsMap.hasLayer(l)) l.addTo(_tsMap); });
-  } else {
-    // Alle verstecken, nur gewählten Tag zeigen
-    window._tsMapLayers.all.forEach(function(l){ if(_tsMap.hasLayer(l)) _tsMap.removeLayer(l); });
-    var dayKey = 'day'+dayIdx;
-    if(window._tsMapLayers.byDay[dayKey]){
-      window._tsMapLayers.byDay[dayKey].forEach(function(l){ l.addTo(_tsMap); });
-    }
-  }
-  setTimeout(function(){ _tsMap.invalidateSize(); }, 100);
-};
 
 
 function showError(errors){
