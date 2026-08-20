@@ -368,6 +368,8 @@ function renderView(state,isReadOnly){
     byC[c].push(s);
   });
 
+  var DE_TO_EN={'Gro\u00dfbritannien':'United Kingdom','Deutschland':'Germany','\u00d6sterreich':'Austria','Schweiz':'Switzerland','Frankreich':'France','Spanien':'Spain','Italien':'Italy','Vereinigte Staaten':'United States','USA':'USA','Kanada':'Canada','Neuseeland':'New Zealand','Australien':'Australia','Niederlande':'Netherlands','Belgien':'Belgium','Portugal':'Portugal'};
+  var cOrderDisplay = en ? cOrder.map(function(c){ return DE_TO_EN[c]||c; }) : cOrder;
   var html='';
   if(!isReadOnly){
     html+='<div class="back-bar"><button onclick="backToTool()">\u2190 Zur\u00fcck</button><span class="preview-tag">Vorschau \u2014 so sehen es die Eltern</span></div>';
@@ -396,9 +398,6 @@ function renderView(state,isReadOnly){
     +'<div class="v-sec-sub">'+state.schools.length+' '+(en?'boarding school'+(state.schools.length===1?'':'s'):'Internat'+(state.schools.length===1?'':'e'))+' \u00b7 '+esc(state.year)+'</div>';
 
   // Länder für EN übersetzen
-  var DE_TO_EN={'Gro\u00dfbritannien':'United Kingdom','Deutschland':'Germany','\u00d6sterreich':'Austria','Schweiz':'Switzerland','Frankreich':'France','Spanien':'Spain','Italien':'Italy','Vereinigte Staaten':'United States','USA':'USA','Kanada':'Canada','Neuseeland':'New Zealand','Australien':'Australia','Niederlande':'Netherlands','Belgien':'Belgium','Portugal':'Portugal'};
-  var cOrderDisplay = en ? cOrder.map(function(c){ return DE_TO_EN[c]||c; }) : cOrder;
-
   cOrder.forEach(function(country,ci){
     var list=byC[country];
     var groupId='cg'+ci;
