@@ -288,15 +288,14 @@ function sendEmail(){
       subject=encodeURIComponent('Boarding School Selection for '+studentName+' - Toechter und Soehne');
       body=encodeURIComponent('Dear '+familyName+' family,')+nl+nl
         +encodeURIComponent('I am pleased to share with you today the first suggestions for boarding schools for '+studentName+'.')+nl+nl
-        +encodeURIComponent('As discussed, I have introduced '+studentName+' to a selection of boarding schools for '+zeitraum+'.')+nl+nl
+        +encodeURIComponent('As discussed, I have introduced '+studentName+' to selected boarding schools for '+zeitraum+'.')+nl+nl
         +encodeURIComponent('You can access '+studentName+'s personalised selection via the following link:')+nl
         +encodeURIComponent(url)+nl+nl
-        +encodeURIComponent('Please could you let me know when you would be available for a phone call, so that I can talk you through the schools in more detail and explain why I have selected these particular schools for '+studentName+'?')+nl+nl
+        +encodeURIComponent('Please could you let me know when you would be available for a phone call, so that I can discuss the boarding schools with you in more detail and explain why I have shortlisted these particular schools for '+studentName+'.')+nl+nl
         +encodeURIComponent('Please note that the schools have currently indicated that places should be available in principle. However, this does not yet constitute a binding offer or guarantee of a place.')+nl+nl
-        +encodeURIComponent('During the next conversation, we will first compile a shortlist of your preferred schools. As each school has its own admissions process, I will then guide you through the next steps for each school individually.')+nl+nl
-        +encodeURIComponent('I will, of course, continue to support you throughout all further stages of the application process.')+nl+nl
+        +encodeURIComponent('During our next conversation, we will first compile a shortlist of your preferred boarding schools. As each school has its own individual admissions process, I will guide you through the next steps for each respective school as well as all of the remaining steps of the application process.')+nl+nl
         +encodeURIComponent('I look forward to receiving your suggested times for a call.')+nl+nl
-        +encodeURIComponent('With kind regards,')+nl
+        +encodeURIComponent('Sincerely,')+nl
         +encodeURIComponent(advisorName);
     } else {
     body='Liebe Familie '+encodeURIComponent(familyName)+','+nl+nl
@@ -369,10 +368,6 @@ function renderView(state,isReadOnly){
     byC[c].push(s);
   });
 
-  // Länder für EN übersetzen
-  var DE_TO_EN={'Gro\u00dfbritannien':'United Kingdom','Deutschland':'Germany','\u00d6sterreich':'Austria','Schweiz':'Switzerland','Frankreich':'France','Spanien':'Spain','Italien':'Italy','Vereinigte Staaten':'United States','USA':'USA','Kanada':'Canada','Neuseeland':'New Zealand','Australien':'Australia','Niederlande':'Netherlands','Belgien':'Belgium','Portugal':'Portugal'};
-  var cOrderDisplay = en ? cOrder.map(function(c){ return DE_TO_EN[c]||c; }) : cOrder;
-
   var html='';
   if(!isReadOnly){
     html+='<div class="back-bar"><button onclick="backToTool()">\u2190 Zur\u00fcck</button><span class="preview-tag">Vorschau \u2014 so sehen es die Eltern</span></div>';
@@ -399,6 +394,10 @@ function renderView(state,isReadOnly){
   html+='<div class="v-section">'
     +'<div class="v-sec-title">'+(en?'Selected Boarding Schools':'Ausgew\u00e4hlte Internate')+'</div>'
     +'<div class="v-sec-sub">'+state.schools.length+' '+(en?'boarding school'+(state.schools.length===1?'':'s'):'Internat'+(state.schools.length===1?'':'e'))+' \u00b7 '+esc(state.year)+'</div>';
+
+  // Länder für EN übersetzen
+  var DE_TO_EN={'Gro\u00dfbritannien':'United Kingdom','Deutschland':'Germany','\u00d6sterreich':'Austria','Schweiz':'Switzerland','Frankreich':'France','Spanien':'Spain','Italien':'Italy','Vereinigte Staaten':'United States','USA':'USA','Kanada':'Canada','Neuseeland':'New Zealand','Australien':'Australia','Niederlande':'Netherlands','Belgien':'Belgium','Portugal':'Portugal'};
+  var cOrderDisplay = en ? cOrder.map(function(c){ return DE_TO_EN[c]||c; }) : cOrder;
 
   cOrder.forEach(function(country,ci){
     var list=byC[country];
@@ -463,7 +462,8 @@ function renderView(state,isReadOnly){
   var advisorPhone=advisorInfo.phone||state.advisorPhone||'';
   var advisorEmail=advisorInfo.email||state.advisorEmail||'';
   var ADVISOR_ROLES={'Janka Z\u00f6ller':'Gesellschafterin','Johanna Lingenthal':'Operative Gesch\u00e4ftsf\u00fchrung','Ann-Kathrin Schiefer':'Senior Consultant','Mirjam Auweiler':'Senior Consultant','Gesine Meyer':'Senior Consultant'};
-  var advisorRole=ADVISOR_ROLES[state.advisor]||advisorInfo.role||state.advisorRole||'Senior Consultant';
+  var ADVISOR_ROLES_EN={'Janka Z\u00f6ller':'Shareholder','Johanna Lingenthal':'Operational Management','Ann-Kathrin Schiefer':'Senior Consultant','Mirjam Auweiler':'Senior Consultant','Gesine Meyer':'Senior Consultant'};
+  var advisorRole=(en?(ADVISOR_ROLES_EN[state.advisor]||'Senior Consultant'):(ADVISOR_ROLES[state.advisor]||'Senior Consultant'))||advisorInfo.role||state.advisorRole||'Senior Consultant';
   var initials=state.advisor?state.advisor.split(' ').map(function(w){return w[0]||'';}).join('').slice(0,2).toUpperCase():'TS';
   var photoHtml=advisorPhoto
     ?'<img class="av-photo" src="'+esc(advisorPhoto)+'" alt="'+esc(state.advisor)+'">'
