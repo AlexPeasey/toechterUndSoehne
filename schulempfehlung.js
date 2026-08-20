@@ -516,7 +516,7 @@ window.copyLink=copyLink;
 window.sendEmail=sendEmail;
 window.updateStatus=updateStatus;
 
-document.addEventListener('DOMContentLoaded',function(){
+function __wwwInit(){
   var shortId=new URLSearchParams(window.location.search).get('id');
   var encoded=new URLSearchParams(window.location.search).get('empfehlung');
 
@@ -599,4 +599,5 @@ document.addEventListener('DOMContentLoaded',function(){
       document.querySelector('.tool').insertBefore(banner,document.querySelector('.card'));
     });
   }
-});
+}
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',__wwwInit);}else{__wwwInit();}
